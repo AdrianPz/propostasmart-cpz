@@ -158,17 +158,17 @@ body {
     transition: border-color 0.15s, color 0.15s, background 0.15s;
     flex-shrink: 0;
 }
-.logo-placeholder:hover {
-    border-color: var(--blue);
-    color: var(--blue);
-    background: var(--blue-dim);
-}
+.logo-placeholder:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+.logo-placeholder.tem-logo { border: none; padding: 0; min-width: unset; background: transparent; }
+.logo-placeholder.tem-logo:hover { background: transparent; }
+.logo-placeholder.tem-logo img { opacity: 1; transition: opacity 0.15s; }
+.logo-placeholder.tem-logo:hover img { opacity: 0.75; }
 .logo-popover {
     display: none;
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    width: 260px;
+    width: 240px;
     background: var(--surface2);
     border: 1.5px solid var(--blue);
     border-radius: 14px;
@@ -182,26 +182,25 @@ body {
     font-size: 12px;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    padding-right: 20px;
 }
 .logo-popover p {
-    font-size: 12px;
-    color: var(--label);
-    margin: 0 0 8px;
+    font-size: 11px;
+    color: var(--muted);
+    margin: 0 0 10px;
     line-height: 1.55;
 }
-.logo-popover code {
-    display: block;
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 7px;
-    padding: 8px 10px;
-    font-size: 11px;
-    color: var(--ok-text);
-    font-family: 'Courier New', monospace;
-    line-height: 1.6;
-    word-break: break-all;
+.logo-upload-btn {
+    width: 100%;
+    min-height: 40px;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: var(--blue); border: none; border-radius: 10px;
+    font-size: 13px; font-weight: 700; color: white;
+    cursor: pointer; font-family: inherit;
+    transition: filter 0.15s;
 }
+.logo-upload-btn:active { filter: brightness(0.88); }
 .logo-popover-fechar {
     position: absolute;
     top: 10px; right: 10px;
@@ -758,17 +757,17 @@ body {
             <p class="subtitulo" id="subtituloApp"></p>
         </div>
         <div class="logo-placeholder" id="logoPlaceholder" onclick="toggleLogoPopover(event)">
-            Logo
+            <span id="logoLabel">Logo</span>
+            <img id="logoImg" style="display:none;height:34px;width:auto;border-radius:6px;background:#fff;padding:4px 8px;pointer-events:none;" alt="">
+            <input type="file" id="logoFileInput" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
             <div class="logo-popover" id="logoPopover" onclick="event.stopPropagation()">
                 <button class="logo-popover-fechar" onclick="fecharLogoPopover()">✕</button>
-                <div class="logo-popover-titulo">Como adicionar a logo</div>
-                <p>Coloque o arquivo de imagem na mesma pasta do <strong>index.html</strong> e defina o caminho no <strong>CONFIG</strong>:</p>
-                <code>logo: 'sua-logo.png'</code>
-                <p style="margin-top:8px;margin-bottom:0;">
-                    Dimensões recomendadas:<br>
-                    <strong>130 × 34 px</strong> — PNG ou JPG<br>
-                    Fundo branco ou transparente
-                </p>
+                <div class="logo-popover-titulo">Logo da empresa</div>
+                <p>Recomendado: <strong>130 × 34 px</strong>, PNG ou JPG com fundo branco ou transparente.</p>
+                <button class="logo-upload-btn" onclick="document.getElementById('logoFileInput').click()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar do dispositivo
+                </button>
             </div>
         </div>
     </div>
@@ -1377,6 +1376,29 @@ function fecharLogoPopover() {
     document.getElementById('logoPopover').classList.remove('aberto');
 }
 document.addEventListener('click', fecharLogoPopover);
+
+function aplicarLogo(src) {
+    const ph  = document.getElementById('logoPlaceholder');
+    const img = document.getElementById('logoImg');
+    const lbl = document.getElementById('logoLabel');
+    img.src = src;
+    img.style.display = '';
+    lbl.style.display = 'none';
+    ph.classList.add('tem-logo');
+}
+
+function handleLogoUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        aplicarLogo(ev.target.result);
+        localStorage.setItem('orcapro_logo', ev.target.result);
+        fecharLogoPopover();
+        mostrarToast('Logo atualizada!');
+    };
+    reader.readAsDataURL(file);
+}
 
 let _toastTimer=null;
 
@@ -2375,13 +2397,9 @@ function renderPagamento() {
 // ── INIT ──
 async function init() {
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
-    if (CONFIG.logo) {
-        const ph = document.getElementById('logoPlaceholder');
-        ph.innerHTML = `<img src="${CONFIG.logo}" alt="${CONFIG.empresa}" style="height:34px;width:auto;border-radius:6px;background:#fff;padding:4px 8px;">`;
-        ph.style.border = 'none';
-        ph.style.cursor = 'default';
-        ph.onclick = null;
-    }
+    const logoSalva = localStorage.getItem('orcapro_logo');
+    if (logoSalva)    aplicarLogo(logoSalva);
+    else if (CONFIG.logo) aplicarLogo(CONFIG.logo);
     await carregarBanco();
     if (!restaurarEstado()) {
         adicionarProduto();
