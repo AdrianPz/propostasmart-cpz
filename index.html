@@ -1385,6 +1385,8 @@ function aplicarLogo(src) {
     img.style.display = '';
     lbl.style.display = 'none';
     ph.classList.add('tem-logo');
+    ph.onclick = null;
+    ph.style.cursor = 'default';
 }
 
 function handleLogoUpload(input) {
