@@ -1,0 +1,2360 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CPZ Orçamento</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap');
+
+:root {
+    --bg:             #0b0d11;
+    --surface:        #13161c;
+    --surface2:       #1a1e26;
+    --border:         #22272f;
+    --border2:        #2c3340;
+    --blue:           #0A84FF;
+    --blue-dim:       #0a2845;
+    --blue-glow:      rgba(10,132,255,0.18);
+    --text:           #f0f4ff;
+    --muted:          #7c8799;
+    --label:          #b8c2d0;
+    --item-bg:        #1e222a;
+    --ok:             #0d3320;
+    --warn:           #3d2500;
+    --danger:         #3d0f0f;
+    --ok-text:        #3dce74;
+    --warn-text:      #f5c842;
+    --danger-text:    #f47070;
+    --dropdown-bg:    #171b22;
+    --dropdown-grupo: #111418;
+    --input-bg:       #1e222a;
+    --input-color:    #f0f4ff;
+    --green:          #0f6b2e;
+    --green-glow:     rgba(15,107,46,0.3);
+    --shadow-card:    0 2px 12px rgba(0,0,0,0.45);
+    --shadow-drop:    0 12px 32px rgba(0,0,0,0.6);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg:             #eef1f6;
+        --surface:        #ffffff;
+        --surface2:       #f5f7fb;
+        --border:         #dce1ea;
+        --border2:        #c8cfdb;
+        --blue-dim:       #e0eeff;
+        --blue-glow:      rgba(10,132,255,0.12);
+        --text:           #0d1117;
+        --muted:          #62707f;
+        --label:          #374151;
+        --item-bg:        #f5f7fb;
+        --ok:             #d4f4e2;
+        --warn:           #fef3c7;
+        --danger:         #fee2e2;
+        --ok-text:        #0f6b2e;
+        --warn-text:      #92600a;
+        --danger-text:    #c92020;
+        --dropdown-bg:    #ffffff;
+        --dropdown-grupo: #f0f3f8;
+        --input-bg:       #ffffff;
+        --input-color:    #0d1117;
+        --green:          #0f6b2e;
+        --green-glow:     rgba(15,107,46,0.15);
+        --shadow-card:    0 2px 10px rgba(0,0,0,0.08);
+        --shadow-drop:    0 8px 24px rgba(0,0,0,0.14);
+    }
+}
+
+/* ── B&A Vision palette ── */
+body.ba-vision {
+    --blue:           #10b981;
+    --blue-dim:       #063d28;
+    --blue-glow:      rgba(16,185,129,0.40);
+    --resultado-bg:   linear-gradient(135deg, #047857 0%, #059669 60%, #10b981 100%);
+    --resultado-shdw: 0 8px 28px rgba(16,185,129,0.38);
+}
+@media (prefers-color-scheme: light) {
+    body.ba-vision {
+        --blue:           #059669;
+        --blue-dim:       #d1fae5;
+        --blue-glow:      rgba(5,150,105,0.35);
+        --resultado-bg:   linear-gradient(135deg, #047857 0%, #059669 100%);
+        --resultado-shdw: 0 8px 28px rgba(5,150,105,0.35);
+    }
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', Arial, sans-serif;
+    padding: 14px 12px 110px;
+}
+
+.container {
+    max-width: 480px;
+    margin: auto;
+}
+
+/* ── TOPO ── */
+.topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    background: var(--surface);
+    padding: 14px 18px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+}
+.topo-texto h2 {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text);
+}
+.subtitulo {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+.logo-empresa {
+    height: 34px;
+    width: auto;
+    border-radius: 6px;
+    background: #fff;
+    padding: 4px 8px;
+}
+
+/* ── CARDS ── */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-card);
+}
+.card-titulo {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+}
+
+/* ── TIPO PROJETO ── */
+.tipos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+}
+.tipo-btn {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 44px;
+    background: var(--item-bg);
+    border: 1.5px solid var(--border2);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--label);
+    transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+    user-select: none;
+}
+.tipo-btn:active { transform: scale(0.97); }
+.tipo-btn.ativo {
+    background: var(--blue-dim);
+    border-color: var(--blue);
+    color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-glow);
+}
+.tipo-btn input { display: none; }
+
+/* ── TOTAL CÂMERAS ── */
+.cameras-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px;
+    background: var(--item-bg);
+    border-radius: 12px;
+    margin-top: 10px;
+    border: 1px solid var(--border2);
+}
+.cameras-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.cameras-badge {
+    min-width: 50px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 9px;
+    background: var(--surface2);
+    font-weight: 700; font-size: 19px;
+    color: var(--text);
+    border: 1.5px solid var(--border2);
+    transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+.cameras-badge.facil   { background: var(--ok);     color: var(--ok-text);     border-color: transparent; }
+.cameras-badge.medio   { background: var(--warn);    color: var(--warn-text);   border-color: transparent; }
+.cameras-badge.dificil { background: var(--danger);  color: var(--danger-text); border-color: transparent; }
+
+/* ── ITENS ── */
+.item-card {
+    background: var(--item-bg);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 11px;
+    margin-bottom: 8px;
+    animation: slideIn 0.18s ease;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.item-topo {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 9px;
+}
+.item-numero {
+    min-width: 26px; height: 26px;
+    background: var(--border2);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    flex-shrink: 0;
+}
+.item-busca-wrapper { flex: 1; min-width: 0; position: relative; }
+
+.item-rodape {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.item-preco {
+    font-size: 13px;
+    color: var(--ok-text);
+    font-weight: 700;
+    flex: 1;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 0;
+}
+
+/* controles +/- */
+.qtd-ctrl {
+    display: flex; align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 9px;
+    overflow: hidden;
+}
+.qtd-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: none;
+    border: none;
+    color: var(--blue);
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0; margin: 0;
+    font-family: inherit;
+    transition: background 0.12s;
+}
+.qtd-btn:active { background: var(--blue-dim); }
+.qtd-num {
+    min-width: 34px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    background: none;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    padding: 0;
+}
+.qtd-num::-webkit-inner-spin-button,
+.qtd-num::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+.btn-del {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: 9px;
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0; margin: 0;
+    font-family: inherit;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-del:active { background: var(--danger); color: var(--danger-text); border-color: transparent; }
+
+/* ── BUSCA ── */
+.busca-input {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 13px;
+    border: 1.5px solid var(--border2);
+    border-radius: 9px;
+    font-size: 14px;
+    outline: none;
+    font-family: 'DM Sans', Arial, sans-serif;
+    background: var(--input-bg);
+    color: var(--input-color);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.busca-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-glow);
+}
+.busca-input::placeholder { color: var(--muted); font-size: 13px; }
+
+.busca-dropdown {
+    display: none;
+    position: absolute;
+    left: 0; right: 0;
+    background: var(--dropdown-bg);
+    border: 1.5px solid var(--blue);
+    border-radius: 12px;
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 999;
+    box-shadow: var(--shadow-drop);
+}
+.busca-dropdown.aberto { display: block; }
+
+.busca-grupo-label {
+    padding: 6px 13px 3px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    background: var(--dropdown-grupo);
+    position: sticky; top: 0;
+}
+.busca-opcao {
+    padding: 10px 13px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    transition: background 0.1s;
+}
+.busca-opcao:last-child { border-bottom: none; }
+.busca-opcao:active { background: var(--blue-dim); }
+.opcao-nome { flex: 1; line-height: 1.35; }
+.opcao-codigo-txt { font-size: 10px; color: var(--muted); display: block; margin-bottom: 1px; }
+.opcao-preco-txt { font-size: 12px; color: var(--ok-text); font-weight: 700; white-space: nowrap; }
+.busca-vazio { padding: 16px 13px; color: var(--muted); font-size: 13px; text-align: center; }
+
+/* ── DIAS ── */
+.dias-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.dias-item label {
+    display: block; font-size: 12px; font-weight: 700;
+    color: var(--muted); margin-bottom: 6px; letter-spacing: 0.2px;
+}
+.dias-item input {
+    width: 100%; min-height: 46px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border2);
+    border-radius: 10px;
+    font-size: 18px; font-weight: 700;
+    text-align: center;
+    background: var(--input-bg);
+    color: var(--input-color);
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.dias-item input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+/* ── RESULTADO ── */
+.resultado-card {
+    background: var(--resultado-bg, linear-gradient(135deg, #0a5fd4 0%, #0A84FF 60%, #38a1ff 100%));
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 10px;
+    box-shadow: var(--resultado-shdw, 0 8px 28px rgba(10,132,255,0.35));
+    border: 1px solid rgba(255,255,255,0.12);
+}
+.resultado-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 4px;
+}
+.resultado-valor { font-size: 36px; font-weight: 700; color: white; line-height: 1; letter-spacing: -0.5px; }
+
+.resumo-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 14px; cursor: pointer;
+    font-size: 12px; color: rgba(255,255,255,0.7);
+    user-select: none;
+    font-weight: 500;
+}
+.resumo-toggle .seta { transition: transform 0.2s; font-size: 10px; }
+.resumo-toggle.aberto .seta { transform: rotate(180deg); }
+
+.resumo-itens {
+    display: none;
+    margin-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+    padding-top: 12px;
+    gap: 8px;
+    flex-direction: column;
+}
+.resumo-itens.visivel { display: flex; }
+.resumo-linha {
+    display: flex; justify-content: space-between; gap: 12px;
+    font-size: 13px; color: rgba(255,255,255,0.75);
+}
+.resumo-linha strong { color: white; font-weight: 700; }
+
+/* ── BOTÕES FIXOS ── */
+.fab-area {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 10px 14px 20px;
+    background: linear-gradient(to top, var(--bg) 65%, transparent);
+    display: flex; gap: 9px;
+    max-width: 504px;
+    margin: auto;
+    z-index: 100;
+}
+.fab {
+    flex: 1; min-height: 50px;
+    border: none; border-radius: 14px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    letter-spacing: 0.1px;
+    transition: filter 0.15s, transform 0.1s;
+}
+.fab:active { transform: scale(0.97); filter: brightness(0.9); }
+.fab-azul {
+    background: var(--blue);
+    color: white;
+    box-shadow: 0 4px 16px var(--blue-glow);
+}
+.fab-ghost {
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    color: var(--muted);
+    flex: 0 0 50px;
+    font-size: 19px;
+}
+
+/* ── TOAST ── */
+.toast {
+    position: fixed;
+    bottom: 82px; left: 50%;
+    transform: translateX(-50%) translateY(14px);
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 50px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    z-index: 9999;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    letter-spacing: 0.1px;
+}
+.toast.visivel {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── ADD ROW ── */
+.add-row {
+    display: flex; gap: 8px; margin-top: 6px;
+}
+.add-row button {
+    flex: 1; min-height: 42px; margin: 0;
+    border-radius: 10px; font-size: 14px;
+    background: var(--green); color: white;
+    border: none; font-family: inherit; font-weight: 700; cursor: pointer;
+    letter-spacing: 0.1px;
+    box-shadow: 0 2px 10px var(--green-glow);
+    transition: filter 0.15s, transform 0.1s;
+}
+.add-row button:active { filter: brightness(0.9); transform: scale(0.98); }
+
+/* ── MODAL PAGAMENTO ── */
+.pag-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 100;
+    display: flex; align-items: flex-end;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s;
+}
+.pag-overlay.aberto { opacity: 1; pointer-events: all; }
+.pag-modal {
+    background: var(--surface);
+    border-radius: 22px 22px 0 0;
+    border-top: 1px solid var(--border);
+    width: 100%; max-height: 88vh;
+    overflow-y: auto;
+    padding: 18px 16px 44px;
+    transform: translateY(100%);
+    transition: transform 0.28s cubic-bezier(.32,.72,0,1);
+}
+.pag-overlay.aberto .pag-modal { transform: translateY(0); }
+
+.pag-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+}
+.pag-titulo { font-size: 17px; font-weight: 700; color: var(--text); }
+.pag-fechar {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 10px; font-size: 16px;
+    color: var(--muted); cursor: pointer;
+    font-family: inherit;
+}
+.pag-exportar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 14px; height: 34px;
+    background: var(--blue); border: none;
+    border-radius: 10px; font-size: 13px; font-weight: 700;
+    color: white; cursor: pointer; font-family: inherit;
+    transition: filter 0.15s;
+}
+.pag-exportar:active { filter: brightness(0.88); }
+.exp-field { display: flex; flex-direction: column; gap: 6px; }
+.exp-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.exp-input {
+    width: 100%; padding: 12px 14px;
+    background: var(--item-bg); border: 1.5px solid var(--border2);
+    border-radius: 12px; font-size: 15px; color: var(--text);
+    font-family: inherit; outline: none; box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+.exp-input:focus { border-color: var(--blue); }
+.exp-btn {
+    width: 100%; min-height: 50px; margin-top: 4px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--blue); border: none; border-radius: 14px;
+    font-size: 15px; font-weight: 700; color: white;
+    cursor: pointer; font-family: inherit;
+    transition: filter 0.15s, transform 0.1s;
+}
+.exp-btn:active { filter: brightness(0.88); transform: scale(0.98); }
+
+.pag-tabs {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 6px; margin-bottom: 14px;
+}
+.pag-tab {
+    padding: 9px 4px; text-align: center;
+    font-size: 12px; font-weight: 600;
+    color: var(--muted);
+    background: var(--item-bg);
+    border: 1.5px solid var(--border2);
+    border-radius: 10px; cursor: pointer;
+    font-family: inherit;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.pag-tab.ativo {
+    background: var(--blue-dim);
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.pag-total-card {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+}
+.pag-total-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.pag-total-valor { font-size: 22px; font-weight: 700; color: var(--text); }
+
+.pag-boleto-ctrl {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.pag-boleto-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+.pag-boleto-sel { display: flex; gap: 6px; }
+.pag-boleto-opt {
+    padding: 6px 10px;
+    background: var(--item-bg);
+    border: 1.5px solid var(--border2);
+    border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+    color: var(--muted); cursor: pointer;
+    font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 1px;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.pag-boleto-opt .opt-parc-val {
+    font-size: 10px; font-weight: 500; opacity: 0.75; white-space: nowrap;
+}
+.pag-boleto-opt.ativo {
+    background: var(--blue-dim); border-color: var(--blue); color: var(--blue);
+}
+.pag-boleto-opt.ativo .opt-parc-val { opacity: 1; }
+.pag-boleto-opt.inviavel {
+    opacity: 0.38; cursor: not-allowed;
+    border-color: var(--danger-text); color: var(--danger-text);
+    text-decoration: line-through;
+}
+.pag-aviso-inviavel {
+    font-size: 11px; color: var(--danger-text);
+    background: var(--danger); border-radius: 8px;
+    padding: 7px 11px; margin-top: 6px; line-height: 1.5;
+}
+
+.pag-parc {
+    background: var(--item-bg); border: 1px solid var(--border2);
+    border-left: 3px solid var(--border2);
+    border-radius: 12px; padding: 12px; margin-bottom: 8px;
+    transition: border-left-color 0.2s;
+}
+.pag-parc.acum-pos { border-left-color: var(--ok-text); }
+.pag-parc.acum-neg { border-left-color: var(--danger-text); }
+.pag-parc-titulo {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px;
+}
+.pag-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 2px 0;
+}
+.pag-row-label { font-size: 13px; color: var(--muted); }
+.pag-row-val { font-size: 13px; font-weight: 700; }
+.pag-saidas-label {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin: 4px 0 2px;
+    opacity: 0.7;
+}
+.pag-row-sub { padding: 1px 0; }
+.pag-row-sub .pag-row-label { font-size: 12px; padding-left: 10px; }
+.pag-row-sub .pag-row-val   { font-size: 12px; }
+.pag-row-val.verde  { color: var(--ok-text); }
+.pag-row-val.vermelho { color: var(--danger-text); }
+.pag-row-val.amarelo { color: var(--warn-text); }
+.pag-sep { height: 1px; background: var(--border2); margin: 6px 0; }
+.pag-saldo-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 0;
+}
+.pag-saldo-label { font-size: 13px; font-weight: 700; color: var(--label); }
+.pag-saldo-val { font-size: 15px; font-weight: 700; }
+
+.pag-resumo {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px; margin-top: 10px;
+}
+.pag-resumo-titulo {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px;
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- TOPO -->
+    <div class="topo">
+        <div class="topo-texto">
+            <h2 id="tituloApp" style="cursor:default;user-select:none;">Orçamento</h2>
+            <p class="subtitulo" id="subtituloApp">CPZ Digital</p>
+        </div>
+        <img class="logo-empresa" id="logoTopo" src="cpz-assinatura.png" alt="CPZ Digital">
+    </div>
+
+    <!-- TIPO -->
+    <div class="card">
+        <div class="card-titulo">Tipo do projeto</div>
+        <div class="tipos-grid" id="tiposGrid">
+            <label class="tipo-btn ativo"><input type="checkbox" name="tipo" value="analogica" checked>Analógica</label>
+            <label class="tipo-btn"><input type="checkbox" name="tipo" value="ip">IP</label>
+            <label class="tipo-btn"><input type="checkbox" name="tipo" value="wifi">Wi-Fi</label>
+            <label class="tipo-btn"><input type="checkbox" name="tipo" value="automacao">Automação</label>
+            <label class="tipo-btn"><input type="checkbox" name="tipo" value="sensores">Sensores</label>
+        </div>
+        <input type="checkbox" id="usarSocio" style="display:none;">
+
+        <div class="cameras-row">
+            <span class="cameras-label">Total de câmeras</span>
+            <span class="cameras-badge" id="totalCameras">0</span>
+        </div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div class="card">
+        <div class="card-titulo">Itens do projeto</div>
+        <div id="listaProdutos"></div>
+        <div class="add-row">
+            <button onclick="adicionarProduto()">+ Produto</button>
+        </div>
+    </div>
+
+    <!-- INFRAESTRUTURA -->
+    <div class="card">
+        <div class="card-titulo">Infraestrutura</div>
+        <div id="listaInfra"></div>
+        <div class="add-row">
+            <button onclick="adicionarInfra()">+ Infraestrutura</button>
+        </div>
+    </div>
+
+    <!-- DIAS -->
+    <div class="card">
+        <div class="card-titulo">Serviço</div>
+        <div class="dias-grid">
+            <div class="dias-item">
+                <label>Dias de trabalho</label>
+                <input type="number" id="diasTrabalho" min="0" value="1">
+            </div>
+            <div class="dias-item">
+                <label>Dias com diarista</label>
+                <input type="number" id="diasDiarista" min="0" value="1">
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="resultado-card">
+        <div class="resultado-label">Valor final do projeto</div>
+        <div class="resultado-valor" id="resultadoValor">R$ 0,00</div>
+
+        <div class="resumo-toggle" id="resumoToggle" onclick="toggleResumo()">
+            <span>Ver detalhes</span>
+            <span class="seta">▼</span>
+        </div>
+        <div class="resumo-itens" id="resumoItens">
+            <div class="resumo-linha"><span>Equipamentos</span><strong id="rEquip">R$ 0,00</strong></div>
+            <div class="resumo-linha"><span>Infraestrutura</span><strong id="rInfra">R$ 0,00</strong></div>
+            <div class="resumo-linha"><span>Serviço e despesas</span><strong id="rServico">R$ 0,00</strong></div>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODAL PAGAMENTO -->
+<div class="pag-overlay" id="pagOverlay">
+    <div class="pag-modal" id="pagModal">
+        <div class="pag-header">
+            <span class="pag-titulo">Formas de Pagamento</span>
+            <div style="display:flex;gap:8px;align-items:center">
+                <button class="pag-exportar" onclick="abrirExportar()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Exportar
+                </button>
+                <button class="pag-fechar" onclick="fecharPagamentos()">✕</button>
+            </div>
+        </div>
+        <div class="pag-tabs" id="pagTabs">
+            <button class="pag-tab ativo" onclick="setPagModo('avista')">À vista</button>
+            <button class="pag-tab"       onclick="setPagModo('boleto')">Boleto</button>
+            <button class="pag-tab"       onclick="setPagModo('cartao')">Cartão</button>
+        </div>
+        <div id="pagConteudo"></div>
+    </div>
+</div>
+
+<!-- MODAL EXPORTAR -->
+<div class="pag-overlay" id="expOverlay">
+    <div class="pag-modal">
+        <div class="pag-header">
+            <span class="pag-titulo">Dados do Cliente</span>
+            <button class="pag-fechar" onclick="fecharExportar()">✕</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px">
+            <div class="exp-field">
+                <label class="exp-label">Nome do cliente</label>
+                <input class="exp-input" id="expNome" type="text" placeholder="Ex: João Silva" autocomplete="off">
+            </div>
+            <div class="exp-field">
+                <label class="exp-label">Telefone</label>
+                <input class="exp-input" id="expTel" type="tel" placeholder="(00) 00000-0000" autocomplete="off">
+            </div>
+            <div class="exp-field">
+                <label class="exp-label">E-mail</label>
+                <input class="exp-input" id="expEmail" type="email" placeholder="cliente@email.com" autocomplete="off">
+            </div>
+            <div class="exp-field">
+                <label class="exp-label">Data do orçamento</label>
+                <input class="exp-input" id="expData" type="date">
+            </div>
+            <div style="display:flex;gap:12px;">
+                <div class="exp-field" style="flex:1;">
+                    <label class="exp-label">Validade</label>
+                    <div style="display:flex;gap:6px;align-items:center">
+                        <input class="exp-input" id="expValidade" type="number" min="1" max="90" value="15" style="width:64px;flex:none">
+                        <span style="color:var(--muted);font-size:13px">dias</span>
+                    </div>
+                </div>
+                <div class="exp-field" style="flex:1;">
+                    <label class="exp-label">Prazo execução</label>
+                    <div style="display:flex;gap:6px;align-items:center">
+                        <input class="exp-input" id="expPrazo" type="number" min="1" max="60" value="2" style="width:64px;flex:none">
+                        <span style="color:var(--muted);font-size:13px">dias úteis</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="exp-btn" onclick="confirmarExportar()" style="flex:1;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Gerar PDF
+                </button>
+                <button class="exp-btn" onclick="exportarXLS()" style="flex:1;background:#16a34a;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    Exportar XLS
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ASSINATURA -->
+<div style="display:flex;align-items:center;justify-content:center;padding:20px 16px 8px;">
+    <img src="cpz-assinatura.png" alt="CPZ" style="width:130px;height:auto;background:white;border-radius:8px;padding:4px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+</div>
+
+<!-- BOTÕES FIXOS -->
+<div class="fab-area">
+    <button class="fab fab-azul" onclick="abrirPagamentos()">💳 Pagamento</button>
+    <button class="fab fab-ghost" onclick="limparOrcamento()" title="Novo orçamento">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+        </svg>
+    </button>
+</div>
+
+<script>
+
+const URL_PRODUTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQg5zxUiq6B03q8unGatN0ATJz1aLR89j34Xe3Z0-a8DFQyh3k-HpZsMngRxVTyrK9quopeBKCHTGlw/pub?gid=1778121456&single=true&output=csv";
+const URL_INFRA    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQg5zxUiq6B03q8unGatN0ATJz1aLR89j34Xe3Z0-a8DFQyh3k-HpZsMngRxVTyrK9quopeBKCHTGlw/pub?gid=1725487429&single=true&output=csv";
+
+let produtos   = [];
+let itensInfra = [];
+
+const ordemCategorias = [
+    "Câmeras","Gravadores","Armazenamento","Cabos",
+    "Infraestrutura","Rede","Energia","Automação","Acessórios"
+];
+
+const fmt = v => v.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+
+function simplificarNome(nome) {
+    return nome.trim().replace(/\s+/g," ")
+        .replace(/CAMERA/gi,"Câmera").replace(/ANALOGICA/gi,"analógica")
+        .replace(/BRANCA/gi,"branca").replace(/PRETA/gi,"preta")
+        .replace(/CAIXA DE PASSAGEM/gi,"caixa de passagem")
+        .replace(/CONVERSOR AUTOMATICO/gi,"Conversor automático")
+        .replace(/PROTETOR ELETRONICO/gi,"Protetor eletrônico")
+        .replace(/SWITCH NAO GERENCIAVEL/gi,"Switch não gerenciável")
+        .replace(/INTERRUPTOR/gi,"Interruptor").replace(/CARTAO/gi,"Cartão")
+        .replace(/CABO/gi,"Cabo").replace(/MINI RACK/gi,"Mini rack")
+        .replace(/NOBREAK/gi,"Nobreak").replace(/CANAIS/gi,"canais")
+        .replace(/PORTAS/gi,"portas").replace(/TOMADAS/gi,"tomadas")
+        .replace(/PACOTE COM/gi,"pacote com").replace(/UNIDADES/gi,"unidades")
+        .replace(/BORNE DE PARAFUSO/gi,"borne de parafuso")
+        .replace(/ALIMENTACAO/gi,"alimentação").replace(/ALIMENTAÇÃO/gi,"alimentação")
+        .replace(/p\/SEGURANCA ELETRONICA/gi,"para segurança eletrônica")
+        .replace(/SEGURANCA ELETRONICA/gi,"segurança eletrônica")
+        .replace(/P\/RACK/gi,"para rack").replace(/S\/FIO/gi,"sem fio")
+        .replace(/s\/HD/g,"sem HD").replace(/c\/HD/g,"com HD")
+        .replace(/c\/MICROSD/gi,"com MicroSD").replace(/\s*-\s*/g," - ");
+}
+
+function categoriaProduto(codigo) {
+    if (codigo.startsWith("CAM-"))                              return "Câmeras";
+    if (codigo.startsWith("DVR")||codigo.startsWith("NVR"))     return "Gravadores";
+    if (codigo.startsWith("ARM-"))                             return "Armazenamento";
+    if (codigo.startsWith("CAB-"))                             return "Cabos";
+    if (codigo.startsWith("INF-"))                             return "Infraestrutura";
+    if (codigo.startsWith("SW")||codigo.startsWith("RED-"))    return "Rede";
+    if (codigo.startsWith("ENG-"))                             return "Energia";
+    if (codigo.startsWith("AUT-"))                             return "Automação";
+    return "Acessórios";
+}
+
+function parseCsv(texto, temCodigo) {
+    const linhas = texto.trim().split(/\r?\n/);
+    if (linhas.length < 2) return [];
+    const sep = linhas[0].includes(";") ? ";" : ",";
+    const res = [];
+    for (let i = 1; i < linhas.length; i++) {
+        const linha = linhas[i].trim(); if (!linha) continue;
+        const campos = []; let atual = "", q = false;
+        for (let c = 0; c < linha.length; c++) {
+            if (linha[c]==='"') q=!q;
+            else if (linha[c]===sep && !q) { campos.push(atual.trim()); atual=""; }
+            else atual+=linha[c];
+        }
+        campos.push(atual.trim());
+        if (temCodigo) {
+            if (campos.length<3) continue;
+            const codigo=campos[0].replace(/^"|"$/g,"").trim();
+            const nome=campos[1].replace(/^"|"$/g,"").trim();
+            const valor=parseFloat(campos[2].replace(/^"|"$/g,"").replace(",",".").trim());
+            if (!codigo||!nome||isNaN(valor)) continue;
+            res.push({codigo, nome:simplificarNome(nome), valor});
+        } else {
+            if (campos.length<5) continue;
+            const nome=campos[1].replace(/^"|"$/g,"").trim();
+            const valor=parseFloat(campos[4].replace(/^"|"$/g,"").replace(",",".").replace(/[^\d.]/g,"").trim());
+            if (!nome||isNaN(valor)) continue;
+            res.push({nome:simplificarNome(nome), valor});
+        }
+    }
+    return res;
+}
+
+async function carregarBanco() {
+    try {
+        const r = await fetch(URL_PRODUTOS);
+        if (r.ok) { const l=parseCsv(await r.text(),true); if(l.length) produtos=l; }
+    } catch(e) { console.error("Produtos:",e.message); }
+    try {
+        const r = await fetch(URL_INFRA);
+        if (r.ok) { const l=parseCsv(await r.text(),false); if(l.length) itensInfra=l; }
+    } catch(e) { console.error("Infra:",e.message); }
+}
+
+// ── COMPONENTE DE BUSCA ──
+function criarBusca(listaOpcoes, placeholder, valorInicial, onSelect) {
+    let opcoes = listaOpcoes;
+    const wrapper = document.createElement("div");
+    wrapper.className = "item-busca-wrapper";
+
+    const input = document.createElement("input");
+    input.type="text"; input.className="busca-input";
+    input.placeholder=placeholder; input.autocomplete="off";
+    input.setAttribute("inputmode","search");
+
+    const dropdown = document.createElement("div");
+    dropdown.className="busca-dropdown";
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(dropdown);
+
+    if (valorInicial) {
+        const opt = opcoes.find(o=>o.valor===valorInicial);
+        if (opt) { input.value=opt.label; input.dataset.valor=opt.valor; }
+    }
+
+    function renderDropdown(filtro) {
+        dropdown.innerHTML="";
+        const termo=filtro.toLowerCase();
+        let grupoAtual=null;
+        let count=0;
+        opcoes.forEach(opt => {
+            const match=!termo||opt.label.toLowerCase().includes(termo)||(opt.sublabel||"").toLowerCase().includes(termo)||(opt.grupo||"").toLowerCase().includes(termo);
+            if (!match) return;
+            if (opt.grupo && opt.grupo!==grupoAtual) {
+                grupoAtual=opt.grupo;
+                const g=document.createElement("div");
+                g.className="busca-grupo-label"; g.textContent=opt.grupo;
+                dropdown.appendChild(g);
+            }
+            const el=document.createElement("div");
+            el.className="busca-opcao";
+            el.innerHTML=`<div class="opcao-nome">${opt.sublabel?`<span class="opcao-codigo-txt">${opt.sublabel}</span>`:""}<span>${opt.label}</span></div><span class="opcao-preco-txt">${opt.preco||""}</span>`;
+            let _touchStartY=0, _touchMoved=false;
+            el.addEventListener("touchstart",e=>{ _touchStartY=e.touches[0].clientY; _touchMoved=false; },{passive:true});
+            el.addEventListener("touchmove",e=>{ if(Math.abs(e.touches[0].clientY-_touchStartY)>8) _touchMoved=true; },{passive:true});
+            el.addEventListener("touchend",e=>{ if(!_touchMoved){e.preventDefault();selecionar(opt);} },{passive:false});
+            el.addEventListener("mousedown",e=>{e.preventDefault();selecionar(opt);});
+            dropdown.appendChild(el);
+            count++;
+        });
+        if (!count) {
+            const v=document.createElement("div");
+            v.className="busca-vazio";
+            v.textContent=termo?"Nenhum item encontrado":"Nenhum item disponível";
+            dropdown.appendChild(v);
+        }
+    }
+
+    function abrirDropdown() {
+        renderDropdown(input.dataset.valor ? "" : input.value);
+        const rect=input.getBoundingClientRect();
+        const espacoAbaixo=window.innerHeight-rect.bottom;
+        if (espacoAbaixo<280) { dropdown.style.top="auto"; dropdown.style.bottom="calc(100% + 4px)"; }
+        else { dropdown.style.top="calc(100% + 4px)"; dropdown.style.bottom="auto"; }
+        dropdown.classList.add("aberto");
+    }
+
+    function fecharDropdown() {
+        dropdown.classList.remove("aberto");
+        if (input.dataset.valor) {
+            const opt=opcoes.find(o=>o.valor===input.dataset.valor);
+            if (opt) input.value=opt.label;
+        } else { input.value=""; }
+    }
+
+    function selecionar(opt) {
+        input.value=opt.label; input.dataset.valor=opt.valor;
+        input.blur(); fecharDropdown(); onSelect(opt.valor);
+    }
+
+    input.addEventListener("focus",()=>{ input.select(); abrirDropdown(); });
+    input.addEventListener("input",()=>{ input.dataset.valor=""; abrirDropdown(); renderDropdown(input.value); onSelect(""); });
+    input.addEventListener("blur",()=>{ setTimeout(fecharDropdown,200); });
+
+    wrapper.getValor=()=>input.dataset.valor||"";
+    wrapper.setOpcoes=(novas)=>{ opcoes=novas; if(valorInicial){const o=opcoes.find(x=>x.valor===valorInicial);if(o){input.value=o.label;input.dataset.valor=o.valor;}} };
+    return wrapper;
+}
+
+function opcoesParaProdutos() {
+    const res=[];
+    ordemCategorias.forEach(cat=>{
+        produtos.filter(p=>categoriaProduto(p.codigo)===cat).forEach(p=>{
+            res.push({valor:p.codigo,label:p.nome,sublabel:p.codigo,grupo:cat,preco:fmt(p.valor)});
+        });
+    });
+    return res;
+}
+
+function opcoesParaInfra() {
+    return itensInfra.map(i=>({valor:i.nome,label:i.nome,sublabel:"",grupo:"",preco:fmt(i.valor)}));
+}
+
+// ── ADICIONAR PRODUTO ──
+function adicionarProduto(codigo, quantidade, precoManual) {
+    const lista=document.getElementById("listaProdutos");
+    const card=document.createElement("div");
+    card.className="item-card item-produto";
+
+    const topo=document.createElement("div"); topo.className="item-topo";
+    const numero=document.createElement("div"); numero.className="item-numero"; numero.textContent="";
+    const busca=criarBusca(opcoesParaProdutos(),"Buscar produto...",codigo||"",()=>atualizarPrecoItem(card,true));
+    topo.appendChild(numero); topo.appendChild(busca);
+
+    const rodape=document.createElement("div"); rodape.className="item-rodape";
+    const preco=document.createElement("div"); preco.className="item-preco"; preco.textContent="—";
+
+    const ctrl=document.createElement("div"); ctrl.className="qtd-ctrl";
+    const btnMenos=document.createElement("button"); btnMenos.className="qtd-btn"; btnMenos.textContent="−"; btnMenos.type="button";
+    const qtdInput=document.createElement("input"); qtdInput.type="number"; qtdInput.className="qtd-num"; qtdInput.min="0"; qtdInput.value=quantidade||0;
+    const btnMais=document.createElement("button"); btnMais.className="qtd-btn"; btnMais.textContent="+"; btnMais.type="button";
+    ctrl.appendChild(btnMenos); ctrl.appendChild(qtdInput); ctrl.appendChild(btnMais);
+
+    const btnDel=document.createElement("button"); btnDel.className="btn-del"; btnDel.innerHTML="🗑"; btnDel.type="button";
+
+    rodape.appendChild(preco); rodape.appendChild(ctrl); rodape.appendChild(btnDel);
+    card.appendChild(topo); card.appendChild(rodape);
+    lista.appendChild(card);
+
+    btnMais.addEventListener("click",()=>{ qtdInput.value=Math.max(0,Number(qtdInput.value)||0)+1; atualizarPrecoItem(card,true); });
+    btnMenos.addEventListener("click",()=>{ qtdInput.value=Math.max(0,(Number(qtdInput.value)||0)-1); atualizarPrecoItem(card,true); });
+    qtdInput.addEventListener("input",()=>atualizarPrecoItem(card,true));
+    qtdInput.addEventListener("focus",()=>{ if(qtdInput.value==="0") qtdInput.value=""; });
+    qtdInput.addEventListener("blur",()=>{ if(qtdInput.value==="") { qtdInput.value="0"; calcular(); } });
+    btnDel.addEventListener("click",()=>{ card.remove(); renumerarProd(); calcular(); });
+    preco.addEventListener("click",()=>ativarEdicaoPreco(card));
+    preco.title="Toque para editar o valor";
+
+    if (precoManual != null && !isNaN(precoManual)) {
+        preco.dataset.valorUnit = precoManual;
+        preco.dataset.manual = "1";
+    }
+    renumerarProd();
+    atualizarPrecoItem(card,true);
+}
+
+function atualizarPrecoItem(card, recalcular) {
+    const busca=card.querySelector(".item-busca-wrapper");
+    const qtd=Number(card.querySelector(".qtd-num").value)||0;
+    const precoEl=card.querySelector(".item-preco");
+    const codigo=busca?busca.getValor():"";
+    const p=produtos.find(x=>x.codigo===codigo);
+    if (!precoEl.dataset.manual) {
+        if (p) {
+            precoEl.dataset.valorUnit = p.valor;
+            precoEl.textContent = qtd>0 ? fmt(p.valor*qtd)+" ✎" : fmt(p.valor)+" / un. ✎";
+        } else {
+            precoEl.dataset.valorUnit = "";
+            precoEl.textContent="—";
+        }
+    }
+    if (recalcular) calcular();
+}
+
+function renumerarProd() {
+    const itens=[...document.querySelectorAll(".item-produto")];
+    itens.forEach((n,i)=>{ n.querySelector(".item-numero").textContent=i+1; });
+}
+
+// ── ADICIONAR INFRA ──
+function adicionarInfra(nome, quantidade, precoManual) {
+    const lista=document.getElementById("listaInfra");
+    const card=document.createElement("div");
+    card.className="item-card item-infra";
+
+    const topo=document.createElement("div"); topo.className="item-topo";
+    const busca=criarBusca(opcoesParaInfra(),"Buscar item...",nome||"",()=>atualizarPrecoInfra(card,true));
+    topo.appendChild(busca);
+
+    const rodape=document.createElement("div"); rodape.className="item-rodape";
+    const preco=document.createElement("div"); preco.className="item-preco"; preco.textContent="—";
+
+    const ctrl=document.createElement("div"); ctrl.className="qtd-ctrl";
+    const btnMenos=document.createElement("button"); btnMenos.className="qtd-btn"; btnMenos.textContent="−"; btnMenos.type="button";
+    const qtdInput=document.createElement("input"); qtdInput.type="number"; qtdInput.className="qtd-num"; qtdInput.min="0"; qtdInput.value=quantidade||0;
+    const btnMais=document.createElement("button"); btnMais.className="qtd-btn"; btnMais.textContent="+"; btnMais.type="button";
+    ctrl.appendChild(btnMenos); ctrl.appendChild(qtdInput); ctrl.appendChild(btnMais);
+
+    const btnDel=document.createElement("button"); btnDel.className="btn-del"; btnDel.innerHTML="🗑"; btnDel.type="button";
+
+    rodape.appendChild(preco); rodape.appendChild(ctrl); rodape.appendChild(btnDel);
+    card.appendChild(topo); card.appendChild(rodape);
+    lista.appendChild(card);
+
+    btnMais.addEventListener("click",()=>{ qtdInput.value=Math.max(0,Number(qtdInput.value)||0)+1; atualizarPrecoInfra(card,true); });
+    btnMenos.addEventListener("click",()=>{ qtdInput.value=Math.max(0,(Number(qtdInput.value)||0)-1); atualizarPrecoInfra(card,true); });
+    qtdInput.addEventListener("input",()=>atualizarPrecoInfra(card,true));
+    qtdInput.addEventListener("focus",()=>{ if(qtdInput.value==="0") qtdInput.value=""; });
+    qtdInput.addEventListener("blur",()=>{ if(qtdInput.value==="") { qtdInput.value="0"; calcular(); } });
+    btnDel.addEventListener("click",()=>{ card.remove(); calcular(); });
+    preco.addEventListener("click",()=>ativarEdicaoPreco(card));
+    preco.title="Toque para editar o valor";
+
+    if (precoManual != null && !isNaN(precoManual)) {
+        preco.dataset.valorUnit = precoManual;
+        preco.dataset.manual = "1";
+    }
+    atualizarPrecoInfra(card,true);
+}
+
+function atualizarPrecoInfra(card, recalcular) {
+    const busca=card.querySelector(".item-busca-wrapper");
+    const qtd=Number(card.querySelector(".qtd-num").value)||0;
+    const precoEl=card.querySelector(".item-preco");
+    const nome=busca?busca.getValor():"";
+    const p=itensInfra.find(x=>x.nome===nome);
+    if (!precoEl.dataset.manual) {
+        if (p) {
+            precoEl.dataset.valorUnit = p.valor;
+            precoEl.textContent = qtd>0 ? fmt(p.valor*qtd)+" ✎" : fmt(p.valor)+" / un. ✎";
+        } else {
+            precoEl.dataset.valorUnit = "";
+            precoEl.textContent="—";
+        }
+    }
+    if (recalcular) calcular();
+}
+
+// ── EDIÇÃO DE PREÇO ──
+function ativarEdicaoPreco(card) {
+    const precoEl = card.querySelector(".item-preco");
+    const qtd = Number(card.querySelector(".qtd-num").value) || 1;
+    const valorAtual = parseFloat(precoEl.dataset.valorUnit) || 0;
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.step = "0.01";
+    input.min = "0";
+    input.value = valorAtual || "";
+    input.placeholder = "Valor unit. (R$)";
+    input.style.cssText = "width:110px;height:32px;padding:4px 8px;border-radius:7px;border:1.5px solid var(--blue);background:var(--input-bg);color:var(--input-color);font-size:13px;font-weight:700;font-family:inherit;outline:none;";
+
+    precoEl.textContent = "";
+    precoEl.appendChild(input);
+    input.focus(); input.select();
+
+    function confirmar() {
+        const novo = parseFloat(input.value);
+        if (!isNaN(novo) && novo >= 0) {
+            precoEl.dataset.valorUnit = novo;
+            precoEl.dataset.manual = "1";
+            precoEl.textContent = qtd > 0 ? fmt(novo * qtd) + " ✎" : fmt(novo) + " / un. ✎";
+        } else {
+            precoEl.dataset.manual = "";
+            precoEl.textContent = valorAtual > 0 ? fmt(valorAtual * qtd) + " ✎" : "—";
+        }
+        calcular();
+    }
+
+    input.addEventListener("blur", confirmar);
+    input.addEventListener("keydown", e => { if (e.key === "Enter") { input.blur(); } if (e.key === "Escape") { precoEl.dataset.manual=""; input.blur(); } });
+}
+
+// ── CÁLCULO ──
+function calcular() {
+    const tipoEl=document.querySelector('input[name="tipo"]:checked');
+    const tipo=tipoEl?tipoEl.value:"analogica";
+    const usarSocio=document.getElementById("usarSocio").checked;
+
+    let qtdCameras=0, totalProd=0;
+    document.querySelectorAll(".item-produto").forEach(card=>{
+        const busca=card.querySelector(".item-busca-wrapper");
+        const codigo=busca?busca.getValor():"";
+        const qtd=Number(card.querySelector(".qtd-num").value)||0;
+        if (codigo.startsWith("CAM-")) qtdCameras+=qtd;
+        const precoEl=card.querySelector(".item-preco");
+        const valorUnit=parseFloat(precoEl.dataset.valorUnit)||0;
+        totalProd+=valorUnit*qtd;
+    });
+
+    let totalInfra=0;
+    document.querySelectorAll(".item-infra").forEach(card=>{
+        const qtd=Number(card.querySelector(".qtd-num").value)||0;
+        const precoEl=card.querySelector(".item-preco");
+        const valorUnit=parseFloat(precoEl.dataset.valorUnit)||0;
+        totalInfra+=valorUnit*qtd;
+    });
+
+    const cam=document.getElementById("totalCameras");
+    cam.textContent=qtdCameras;
+    let nivel=qtdCameras>=33?"dificil":qtdCameras>=9?"medio":qtdCameras>=1?"facil":"";
+    cam.className="cameras-badge"+(nivel?" "+nivel:"");
+
+    const tS={analogica:{facil:1.6,medio:1.7,dificil:1.7},ip:{facil:1.7,medio:1.9,dificil:2.0},wifi:{facil:2.0,medio:2.1,dificil:2.2},automacao:{facil:2.2,medio:2.4,dificil:2.7},sensores:{facil:2.0,medio:2.2,dificil:2.3}};
+    const tSo={analogica:{facil:2.1,medio:2.2,dificil:2.2},ip:{facil:2.3,medio:2.4,dificil:2.6},wifi:{facil:2.6,medio:2.7,dificil:2.8},automacao:{facil:3.0,medio:3.2,dificil:3.5},sensores:{facil:2.8,medio:3.0,dificil:3.2}};
+    const tab=usarSocio?tSo:tS;
+    const mult=(tab[tipo]||tab.analogica)[nivel||"facil"];
+
+    const diasT=Number(document.getElementById("diasTrabalho").value)||0;
+    const diasD=Number(document.getElementById("diasDiarista").value)||0;
+    const desl=50*diasT;
+    const diarias=diasT*500*(usarSocio?2:1);
+    const diarista=diasD*120;
+    const despesas=desl+totalInfra+diarias+diarista;
+    const valorFinal=Math.round((totalProd*mult+despesas)/50)*50;
+
+    document.getElementById("resultadoValor").textContent=fmt(valorFinal);
+    document.getElementById("rEquip").textContent=fmt(totalProd);
+    document.getElementById("rInfra").textContent=fmt(totalInfra);
+    document.getElementById("rServico").textContent=fmt(despesas-totalInfra);
+
+    _pag = { valorFinal, totalProd, totalInfra, desl, diarias, diarista };
+
+    salvarEstado();
+}
+
+function toggleResumo() {
+    const toggle=document.getElementById("resumoToggle");
+    const itens=document.getElementById("resumoItens");
+    toggle.classList.toggle("aberto");
+    itens.classList.toggle("visivel");
+}
+
+// ── TIPO ──
+document.querySelectorAll(".tipo-btn input").forEach(cb=>{
+    cb.closest(".tipo-btn").addEventListener("click",function(){
+        document.querySelectorAll(".tipo-btn input").forEach(o=>{ o.checked=false; o.closest(".tipo-btn").classList.remove("ativo"); });
+        cb.checked=true; this.classList.add("ativo"); calcular();
+    });
+});
+
+// ── GATILHO 3 CLICKS ──
+let _clickCount=0, _clickTimer=null, _toastTimer=null;
+
+function mostrarToast(msg) {
+    const t=document.getElementById("toast");
+    t.textContent=msg; t.classList.add("visivel");
+    clearTimeout(_toastTimer);
+    _toastTimer=setTimeout(()=>t.classList.remove("visivel"),2500);
+}
+
+function toggleBAVision() {
+    const cb=document.getElementById("usarSocio");
+    cb.checked=!cb.checked;
+    const ativo=cb.checked;
+    document.body.classList.toggle('ba-vision', ativo);
+    document.getElementById("subtituloApp").textContent=ativo?"B&A Vision":"CPZ Digital";
+    document.getElementById("logoTopo").src=ativo?"ba-vision-assinatura.png":"cpz-assinatura.png";
+    mostrarToast(ativo?"B&A Vision ativada":"CPZ Digital ativada");
+    calcular();
+}
+
+document.getElementById("tituloApp").addEventListener("click",()=>{
+    _clickCount++;
+    clearTimeout(_clickTimer);
+    if (_clickCount>=3) { _clickCount=0; toggleBAVision(); return; }
+    _clickTimer=setTimeout(()=>{ _clickCount=0; },600);
+});
+
+document.querySelectorAll(".dias-item input").forEach(i=>{
+    i.addEventListener("input", calcular);
+    i.addEventListener("focus", ()=>{ if(i.value==="0") i.value=""; });
+    i.addEventListener("blur",  ()=>{ if(i.value==="") { i.value="0"; calcular(); } });
+});
+
+// ── PERSISTÊNCIA ──
+function salvarEstado() {
+    const estado={
+        tipo:document.querySelector('input[name="tipo"]:checked')?.value||"analogica",
+        socio:document.getElementById("usarSocio").checked,
+        diasTrabalho:document.getElementById("diasTrabalho").value,
+        diasDiarista:document.getElementById("diasDiarista").value,
+        pagModo:_pagModo, subAvista:_subAvista,
+        nPix:_nPix, nBoleto:_nBoleto, nCartao:_nCartao,
+        clienteInfo:{ ..._clienteInfo },
+        produtos:[], infra:[]
+    };
+    document.querySelectorAll(".item-produto").forEach(card=>{
+        const busca=card.querySelector(".item-busca-wrapper");
+        const precoEl=card.querySelector(".item-preco");
+        const pm=precoEl.dataset.manual?parseFloat(precoEl.dataset.valorUnit):null;
+        estado.produtos.push({codigo:busca?busca.getValor():"", qtd:card.querySelector(".qtd-num").value, precoManual:isNaN(pm)?null:pm});
+    });
+    document.querySelectorAll(".item-infra").forEach(card=>{
+        const busca=card.querySelector(".item-busca-wrapper");
+        const precoEl=card.querySelector(".item-preco");
+        const pm=precoEl.dataset.manual?parseFloat(precoEl.dataset.valorUnit):null;
+        estado.infra.push({nome:busca?busca.getValor():"", qtd:card.querySelector(".qtd-num").value, precoManual:isNaN(pm)?null:pm});
+    });
+    localStorage.setItem("cpz_estado",JSON.stringify(estado));
+}
+
+function restaurarEstado() {
+    try {
+        const raw=localStorage.getItem("cpz_estado");
+        if (!raw) return false;
+        const e=JSON.parse(raw);
+        document.querySelectorAll('input[name="tipo"]').forEach(cb=>{
+            cb.checked=cb.value===e.tipo;
+            cb.closest(".tipo-btn").classList.toggle("ativo",cb.value===e.tipo);
+        });
+        const socio=document.getElementById("usarSocio");
+        socio.checked=e.socio||false;
+        document.body.classList.toggle('ba-vision', socio.checked);
+        document.getElementById("subtituloApp").textContent=socio.checked?"B&A Vision":"CPZ Digital";
+        document.getElementById("logoTopo").src=socio.checked?"ba-vision-assinatura.png":"cpz-assinatura.png";
+        if (e.diasTrabalho) document.getElementById("diasTrabalho").value=e.diasTrabalho;
+        if (e.diasDiarista) document.getElementById("diasDiarista").value=e.diasDiarista;
+        if (e.pagModo)   _pagModo   = e.pagModo;
+        if (e.subAvista) _subAvista = e.subAvista;
+        if (e.nPix)      _nPix      = e.nPix;
+        if (e.nBoleto)   _nBoleto   = e.nBoleto;
+        if (e.nCartao)   _nCartao   = e.nCartao;
+        if (e.clienteInfo) {
+            _clienteInfo = { ..._clienteInfo, ...e.clienteInfo };
+            const ci = _clienteInfo;
+            if (ci.nome)     document.getElementById('expNome').value     = ci.nome;
+            if (ci.tel)      document.getElementById('expTel').value      = ci.tel;
+            if (ci.email)    document.getElementById('expEmail').value    = ci.email;
+            if (ci.data)     document.getElementById('expData').value     = ci.data;
+            if (ci.validade) document.getElementById('expValidade').value = ci.validade;
+            if (ci.prazo)    document.getElementById('expPrazo').value    = ci.prazo;
+        }
+        if (e.produtos&&e.produtos.length) e.produtos.forEach(p=>adicionarProduto(p.codigo,p.qtd,p.precoManual));
+        else adicionarProduto();
+        if (e.infra&&e.infra.length) e.infra.forEach(i=>adicionarInfra(i.nome,i.qtd,i.precoManual));
+        else adicionarInfra();
+        return true;
+    } catch(err) { console.error(err); return false; }
+}
+
+function limparOrcamento() {
+    if (!confirm("Apagar o orçamento e começar do zero?")) return;
+    localStorage.removeItem("cpz_estado");
+    document.getElementById("listaProdutos").innerHTML="";
+    document.getElementById("listaInfra").innerHTML="";
+    document.querySelectorAll('input[name="tipo"]').forEach((cb,i)=>{
+        cb.checked=i===0; cb.closest(".tipo-btn").classList.toggle("ativo",i===0);
+    });
+    document.getElementById("usarSocio").checked=false;
+    document.body.classList.remove('ba-vision');
+    document.getElementById("subtituloApp").textContent="CPZ Digital";
+    document.getElementById("logoTopo").src="cpz-assinatura.png";
+    document.getElementById("diasTrabalho").value=1;
+    document.getElementById("diasDiarista").value=1;
+    _pagModo='avista'; _subAvista='5050'; _nPix=4; _nBoleto=4; _nCartao=4;
+    _clienteInfo={ nome:'', tel:'', email:'', data:'', validade:15, prazo:'2' };
+    adicionarProduto(); adicionarInfra(); calcular();
+}
+
+// ── PAGAMENTO ──
+let _pag       = { valorFinal:0, totalProd:0, totalInfra:0, desl:0, diarias:0, diarista:0 };
+let _pagModo   = 'avista';  // 'avista' | 'boleto' | 'cartao'
+let _subAvista = '5050';    // '5050'  | '4pix'
+let _nPix      = 4;         // 2-6
+let _nBoleto   = 4;         // 2-6
+let _nCartao   = 4;         // 2-6
+
+function abrirPagamentos() {
+    renderPagamento();
+    document.getElementById('pagOverlay').classList.add('aberto');
+    document.querySelector('.fab-area').style.display = 'none';
+}
+
+function fecharPagamentos() {
+    document.getElementById('pagOverlay').classList.remove('aberto');
+    document.querySelector('.fab-area').style.display = '';
+}
+
+document.getElementById('pagOverlay').addEventListener('click', function(e) {
+    if (e.target === this) fecharPagamentos();
+});
+document.getElementById('expOverlay').addEventListener('click', function(e) {
+    if (e.target === this) fecharExportar();
+});
+
+function setPagModo(modo) {
+    _pagModo = modo;
+    const modos = ['avista','boleto','cartao'];
+    document.querySelectorAll('.pag-tab').forEach((t,i) => t.classList.toggle('ativo', modos[i] === modo));
+    renderPagamento();
+}
+
+function setSubAvista(sub) { _subAvista = sub; renderPagamento(); }
+function setNPix(n)        { _nPix      = n;   renderPagamento(); }
+function setNBoleto(n)     { _nBoleto   = n;   renderPagamento(); }
+function setNCartao(n)     { _nCartao   = n;   renderPagamento(); }
+
+// ── EXPORTAR ──
+let _clienteInfo = { nome:'', tel:'', email:'', data:'', validade:15, prazo:'2' };
+
+function abrirExportar() {
+    const ci = _clienteInfo;
+    if (ci.nome)     document.getElementById('expNome').value     = ci.nome;
+    if (ci.tel)      document.getElementById('expTel').value      = ci.tel;
+    if (ci.email)    document.getElementById('expEmail').value    = ci.email;
+    if (ci.validade) document.getElementById('expValidade').value = ci.validade;
+    if (ci.prazo)    document.getElementById('expPrazo').value    = ci.prazo;
+    const inputData = document.getElementById('expData');
+    if (ci.data) inputData.value = ci.data;
+    else if (!inputData.value) inputData.value = new Date().toISOString().slice(0,10);
+    document.getElementById('expOverlay').classList.add('aberto');
+}
+
+function fecharExportar() {
+    document.getElementById('expOverlay').classList.remove('aberto');
+}
+
+function confirmarExportar() {
+    const nome     = document.getElementById('expNome').value.trim();
+    const tel      = document.getElementById('expTel').value.trim();
+    const email    = document.getElementById('expEmail').value.trim();
+    const data     = document.getElementById('expData').value;
+    const validade = document.getElementById('expValidade').value;
+    const prazo    = document.getElementById('expPrazo').value || '2';
+    if (!nome)  { document.getElementById('expNome').focus();  return; }
+    if (!tel)   { document.getElementById('expTel').focus();   return; }
+    _clienteInfo = { nome, tel, email, data, validade, prazo };
+    salvarEstado();
+    fecharExportar();
+    gerarPDF();
+}
+
+function gerarPDF() {
+    const { nome, tel, email, data, validade, prazo = '2' } = _clienteInfo;
+    const fmtR  = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+    const socio = document.getElementById('usarSocio').checked;
+    const marca = socio ? 'B&A Vision' : 'CPZ Digital';
+
+    const baseMs   = data ? new Date(data + 'T12:00:00').getTime() : Date.now();
+    const addDias  = d => new Date(baseMs + d * 86400000).toLocaleDateString('pt-BR');
+    const dataFmt  = addDias(0);
+    const dataVenc = addDias(Number(validade));
+
+    const cor  = socio ? '#059669' : '#0055b3';
+    const corL = socio ? '#d1f5e8' : '#e8eef8';
+    const corR = socio ? '#f0fbf7' : '#f7f9ff';
+
+    const msgInstitucional = socio
+        ? 'A B&A Vision agradece a oportunidade de apresentar esta proposta e coloca-se à disposição para esclarecer qualquer dúvida.'
+        : 'A CPZ Digital agradece a oportunidade de apresentar esta proposta e coloca-se à disposição para esclarecer qualquer dúvida.';
+    const responsavel = socio ? 'Bruno &amp; Adriano — B&A Vision' : 'Adriano — CPZ Digital';
+    const cnpj        = socio ? '62.456.202/0001-08' : '58.589.970/0001-54';
+    const TH  = 'background:' + cor + ';color:#fff;padding:8px 12px;font-size:11px;font-weight:700;text-align:left;';
+    const TDL = 'padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #e8e8e8;';
+    const TDC = 'padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #e8e8e8;text-align:center;';
+    const TDR = 'padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #e8e8e8;text-align:right;';
+
+    // Produtos
+    const itensProd = [];
+    document.querySelectorAll('.item-produto').forEach(card => {
+        const busca  = card.querySelector('.item-busca-wrapper');
+        const codigo = busca ? busca.getValor() : '';
+        if (!codigo) return;
+        const qtd = Number(card.querySelector('.qtd-num').value) || 0;
+        if (!qtd) return;
+        const prod = produtos.find(p => p.codigo === codigo);
+        itensProd.push({ descricao: prod ? (prod.descricao || prod.nome || codigo) : codigo, qtd });
+    });
+
+    // Infra
+    const itensInf = [];
+    document.querySelectorAll('.item-infra').forEach(card => {
+        const busca    = card.querySelector('.item-busca-wrapper');
+        const nomeItem = busca ? busca.getValor() : '';
+        if (!nomeItem) return;
+        const qtd = Number(card.querySelector('.qtd-num').value) || 0;
+        if (!qtd) return;
+        itensInf.push({ descricao: nomeItem, qtd });
+    });
+
+    const qtdCameras = itensProd
+        .filter(it => /câmera|camera/i.test(it.descricao))
+        .reduce((s, it) => s + Number(it.qtd), 0);
+    const qtdCamerasRow = qtdCameras > 0
+        ? '<p style="font-size:12px;color:#333;margin:0 0 16px;padding:7px 12px;background:' + corL + ';border-left:3px solid ' + cor + ';">' +
+          '<strong>Quantidade de câmeras previstas:</strong> ' + qtdCameras + ' unidades</p>'
+        : '';
+
+    const inst       = calcInstallments();
+    const modoLabel  = { avista:'À Vista (Pix)', boleto:'Boleto Bancário', cartao:'Cartão de Crédito' }[_pagModo];
+    const formaLabel = _pagModo === 'avista'
+        ? (_subAvista === '5050' ? '50% na aprovação + 50% na conclusão' : _nPix + '× Pix')
+        : _pagModo === 'boleto' ? (_nBoleto + '× mensais') : (_nCartao + '× no cartão');
+
+    const rowsParc = inst.parcelas.map((p, i) => {
+        const venc = addDias(Number(validade) + i * 30);
+        return '<tr style="background:' + (i%2 ? corR : '#fff') + '">' +
+            '<td style="' + TDL + '">' + p.label + '</td>' +
+            '<td style="' + TDC + '">' + venc + '</td>' +
+            '<td style="' + TDR + 'font-weight:700;color:' + cor + ';">' + fmtR(p.recebe) + '</td></tr>';
+    }).join('');
+
+    const todosItens = [
+        ...itensProd.map(it => ({ descricao: it.descricao, qtd: it.qtd })),
+        ...itensInf.map(it => ({ descricao: it.descricao, qtd: it.qtd }))
+    ];
+    const THs  = 'background:' + cor + ';color:#fff;padding:5px 8px;font-size:9px;font-weight:700;text-align:left;';
+    const TDLs = 'padding:4px 8px;font-size:9px;color:#333;border-bottom:1px solid #eee;';
+    const TDCs = 'padding:4px 8px;font-size:9px;color:#333;border-bottom:1px solid #eee;text-align:center;';
+    const relacaoMateriais = todosItens.length
+        ? '<div style="page-break-inside:avoid;">' +
+          '<p style="font-size:13px;font-weight:700;color:' + cor + ';border-bottom:2px solid ' + cor + ';padding-bottom:4px;margin:0 0 8px;page-break-after:avoid;">Relação de Materiais e Equipamentos</p>' +
+          '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:6px;">' +
+          '<tr>' +
+          '<th style="' + THs + 'width:36px;text-align:center;">Item</th>' +
+          '<th style="' + THs + '">Descrição</th>' +
+          '<th style="' + THs + 'text-align:center;width:44px;">Qtd</th>' +
+          '<th style="' + THs + 'width:60px;">Unidade</th>' +
+          '</tr>' +
+          todosItens.map((it, i) =>
+              '<tr style="background:' + (i%2 ? corR : '#fff') + '">' +
+              '<td style="' + TDCs + 'color:#888;">' + (i+1) + '</td>' +
+              '<td style="' + TDLs + '">' + it.descricao + '</td>' +
+              '<td style="' + TDCs + '">' + it.qtd + '</td>' +
+              '<td style="' + TDLs + 'color:#888;">un</td>' +
+              '</tr>').join('') +
+          '</table>' +
+          '<p style="font-size:9px;color:#999;font-style:italic;margin:3px 0 18px;">* Poderão ocorrer ajustes de marca ou modelo, sempre garantindo equivalência técnica.</p>' +
+          '</div>'
+        : '';
+
+    const placeholders = {
+        '{{logo_src}}':          socio ? 'ba-vision-assinatura.png' : 'cpz-assinatura.png',
+        '{{logo_height}}':        socio ? '48' : '40',
+        '{{marca}}':             marca,
+        '{{dataFmt}}':           dataFmt,
+        '{{dataVenc}}':          dataVenc,
+        '{{nome}}':              nome,
+        '{{tel}}':               tel,
+        '{{email_row}}':         email ? '<tr><td style="color:#888;">E-mail</td><td colspan="3" style="font-weight:700;">' + email + '</td></tr>' : '',
+        '{{msg_institucional}}': msgInstitucional,
+        '{{qtd_cameras_row}}':   qtdCamerasRow,
+        '{{relacao_materiais}}': relacaoMateriais,
+        '{{responsavel}}':       responsavel,
+        '{{cnpj}}':              cnpj,
+        '{{total}}':             fmtR(inst.total),
+        '{{modoLabel}}':         modoLabel,
+        '{{formaLabel}}':        formaLabel,
+        '{{rows_parc}}':         rowsParc,
+        '{{validade}}':          validade,
+        '{{prazo}}':             prazo + ' dias úteis',
+        '{{cor_pri}}':           socio ? '#059669' : '#0055b3',
+        '{{cor_light}}':         socio ? '#d1f5e8' : '#e8eef8',
+        '{{cor_bg}}':            socio ? '#f0fbf7' : '#f0f5ff',
+        '{{cor_row}}':           socio ? '#f0fbf7' : '#f7f9ff',
+        '{{contato_email}}':     socio ? 'ba.visionseguranca@gmail.com' : 'contato@cpzdigital.com.br',
+        '{{contato_tel}}':       socio ? '(21) 99664-6927' : '(21) 96745-5648',
+        '{{geradoEm}}':          new Date().toLocaleDateString('pt-BR'),
+    };
+
+    const nomeArq = 'orcamento-' + nome.replace(/\s+/g, '-').toLowerCase() + '-' + (data || new Date().toISOString().slice(0,10)) + '.pdf';
+
+    fetch('template-pdf.html')
+        .then(r => r.text())
+        .then(tpl => {
+            let html = tpl;
+            Object.entries(placeholders).forEach(([k, v]) => { html = html.split(k).join(v); });
+            const [fr,fg,fb] = socio ? [5,150,105] : [0,85,179];
+            const footerLine = socio
+                ? 'B&A Vision  |  (21) 99664-6927  |  ba.visionseguranca@gmail.com  |  CNPJ: 62.456.202/0001-08  |  Responsáveis: Bruno & Adriano'
+                : 'CPZ Digital  |  (21) 96745-5648  |  contato@cpzdigital.com.br  |  CNPJ: 58.589.970/0001-54  |  Responsável: Adriano';
+            mostrarToast('Gerando PDF...');
+            html2pdf().from(html).set({
+                margin:      [4, 4, 16, 4],
+                filename:    nomeArq,
+                image:       { type:'jpeg', quality:0.95 },
+                html2canvas: { scale:2, useCORS:true, windowWidth:756, scrollX:0, scrollY:0 },
+                jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
+            }).toPdf().get('pdf').then(async pdf => {
+                const n = pdf.internal.getNumberOfPages();
+                const w = pdf.internal.pageSize.getWidth();
+                const h = pdf.internal.pageSize.getHeight();
+                for (let i = 1; i <= n; i++) {
+                    pdf.setPage(i);
+                    pdf.setDrawColor(fr, fg, fb);
+                    pdf.setLineWidth(0.4);
+                    pdf.line(4, h - 11, w - 4, h - 11);
+                    pdf.setFontSize(7);
+                    pdf.setFont('helvetica', 'normal');
+                    pdf.setTextColor(100, 100, 100);
+                    pdf.text(footerLine, w / 2, h - 7, { align: 'center' });
+                }
+
+                const fone = '55' + tel.replace(/\D/g, '').replace(/^55/, '');
+                const msgWpp = encodeURIComponent('Olá ' + nome + ', segue a proposta comercial.');
+                const blob = new Blob([pdf.output('arraybuffer')], { type: 'application/pdf' });
+                const file = new File([blob], nomeArq, { type: 'application/pdf' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({ files: [file], title: 'Proposta — ' + nome, text: 'Segue a proposta comercial.' });
+                    } catch(e) {
+                        if (e.name !== 'AbortError') pdf.save(nomeArq);
+                    }
+                } else {
+                    pdf.save(nomeArq);
+                    if (tel) setTimeout(() => window.open('https://wa.me/' + fone + '?text=' + msgWpp, '_blank'), 1000);
+                }
+            });
+        })
+        .catch(e => alert('Erro ao carregar template: ' + e.message));
+}
+
+async function exportarXLS() {
+    const nome     = document.getElementById('expNome').value.trim();
+    const tel      = document.getElementById('expTel').value.trim();
+    const email    = document.getElementById('expEmail').value.trim();
+    const data     = document.getElementById('expData').value;
+    const validade = document.getElementById('expValidade').value;
+    const prazo    = document.getElementById('expPrazo').value || '2';
+    if (!nome) { document.getElementById('expNome').focus(); return; }
+    if (!tel)  { document.getElementById('expTel').focus();  return; }
+
+    _clienteInfo = { nome, tel, email, data, validade, prazo };
+    salvarEstado();
+    fecharExportar();
+    mostrarToast('Gerando planilha...');
+
+    const socio  = document.getElementById('usarSocio').checked;
+    const marca  = socio ? 'B&A Vision' : 'CPZ Digital';
+    const tipoEl = document.querySelector('input[name="tipo"]:checked');
+    const tipo   = tipoEl ? tipoEl.value : 'analogica';
+    const baseMs = data ? new Date(data + 'T12:00:00').getTime() : Date.now();
+    const addDias = d => new Date(baseMs + d * 86400000).toLocaleDateString('pt-BR');
+
+    // cores por modo
+    const COR    = socio ? 'FF059669' : 'FF0055B3';
+    const COR_DK = socio ? 'FF047857' : 'FF003D82';
+    const COR_LT = socio ? 'FFD1FAE5' : 'FFE0EEFF';
+    const COR_RW = socio ? 'FFF0FBF7' : 'FFF7F9FF';
+    const BRL    = '"R$" #,##0.00';
+    const THIN   = { style: 'thin', color: { argb: 'FFDDDDDD' } };
+
+    // coleta produtos
+    const itensProd = [];
+    document.querySelectorAll('.item-produto').forEach(card => {
+        const busca = card.querySelector('.item-busca-wrapper');
+        const codigo = busca ? busca.getValor() : '';
+        if (!codigo) return;
+        const qtd = Number(card.querySelector('.qtd-num').value) || 0;
+        if (!qtd) return;
+        const precoEl = card.querySelector('.item-preco');
+        const valorUnit = parseFloat(precoEl.dataset.valorUnit) || 0;
+        const prod = produtos.find(p => p.codigo === codigo);
+        itensProd.push({ codigo, descricao: prod ? (prod.descricao || prod.nome || codigo) : codigo, qtd, valorUnit, total: valorUnit * qtd });
+    });
+
+    // coleta infra
+    const itensInf = [];
+    document.querySelectorAll('.item-infra').forEach(card => {
+        const busca = card.querySelector('.item-busca-wrapper');
+        const nomeItem = busca ? busca.getValor() : '';
+        if (!nomeItem) return;
+        const qtd = Number(card.querySelector('.qtd-num').value) || 0;
+        if (!qtd) return;
+        const precoEl = card.querySelector('.item-preco');
+        const valorUnit = parseFloat(precoEl.dataset.valorUnit) || 0;
+        itensInf.push({ descricao: nomeItem, qtd, valorUnit, total: valorUnit * qtd });
+    });
+
+    const diasT    = Number(document.getElementById('diasTrabalho').value) || 0;
+    const diasD    = Number(document.getElementById('diasDiarista').value) || 0;
+    const desl     = 50 * diasT;
+    const diarias  = diasT * 500 * (socio ? 2 : 1);
+    const diarista = diasD * 120;
+    const totalServ = desl + diarias + diarista;
+
+    const inst = calcInstallments();
+    const modoLabel  = { avista:'À Vista (Pix)', boleto:'Boleto Bancário', cartao:'Cartão de Crédito' }[_pagModo];
+    const formaLabel = _pagModo === 'avista'
+        ? (_subAvista === '5050' ? '50% na aprovação + 50% na conclusão' : _nPix + '× Pix')
+        : _pagModo === 'boleto' ? (_nBoleto + '× mensais') : (_nCartao + '× no cartão');
+
+    const totalProdVal = itensProd.reduce((s, it) => s + it.total, 0);
+    const totalInfVal  = itensInf.reduce((s, it) => s + it.total, 0);
+
+    // ── workbook ──
+    const wb = new ExcelJS.Workbook();
+    wb.creator = marca;
+    const ws = wb.addWorksheet('Orçamento', { pageSetup: { paperSize: 9, orientation: 'portrait', fitToPage: true, fitToWidth: 1 } });
+    ws.columns = [
+        { width: 5 }, { width: 18 }, { width: 44 }, { width: 8 }, { width: 18 }, { width: 18 }
+    ];
+
+    // ── helpers ──
+    function mergedRow(text, bgARGB, fontColor, fontSize, height) {
+        const r = ws.addRow([text]);
+        r.height = height || 24;
+        r.getCell(1).value = text;
+        r.getCell(1).style = {
+            font: { bold: true, size: fontSize || 11, color: { argb: fontColor || 'FFFFFFFF' }, name: 'Calibri' },
+            fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: bgARGB } },
+            alignment: { horizontal: 'center', vertical: 'middle', wrapText: true }
+        };
+        ws.mergeCells(r.number, 1, r.number, 6);
+        return r;
+    }
+
+    function spacer() { const r = ws.addRow([]); r.height = 7; return r; }
+
+    function sectionHdr(text) { return mergedRow(text, COR, 'FFFFFFFF', 11, 24); }
+
+    function tblHdr(cols) {
+        const r = ws.addRow(cols);
+        r.height = 22;
+        for (let c = 1; c <= 6; c++) {
+            r.getCell(c).style = {
+                font: { bold: true, size: 10, color: { argb: 'FFFFFFFF' }, name: 'Calibri' },
+                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_DK } },
+                alignment: { horizontal: 'center', vertical: 'middle' },
+                border: { bottom: { style: 'medium', color: { argb: 'FFFFFFFF' } } }
+            };
+        }
+        return r;
+    }
+
+    function dataRow(vals, isAlt) {
+        const r = ws.addRow(vals);
+        r.height = 20;
+        const bg = isAlt ? COR_RW : 'FFFFFFFF';
+        for (let c = 1; c <= 6; c++) {
+            r.getCell(c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+            r.getCell(c).font = { size: 10, name: 'Calibri', color: { argb: 'FF333333' } };
+            r.getCell(c).border = { top: THIN, left: THIN, bottom: THIN, right: THIN };
+        }
+        return r;
+    }
+
+    function subtotalRow(label, value) {
+        const r = ws.addRow(['', '', label, '', '', value]);
+        r.height = 22;
+        ws.mergeCells(r.number, 2, r.number, 5);
+        r.getCell(3).style = {
+            font: { bold: true, size: 10, color: { argb: COR }, name: 'Calibri' },
+            fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_LT } },
+            alignment: { horizontal: 'right', vertical: 'middle', indent: 1 },
+            border: { top: THIN, left: THIN, bottom: { style: 'medium', color: { argb: COR } }, right: THIN }
+        };
+        r.getCell(6).style = {
+            font: { bold: true, size: 10, color: { argb: COR }, name: 'Calibri' },
+            fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_LT } },
+            alignment: { horizontal: 'right', vertical: 'middle' },
+            numFmt: BRL,
+            border: { top: THIN, left: THIN, bottom: { style: 'medium', color: { argb: COR } }, right: THIN }
+        };
+        return r;
+    }
+
+    function duoCellRow(l1, v1, l2, v2) {
+        const r = ws.addRow(['', l1, v1, '', l2, v2]);
+        r.height = 20;
+        ws.mergeCells(r.number, 3, r.number, 4);
+        r.getCell(2).style = { font: { bold: true, size: 10, color: { argb: 'FF444444' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_LT } }, alignment: { horizontal: 'left', vertical: 'middle', indent: 1 }, border: { top: THIN, left: THIN, bottom: THIN, right: THIN } };
+        r.getCell(3).style = { font: { size: 10, name: 'Calibri', color: { argb: 'FF111111' } }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } }, alignment: { horizontal: 'left', vertical: 'middle', indent: 1 }, border: { top: THIN, left: THIN, bottom: THIN, right: THIN } };
+        if (l2) {
+            r.getCell(5).style = { font: { bold: true, size: 10, color: { argb: 'FF444444' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_LT } }, alignment: { horizontal: 'left', vertical: 'middle', indent: 1 }, border: { top: THIN, left: THIN, bottom: THIN, right: THIN } };
+            r.getCell(6).style = { font: { size: 10, name: 'Calibri', color: { argb: 'FF111111' } }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } }, alignment: { horizontal: 'left', vertical: 'middle', indent: 1 }, border: { top: THIN, left: THIN, bottom: THIN, right: THIN } };
+        }
+        return r;
+    }
+
+    // ══════════════════════════════════════
+    // TÍTULO
+    mergedRow(marca + ' — Proposta Comercial', COR, 'FFFFFFFF', 18, 44);
+    mergedRow('Gerado em: ' + new Date().toLocaleDateString('pt-BR') + '   ·   Cliente: ' + nome + '   ·   Data: ' + addDias(0), COR_LT, 'FF444444', 10, 18);
+    spacer();
+
+    // DADOS DO CLIENTE
+    sectionHdr('DADOS DO CLIENTE');
+    duoCellRow('Nome', nome, 'Data do orçamento', addDias(0));
+    duoCellRow('Telefone', tel, 'Validade', validade + ' dias');
+    duoCellRow(email ? 'E-mail' : 'Tipo de projeto', email || tipo, 'Prazo de execução', prazo + ' dias úteis');
+    if (email) duoCellRow('Tipo de projeto', tipo, '', '');
+    spacer();
+
+    // EQUIPAMENTOS
+    if (itensProd.length) {
+        sectionHdr('EQUIPAMENTOS');
+        tblHdr(['#', 'Código', 'Descrição', 'Qtd', 'Valor Unit.', 'Total']);
+        itensProd.forEach((it, i) => {
+            const r = dataRow([i + 1, it.codigo, it.descricao, it.qtd, it.valorUnit, it.total], i % 2 === 1);
+            r.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+            r.getCell(4).alignment = { horizontal: 'center', vertical: 'middle' };
+            r.getCell(5).numFmt = BRL; r.getCell(5).alignment = { horizontal: 'right', vertical: 'middle' };
+            r.getCell(6).numFmt = BRL; r.getCell(6).alignment = { horizontal: 'right', vertical: 'middle' };
+            r.getCell(6).font = { bold: true, size: 10, name: 'Calibri', color: { argb: COR } };
+        });
+        subtotalRow('SUBTOTAL EQUIPAMENTOS', totalProdVal);
+        spacer();
+    }
+
+    // INFRAESTRUTURA
+    if (itensInf.length) {
+        sectionHdr('INFRAESTRUTURA');
+        tblHdr(['#', '', 'Descrição', 'Qtd', 'Valor Unit.', 'Total']);
+        itensInf.forEach((it, i) => {
+            const r = dataRow([i + 1, '', it.descricao, it.qtd, it.valorUnit, it.total], i % 2 === 1);
+            r.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+            r.getCell(4).alignment = { horizontal: 'center', vertical: 'middle' };
+            r.getCell(5).numFmt = BRL; r.getCell(5).alignment = { horizontal: 'right', vertical: 'middle' };
+            r.getCell(6).numFmt = BRL; r.getCell(6).alignment = { horizontal: 'right', vertical: 'middle' };
+            r.getCell(6).font = { bold: true, size: 10, name: 'Calibri', color: { argb: COR } };
+        });
+        subtotalRow('SUBTOTAL INFRAESTRUTURA', totalInfVal);
+        spacer();
+    }
+
+    // SERVIÇO
+    sectionHdr('SERVIÇO');
+    duoCellRow('Dias de trabalho', diasT + ' dias', 'Deslocamento', desl);
+    ws.lastRow.getCell(6).numFmt = BRL;
+    duoCellRow('Dias com diarista', diasD + ' dias', 'Diarista', diarista);
+    ws.lastRow.getCell(6).numFmt = BRL;
+    duoCellRow('', '', 'Diárias', diarias);
+    ws.lastRow.getCell(6).numFmt = BRL;
+    subtotalRow('TOTAL SERVIÇO', totalServ);
+    spacer();
+
+    // RESUMO FINANCEIRO
+    sectionHdr('RESUMO FINANCEIRO');
+    [
+        ['Equipamentos', totalProdVal],
+        ['Infraestrutura', totalInfVal],
+        ['Serviço', totalServ],
+    ].forEach(([label, val]) => {
+        const r = ws.addRow(['', label, '', '', '', val]);
+        r.height = 20;
+        ws.mergeCells(r.number, 2, r.number, 5);
+        r.getCell(2).style = { font: { size: 10, color: { argb: 'FF444444' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_LT } }, alignment: { horizontal: 'left', vertical: 'middle', indent: 1 }, border: { top: THIN, left: THIN, bottom: THIN, right: THIN } };
+        r.getCell(6).style = { font: { size: 10, color: { argb: 'FF333333' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } }, alignment: { horizontal: 'right', vertical: 'middle' }, numFmt: BRL, border: { top: THIN, left: THIN, bottom: THIN, right: THIN } };
+    });
+
+    // VALOR TOTAL — linha de destaque
+    const totRow = ws.addRow(['VALOR TOTAL DO PROJETO', '', '', '', '', inst.total]);
+    totRow.height = 36;
+    ws.mergeCells(totRow.number, 1, totRow.number, 5);
+    totRow.getCell(1).style = { font: { bold: true, size: 14, color: { argb: 'FFFFFFFF' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR } }, alignment: { horizontal: 'center', vertical: 'middle' } };
+    totRow.getCell(6).style = { font: { bold: true, size: 14, color: { argb: 'FFFFFFFF' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR } }, alignment: { horizontal: 'right', vertical: 'middle' }, numFmt: BRL };
+
+    // pagamento
+    [['Forma de pagamento', modoLabel], ['Condição', formaLabel]].forEach(([l, v]) => {
+        const r = ws.addRow(['', l, v, '', '', '']);
+        r.height = 20;
+        ws.mergeCells(r.number, 3, r.number, 6);
+        r.getCell(2).style = { font: { bold: true, size: 10, color: { argb: 'FF444444' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_LT } }, alignment: { horizontal: 'left', vertical: 'middle', indent: 1 }, border: { top: THIN, left: THIN, bottom: THIN, right: THIN } };
+        r.getCell(3).style = { font: { size: 10, color: { argb: 'FF222222' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } }, alignment: { horizontal: 'left', vertical: 'middle', indent: 1 }, border: { top: THIN, left: THIN, bottom: THIN, right: THIN } };
+    });
+    spacer();
+
+    // PARCELAS
+    sectionHdr('PARCELAS');
+    const ph = ws.addRow(['#', 'Parcela', 'Vencimento', '', '', 'Valor (R$)']);
+    ph.height = 22;
+    for (let c = 1; c <= 6; c++) ph.getCell(c).style = { font: { bold: true, size: 10, color: { argb: 'FFFFFFFF' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_DK } }, alignment: { horizontal: 'center', vertical: 'middle' } };
+    ws.mergeCells(ph.number, 3, ph.number, 5);
+
+    inst.parcelas.forEach((p, i) => {
+        const r = dataRow([i + 1, p.label, addDias(Number(validade) + i * 30), '', '', p.recebe], i % 2 === 1);
+        r.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+        ws.mergeCells(r.number, 3, r.number, 5);
+        r.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
+        r.getCell(6).numFmt = BRL;
+        r.getCell(6).alignment = { horizontal: 'right', vertical: 'middle' };
+        r.getCell(6).font = { bold: true, size: 10, color: { argb: COR }, name: 'Calibri' };
+    });
+
+    // rodapé
+    spacer();
+    mergedRow(
+        marca + '   |   ' + (socio ? '(21) 99664-6927   |   ba.visionseguranca@gmail.com' : '(21) 96745-5648   |   contato@cpzdigital.com.br') +
+        '   |   CNPJ: ' + (socio ? '62.456.202/0001-08' : '58.589.970/0001-54'),
+        COR_LT, 'FF555555', 9, 18
+    );
+
+    // ── SHEET 2: FINANCEIRO ──
+    const ws2 = wb.addWorksheet('Financeiro');
+    ws2.columns = [
+        { width: 5 }, { width: 22 }, { width: 16 }, { width: 18 }, { width: 18 }, { width: 18 }, { width: 20 }
+    ];
+    const NC2 = 7;
+    const contato2 = socio ? '(21) 99664-6927  ·  ba.visionseguranca@gmail.com' : '(21) 96745-5648  ·  contato@cpzdigital.com.br';
+
+    function mr2(text, bg, fc, fs, h) {
+        const r = ws2.addRow([text]);
+        r.height = h || 24;
+        r.getCell(1).style = { font: { bold: true, size: fs || 11, color: { argb: fc || 'FFFFFFFF' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } }, alignment: { horizontal: 'center', vertical: 'middle' } };
+        ws2.mergeCells(r.number, 1, r.number, NC2);
+        return r;
+    }
+    function sp2() { const r = ws2.addRow([]); r.height = 7; return r; }
+    function secHdr2(t) { return mr2(t, COR, 'FFFFFFFF', 12, 26); }
+
+    // salva estado atual
+    const savedM = _pagModo, savedS = _subAvista, savedNP = _nPix, savedNB = _nBoleto, savedNC = _nCartao;
+
+    const allGroups = [
+        {
+            secao: 'À VISTA — PIX',
+            opcoes: [
+                { label: '50% + 50% (Pix)', modo: 'avista', sub: '5050', n: '5050' },
+                ...[2, 3, 4, 5, 6].map(n => ({ label: n + '× Pix', modo: 'avista', sub: 'npix', n }))
+            ]
+        },
+        {
+            secao: 'BOLETO BANCÁRIO  (+5%)',
+            opcoes: [2, 3, 4, 5, 6].map(n => ({ label: n + '× mensais', modo: 'boleto', n }))
+        },
+        {
+            secao: 'CARTÃO DE CRÉDITO  (+10%)',
+            opcoes: [2, 3, 4, 5, 6].map(n => ({ label: n + '× no cartão', modo: 'cartao', n }))
+        },
+    ];
+
+    mr2(marca + ' — Análise Financeira Completa', COR, 'FFFFFFFF', 16, 40);
+    mr2('Valor base: ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(_pag.valorFinal) + '   ·   Cliente: ' + nome + '   ·   ' + addDias(0), COR_LT, 'FF444444', 10, 18);
+    sp2();
+
+    allGroups.forEach(group => {
+        secHdr2(group.secao);
+
+        group.opcoes.forEach(opt => {
+            _pagModo = opt.modo;
+            if (opt.modo === 'avista') { _subAvista = opt.sub; if (opt.sub !== '5050') _nPix = opt.n; }
+            else if (opt.modo === 'boleto') _nBoleto = opt.n;
+            else _nCartao = opt.n;
+
+            const inst   = calcInstallments();
+            const viavel = simularViabilidade(opt.modo, opt.n);
+
+            // sub-cabeçalho da opção
+            const sCor = viavel ? 'FF166534' : 'FF991B1B';
+            const sBg  = viavel ? 'FFD1FAE5' : 'FFFEE2E2';
+            const oRow = ws2.addRow([opt.label, '', '', '', '', inst.total, viavel ? '✔ VIÁVEL' : '✖ INVIÁVEL']);
+            oRow.height = 26;
+            ws2.mergeCells(oRow.number, 1, oRow.number, 5);
+            oRow.getCell(1).style = { font: { bold: true, size: 11, color: { argb: 'FF111111' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_LT } }, alignment: { horizontal: 'left', vertical: 'middle', indent: 1 } };
+            oRow.getCell(6).style = { font: { bold: true, size: 11, color: { argb: COR }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_LT } }, alignment: { horizontal: 'right', vertical: 'middle' }, numFmt: BRL };
+            oRow.getCell(7).style = { font: { bold: true, size: 10, color: { argb: sCor }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: sBg } }, alignment: { horizontal: 'center', vertical: 'middle' } };
+
+            // cabeçalho da tabela
+            const hRow = ws2.addRow(['#', 'Parcela', 'Vencimento', 'Recebe (R$)', 'Saídas (R$)', 'Caixa período', 'Caixa acum.']);
+            hRow.height = 20;
+            for (let c = 1; c <= NC2; c++) {
+                hRow.getCell(c).style = { font: { bold: true, size: 9, color: { argb: 'FFFFFFFF' }, name: 'Calibri' }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: COR_DK } }, alignment: { horizontal: 'center', vertical: 'middle' } };
+            }
+
+            // linhas de parcelas
+            let acum = 0;
+            inst.parcelas.forEach((p, i) => {
+                acum += p.caixa;
+                const saidas = p.desp + p.adriano;
+                const bg = i % 2 === 1 ? COR_RW : 'FFFFFFFF';
+                const dr = ws2.addRow([i + 1, p.label, addDias(Number(validade) + i * 30), p.recebe, saidas, p.caixa, acum]);
+                dr.height = 18;
+                for (let c = 1; c <= NC2; c++) {
+                    dr.getCell(c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+                    dr.getCell(c).font = { size: 9, name: 'Calibri', color: { argb: 'FF333333' } };
+                    dr.getCell(c).border = { top: THIN, left: THIN, bottom: THIN, right: THIN };
+                }
+                dr.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+                [4, 5, 6, 7].forEach(c => { dr.getCell(c).numFmt = BRL; dr.getCell(c).alignment = { horizontal: 'right', vertical: 'middle' }; });
+                dr.getCell(6).font = { size: 9, name: 'Calibri', color: { argb: p.caixa >= 0 ? COR : 'FFCC0000' } };
+                dr.getCell(7).font = { bold: true, size: 9, name: 'Calibri', color: { argb: acum >= 0 ? COR : 'FFCC0000' } };
+            });
+            sp2();
+        });
+        sp2();
+    });
+
+    // restaura estado
+    _pagModo = savedM; _subAvista = savedS; _nPix = savedNP; _nBoleto = savedNB; _nCartao = savedNC;
+
+    sp2();
+    mr2(marca + '   |   ' + contato2 + '   |   CNPJ: ' + (socio ? '62.456.202/0001-08' : '58.589.970/0001-54'), COR_LT, 'FF555555', 9, 18);
+
+    // download
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'orcamento-' + nome.replace(/\s+/g, '-').toLowerCase() + '-' + (data || new Date().toISOString().slice(0, 10)) + '.xlsx';
+    a.click();
+    URL.revokeObjectURL(url);
+    mostrarToast('Planilha exportada!');
+}
+
+function simularViabilidade(modo, n) {
+    const { valorFinal, totalProd, totalInfra, desl, diarias, diarista } = _pag;
+    if (!valorFinal) return true;
+    const r50 = v => Math.round(v / 50) * 50;
+    const caixaParc = (recebe, despMat, despInfra, despDesl, despDiar, adriano) =>
+        (recebe - despMat - despInfra - despDesl - despDiar) - adriano;
+
+    let caixas = [];
+
+    if (modo === 'avista') {
+        if (n === '5050') {
+            const meia = valorFinal / 2;
+            caixas = [
+                caixaParc(meia, 0,         totalInfra, desl, 0,        0),
+                caixaParc(meia, totalProd, 0,          0,    diarista,  diarias)
+            ];
+        } else {
+            const total  = valorFinal;
+            const parc   = total / n;
+            const adPerc = diarias / n;
+            const matPer = n > 1 ? totalProd / (n - 1) : 0;
+            for (let i = 1; i <= n; i++)
+                caixas.push(caixaParc(parc, i >= 2 ? matPer : 0,
+                    i === 1 ? totalInfra : 0, i === 1 ? desl : 0,
+                    i === 1 ? diarista : 0, adPerc));
+        }
+    } else if (modo === 'boleto') {
+        const total  = r50(valorFinal * 1.05);
+        const parc   = total / n;
+        const adPerc = diarias / n;
+        const matPer = n > 1 ? totalProd / (n - 1) : 0;
+        for (let i = 1; i <= n; i++)
+            caixas.push(caixaParc(parc, i >= 2 ? matPer : 0,
+                i === 1 ? totalInfra : 0, i === 1 ? desl : 0,
+                i === 1 ? diarista : 0, adPerc));
+    } else if (modo === 'cartao') {
+        const total  = r50(valorFinal * 1.10);
+        const parc   = total / n;
+        const adPerc = diarias / n;
+        const matPer = totalProd / n;
+        for (let i = 1; i <= n; i++)
+            caixas.push(caixaParc(parc, matPer,
+                i === 1 ? totalInfra : 0, i === 1 ? desl : 0,
+                i === 1 ? diarista : 0, adPerc));
+    }
+
+    let acum = 0;
+    for (const c of caixas) {
+        acum += c;
+        if (acum < 0) return false;
+    }
+    return true;
+}
+
+function calcInstallments() {
+    const { valorFinal, totalProd, totalInfra, desl, diarias, diarista } = _pag;
+    const r50 = v => Math.round(v / 50) * 50;
+    const mkParc = (label, recebe, despMat, despInfra, despDesl, despDiar, adriano) => {
+        const desp  = despMat + despInfra + despDesl + despDiar;
+        const saldo = recebe - desp;
+        return { label, recebe, despMat, despInfra, despDesl, despDiar, desp, adriano, saldo, caixa: saldo - adriano };
+    };
+
+    // helper: N parcelas — infra/desl/diarista na P1, material de matStart em diante
+    function gerarParcelas(total, N, matStart) {
+        const parc   = total / N;
+        const adPerc = diarias / N;
+        const matN   = N - matStart + 1;
+        const matPer = matN > 0 ? totalProd / matN : 0;
+        const result = [];
+        for (let i = 1; i <= N; i++) {
+            const isMat = i >= matStart;
+            result.push(mkParc(
+                `${i}ª parcela`, parc,
+                isMat ? matPer : 0,
+                i === 1 ? totalInfra : 0,
+                i === 1 ? desl : 0,
+                i === 1 ? diarista : 0,
+                adPerc
+            ));
+        }
+        return { total, parcelas: result };
+    }
+
+    if (_pagModo === 'avista') {
+        const total = valorFinal;
+        if (_subAvista === '5050') {
+            const meia = total / 2;
+            return { total, parcelas: [
+                mkParc('Sinal (50%)', meia, 0,          totalInfra, desl, 0,        0),
+                mkParc('Final (50%)', meia, totalProd,  0,          0,    diarista,  diarias)
+            ]};
+        }
+        // N× Pix — material nas parcelas 2-N
+        return gerarParcelas(total, _nPix, 2);
+    }
+
+    if (_pagModo === 'boleto') {
+        const total = r50(valorFinal * 1.05);
+        return gerarParcelas(total, _nBoleto, 2);
+    }
+
+    if (_pagModo === 'cartao') {
+        // Cartão +10% | material distribuído em todas as N parcelas
+        const N      = _nCartao;
+        const total  = r50(valorFinal * 1.10);
+        const parc   = total / N;
+        const adPerc = diarias / N;
+        const matPer = totalProd / N;
+        const parcelas = [];
+        for (let i = 1; i <= N; i++) {
+            parcelas.push(mkParc(
+                `${i}ª parcela`, parc,
+                matPer,
+                i === 1 ? totalInfra : 0,
+                i === 1 ? desl : 0,
+                i === 1 ? diarista : 0,
+                adPerc
+            ));
+        }
+        return { total, parcelas };
+    }
+}
+
+function renderPagamento() {
+    const data      = calcInstallments();
+    const socio     = document.getElementById('usarSocio').checked;
+    const lblDiaria = socio ? 'Diárias' : 'Adriano';
+    const cor       = v => v >= 0 ? 'verde' : 'vermelho';
+    let html = '';
+
+    const totalDesc = {
+        avista: _subAvista === '5050' ? 'Pix — 50% + 50%' : `Pix — ${_nPix}×`,
+        boleto: `Boleto — ${_nBoleto}×`,
+        cartao: `Cartão — ${_nCartao}×`
+    }[_pagModo];
+
+    html += `<div class="pag-total-card">
+        <div>
+            <div class="pag-total-label">Total</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${totalDesc}</div>
+        </div>
+        <span class="pag-total-valor">${fmt(data.total)}</span>
+    </div>`;
+
+    // auto-corrige seleção inviável para o menor N viável
+    const corrigirN = (opts, nAtual, setter, modo) => {
+        if (!simularViabilidade(modo, nAtual)) {
+            const viavel = opts.find(n => simularViabilidade(modo, n));
+            if (viavel) { window[setter](viavel); return true; }
+        }
+        return false;
+    };
+    if (_pagModo === 'avista' && _subAvista === '4pix') corrigirN([2,3,4,5,6], _nPix, 'setNPix', 'avista');
+    if (_pagModo === 'boleto')                          corrigirN([2,3,4,5,6], _nBoleto, 'setNBoleto', 'boleto');
+    if (_pagModo === 'cartao')                          corrigirN([2,3,4,5,6], _nCartao, 'setNCartao', 'cartao');
+
+    const mkOpts = (opts, nAtual, setter, modo) =>
+        opts.map(n => {
+            const viavel = simularViabilidade(modo, n);
+            const cls = `pag-boleto-opt ${n === nAtual ? 'ativo' : ''} ${!viavel ? 'inviavel' : ''}`;
+            const click = viavel ? `onclick="${setter}(${n})"` : '';
+            return `<button class="${cls}" ${click} ${!viavel ? 'title="Caixa fica negativo neste parcelamento"' : ''}>${n}×</button>`;
+        }).join('');
+
+    const avisoInviavel = (modo, n) => !simularViabilidade(modo, n)
+        ? `<div class="pag-aviso-inviavel">⚠ Projeto inviável em ${n}× — o caixa acumulado fica negativo neste parcelamento.</div>`
+        : '';
+
+    if (_pagModo === 'avista') {
+        html += `<div class="pag-boleto-ctrl">
+            <span class="pag-boleto-label">Forma:</span>
+            <div class="pag-boleto-sel">
+                <button class="pag-boleto-opt ${_subAvista==='5050'?'ativo':''}" onclick="setSubAvista('5050')">50%+50%</button>
+                <button class="pag-boleto-opt ${_subAvista==='4pix'?'ativo':''}" onclick="setSubAvista('4pix')">Pix</button>
+            </div>
+        </div>`;
+        if (_subAvista === '4pix') {
+            html += `<div class="pag-boleto-ctrl">
+                <span class="pag-boleto-label">Parcelas:</span>
+                <div class="pag-boleto-sel">
+                    ${mkOpts([2,3,4,5,6], _nPix, 'setNPix', 'avista')}
+                </div>
+            </div>
+            ${avisoInviavel('avista', _nPix)}`;
+        }
+    }
+
+    if (_pagModo === 'boleto') {
+        html += `<div class="pag-boleto-ctrl">
+            <span class="pag-boleto-label">Parcelas:</span>
+            <div class="pag-boleto-sel">
+                ${mkOpts([2,3,4,5,6], _nBoleto, 'setNBoleto', 'boleto')}
+            </div>
+        </div>
+        ${avisoInviavel('boleto', _nBoleto)}`;
+    }
+
+    if (_pagModo === 'cartao') {
+        html += `<div class="pag-boleto-ctrl">
+            <span class="pag-boleto-label">Parcelas:</span>
+            <div class="pag-boleto-sel">
+                ${mkOpts([2,3,4,5,6], _nCartao, 'setNCartao', 'cartao')}
+            </div>
+        </div>
+        ${avisoInviavel('cartao', _nCartao)}`;
+    }
+
+    let acum = 0;
+    data.parcelas.forEach((p, idx) => {
+        const acumBefore = acum;
+        acum += p.caixa;
+
+        // carry: saldo acumulado das parcelas anteriores (positivo ou negativo)
+        const carry     = idx > 0 ? acumBefore : 0;
+        const saldoDisp = p.recebe + carry - p.desp;
+
+        const saidasRows = [
+            p.despInfra > 0 ? `<div class="pag-row pag-row-sub">
+                <span class="pag-row-label">Infra/equip.</span>
+                <span class="pag-row-val vermelho">−${fmt(p.despInfra)}</span>
+            </div>` : '',
+            p.despDesl > 0 ? `<div class="pag-row pag-row-sub">
+                <span class="pag-row-label">Deslocamento</span>
+                <span class="pag-row-val vermelho">−${fmt(p.despDesl)}</span>
+            </div>` : '',
+            p.despDiar > 0 ? `<div class="pag-row pag-row-sub">
+                <span class="pag-row-label">Diarista</span>
+                <span class="pag-row-val vermelho">−${fmt(p.despDiar)}</span>
+            </div>` : '',
+            p.despMat > 0 ? `<div class="pag-row pag-row-sub">
+                <span class="pag-row-label">Material</span>
+                <span class="pag-row-val vermelho">−${fmt(p.despMat)}</span>
+            </div>` : '',
+        ].join('');
+
+        const cardClass = acum >= 0 ? 'acum-pos' : 'acum-neg';
+        html += `<div class="pag-parc ${cardClass}">
+            <div class="pag-parc-titulo">${p.label}</div>
+            <div class="pag-row">
+                <span class="pag-row-label">Recebe</span>
+                <span class="pag-row-val verde">${fmt(p.recebe)}</span>
+            </div>
+            ${carry > 0 ? `<div class="pag-row">
+                <span class="pag-row-label">+ Saldo anterior</span>
+                <span class="pag-row-val verde">${fmt(carry)}</span>
+            </div>` : carry < 0 ? `<div class="pag-row">
+                <span class="pag-row-label">− Déficit anterior</span>
+                <span class="pag-row-val vermelho">−${fmt(-carry)}</span>
+            </div>` : ''}
+            ${p.desp > 0 ? `<div class="pag-saidas-label">Saídas</div>${saidasRows}` : ''}
+            <div class="pag-sep"></div>
+            <div class="pag-row">
+                <span class="pag-row-label">Saldo</span>
+                <span class="pag-row-val ${cor(saldoDisp)}">${fmt(saldoDisp)}</span>
+            </div>
+            ${p.adriano > 0 ? (socio ? `
+            <div class="pag-row">
+                <span class="pag-row-label">Adriano — diária</span>
+                <span class="pag-row-val amarelo">−${fmt(p.adriano / 2)}</span>
+            </div>
+            <div class="pag-row">
+                <span class="pag-row-label">Bruno — diária</span>
+                <span class="pag-row-val amarelo">−${fmt(p.adriano / 2)}</span>
+            </div>` : `
+            <div class="pag-row">
+                <span class="pag-row-label">Adriano — diária</span>
+                <span class="pag-row-val amarelo">−${fmt(p.adriano)}</span>
+            </div>`) : ''}
+            <div class="pag-sep"></div>
+            <div class="pag-saldo-row">
+                <span class="pag-saldo-label">Caixa acumulado</span>
+                <span class="pag-saldo-val ${cor(acum)}">${fmt(acum)}</span>
+            </div>
+        </div>`;
+    });
+
+    const totalCaixa   = data.parcelas.reduce((s,p) => s + p.caixa, 0);
+    const empresaFinal = totalCaixa * 0.20;
+    const resumoRows   = socio ? `
+        <div class="pag-row">
+            <span class="pag-row-label">Adriano (40%)</span>
+            <span class="pag-row-val amarelo">${fmt(totalCaixa * 0.40)}</span>
+        </div>
+        <div class="pag-row">
+            <span class="pag-row-label">Bruno (40%)</span>
+            <span class="pag-row-val amarelo">${fmt(totalCaixa * 0.40)}</span>
+        </div>` : `
+        <div class="pag-row">
+            <span class="pag-row-label">Adriano (80%)</span>
+            <span class="pag-row-val amarelo">${fmt(totalCaixa * 0.80)}</span>
+        </div>`;
+    html += `<div class="pag-resumo">
+        <div class="pag-resumo-titulo">Divisão final</div>
+        ${resumoRows}
+        <div class="pag-sep"></div>
+        <div class="pag-row">
+            <span class="pag-row-label">Empresa (20%)</span>
+            <span class="pag-row-val verde">${fmt(empresaFinal)}</span>
+        </div>
+    </div>`;
+
+    document.getElementById('pagConteudo').innerHTML = html;
+}
+
+// ── INIT ──
+async function init() {
+    await carregarBanco();
+    if (!restaurarEstado()) {
+        adicionarProduto();
+        adicionarInfra();
+    }
+    calcular();
+}
+init();
+
+</script>
+</body>
+</html>
