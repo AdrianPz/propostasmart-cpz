@@ -137,6 +137,84 @@ body {
     margin-bottom: 12px;
 }
 
+/* ── LOGO PLACEHOLDER ── */
+.logo-placeholder {
+    position: relative;
+    height: 34px;
+    min-width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px dashed var(--border2);
+    border-radius: 8px;
+    padding: 0 12px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    user-select: none;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+.logo-placeholder:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: var(--blue-dim);
+}
+.logo-popover {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 260px;
+    background: var(--surface2);
+    border: 1.5px solid var(--blue);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: var(--shadow-drop);
+    z-index: 200;
+    cursor: default;
+}
+.logo-popover.aberto { display: block; }
+.logo-popover-titulo {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+.logo-popover p {
+    font-size: 12px;
+    color: var(--label);
+    margin: 0 0 8px;
+    line-height: 1.55;
+}
+.logo-popover code {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--ok-text);
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+    word-break: break-all;
+}
+.logo-popover-fechar {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none;
+    color: var(--muted); font-size: 14px;
+    cursor: pointer; font-family: inherit;
+    border-radius: 6px;
+    transition: background 0.12s;
+}
+.logo-popover-fechar:hover { background: var(--border2); }
+
 /* ── TIPO PROJETO ── */
 .tipos-grid {
     display: grid;
@@ -679,6 +757,20 @@ body {
             <h2 id="tituloApp" style="cursor:default;user-select:none;">Orçamento</h2>
             <p class="subtitulo" id="subtituloApp"></p>
         </div>
+        <div class="logo-placeholder" id="logoPlaceholder" onclick="toggleLogoPopover(event)">
+            Logo
+            <div class="logo-popover" id="logoPopover" onclick="event.stopPropagation()">
+                <button class="logo-popover-fechar" onclick="fecharLogoPopover()">✕</button>
+                <div class="logo-popover-titulo">Como adicionar a logo</div>
+                <p>Coloque o arquivo de imagem na mesma pasta do <strong>index.html</strong> e defina o caminho no <strong>CONFIG</strong>:</p>
+                <code>logo: 'sua-logo.png'</code>
+                <p style="margin-top:8px;margin-bottom:0;">
+                    Dimensões recomendadas:<br>
+                    <strong>130 × 34 px</strong> — PNG ou JPG<br>
+                    Fundo branco ou transparente
+                </p>
+            </div>
+        </div>
     </div>
 
     <!-- TIPO -->
@@ -824,6 +916,11 @@ body {
             </div>
         </div>
     </div>
+</div>
+
+<!-- ASSINATURA CPZ -->
+<div style="display:flex;align-items:center;justify-content:center;padding:20px 16px 8px;">
+    <img src="cpz-assinatura.png" alt="CPZ Digital" style="width:130px;height:auto;background:white;border-radius:8px;padding:4px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
 </div>
 
 <!-- BOTÕES FIXOS -->
@@ -1268,6 +1365,18 @@ document.querySelectorAll(".tipo-btn input").forEach(cb=>{
         cb.checked=true; this.classList.add("ativo"); calcular();
     });
 });
+
+function toggleLogoPopover(e) {
+    e.stopPropagation();
+    const pop = document.getElementById('logoPopover');
+    const isAberto = pop.classList.contains('aberto');
+    fecharLogoPopover();
+    if (!isAberto) pop.classList.add('aberto');
+}
+function fecharLogoPopover() {
+    document.getElementById('logoPopover').classList.remove('aberto');
+}
+document.addEventListener('click', fecharLogoPopover);
 
 let _toastTimer=null;
 
@@ -2266,6 +2375,13 @@ function renderPagamento() {
 // ── INIT ──
 async function init() {
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
+    if (CONFIG.logo) {
+        const ph = document.getElementById('logoPlaceholder');
+        ph.innerHTML = `<img src="${CONFIG.logo}" alt="${CONFIG.empresa}" style="height:34px;width:auto;border-radius:6px;background:#fff;padding:4px 8px;">`;
+        ph.style.border = 'none';
+        ph.style.cursor = 'default';
+        ph.onclick = null;
+    }
     await carregarBanco();
     if (!restaurarEstado()) {
         adicionarProduto();
