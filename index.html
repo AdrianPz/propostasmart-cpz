@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>CPZ Orçamento</title>
+<title>OrçaPro</title>
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap');
@@ -67,23 +67,6 @@
     }
 }
 
-/* ── B&A Vision palette ── */
-body.ba-vision {
-    --blue:           #10b981;
-    --blue-dim:       #063d28;
-    --blue-glow:      rgba(16,185,129,0.40);
-    --resultado-bg:   linear-gradient(135deg, #047857 0%, #059669 60%, #10b981 100%);
-    --resultado-shdw: 0 8px 28px rgba(16,185,129,0.38);
-}
-@media (prefers-color-scheme: light) {
-    body.ba-vision {
-        --blue:           #059669;
-        --blue-dim:       #d1fae5;
-        --blue-glow:      rgba(5,150,105,0.35);
-        --resultado-bg:   linear-gradient(135deg, #047857 0%, #059669 100%);
-        --resultado-shdw: 0 8px 28px rgba(5,150,105,0.35);
-    }
-}
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -694,9 +677,8 @@ body {
     <div class="topo">
         <div class="topo-texto">
             <h2 id="tituloApp" style="cursor:default;user-select:none;">Orçamento</h2>
-            <p class="subtitulo" id="subtituloApp">CPZ Digital</p>
+            <p class="subtitulo" id="subtituloApp"></p>
         </div>
-        <img class="logo-empresa" id="logoTopo" src="cpz-assinatura.png" alt="CPZ Digital">
     </div>
 
     <!-- TIPO -->
@@ -709,8 +691,6 @@ body {
             <label class="tipo-btn"><input type="checkbox" name="tipo" value="automacao">Automação</label>
             <label class="tipo-btn"><input type="checkbox" name="tipo" value="sensores">Sensores</label>
         </div>
-        <input type="checkbox" id="usarSocio" style="display:none;">
-
         <div class="cameras-row">
             <span class="cameras-label">Total de câmeras</span>
             <span class="cameras-badge" id="totalCameras">0</span>
@@ -846,11 +826,6 @@ body {
     </div>
 </div>
 
-<!-- ASSINATURA -->
-<div style="display:flex;align-items:center;justify-content:center;padding:20px 16px 8px;">
-    <img src="cpz-assinatura.png" alt="CPZ" style="width:130px;height:auto;background:white;border-radius:8px;padding:4px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-</div>
-
 <!-- BOTÕES FIXOS -->
 <div class="fab-area">
     <button class="fab fab-azul" onclick="abrirPagamentos()">💳 Pagamento</button>
@@ -864,8 +839,23 @@ body {
 
 <script>
 
-const URL_PRODUTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQg5zxUiq6B03q8unGatN0ATJz1aLR89j34Xe3Z0-a8DFQyh3k-HpZsMngRxVTyrK9quopeBKCHTGlw/pub?gid=1778121456&single=true&output=csv";
-const URL_INFRA    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQg5zxUiq6B03q8unGatN0ATJz1aLR89j34Xe3Z0-a8DFQyh3k-HpZsMngRxVTyrK9quopeBKCHTGlw/pub?gid=1725487429&single=true&output=csv";
+// ── CONFIGURAÇÃO DA EMPRESA ── preencha antes de distribuir ──────────────
+const CONFIG = {
+    empresa:     'Minha Empresa',       // nome exibido no app e nos documentos
+    responsavel: 'Responsável',         // nome do responsável nos PDFs
+    cnpj:        '',                    // CNPJ (ex: "00.000.000/0001-00")
+    telefone:    '',                    // telefone de contato
+    email:       '',                    // e-mail de contato
+    logo:        '',                    // caminho da imagem de logo (ex: "logo.png")
+    corPrimaria: '#0055b3',             // cor principal dos documentos gerados
+    // URLs da planilha Google Sheets publicada como CSV
+    urlProdutos: '',                    // link da aba de produtos
+    urlInfra:    '',                    // link da aba de infraestrutura
+};
+// ─────────────────────────────────────────────────────────────────────────
+
+const URL_PRODUTOS = CONFIG.urlProdutos;
+const URL_INFRA    = CONFIG.urlInfra;
 
 let produtos   = [];
 let itensInfra = [];
@@ -1218,7 +1208,6 @@ function ativarEdicaoPreco(card) {
 function calcular() {
     const tipoEl=document.querySelector('input[name="tipo"]:checked');
     const tipo=tipoEl?tipoEl.value:"analogica";
-    const usarSocio=document.getElementById("usarSocio").checked;
 
     let qtdCameras=0, totalProd=0;
     document.querySelectorAll(".item-produto").forEach(card=>{
@@ -1245,14 +1234,12 @@ function calcular() {
     cam.className="cameras-badge"+(nivel?" "+nivel:"");
 
     const tS={analogica:{facil:1.6,medio:1.7,dificil:1.7},ip:{facil:1.7,medio:1.9,dificil:2.0},wifi:{facil:2.0,medio:2.1,dificil:2.2},automacao:{facil:2.2,medio:2.4,dificil:2.7},sensores:{facil:2.0,medio:2.2,dificil:2.3}};
-    const tSo={analogica:{facil:2.1,medio:2.2,dificil:2.2},ip:{facil:2.3,medio:2.4,dificil:2.6},wifi:{facil:2.6,medio:2.7,dificil:2.8},automacao:{facil:3.0,medio:3.2,dificil:3.5},sensores:{facil:2.8,medio:3.0,dificil:3.2}};
-    const tab=usarSocio?tSo:tS;
-    const mult=(tab[tipo]||tab.analogica)[nivel||"facil"];
+    const mult=(tS[tipo]||tS.analogica)[nivel||"facil"];
 
     const diasT=Number(document.getElementById("diasTrabalho").value)||0;
     const diasD=Number(document.getElementById("diasDiarista").value)||0;
     const desl=50*diasT;
-    const diarias=diasT*500*(usarSocio?2:1);
+    const diarias=diasT*500;
     const diarista=diasD*120;
     const despesas=desl+totalInfra+diarias+diarista;
     const valorFinal=Math.round((totalProd*mult+despesas)/50)*50;
@@ -1282,8 +1269,7 @@ document.querySelectorAll(".tipo-btn input").forEach(cb=>{
     });
 });
 
-// ── GATILHO 3 CLICKS ──
-let _clickCount=0, _clickTimer=null, _toastTimer=null;
+let _toastTimer=null;
 
 function mostrarToast(msg) {
     const t=document.getElementById("toast");
@@ -1291,24 +1277,6 @@ function mostrarToast(msg) {
     clearTimeout(_toastTimer);
     _toastTimer=setTimeout(()=>t.classList.remove("visivel"),2500);
 }
-
-function toggleBAVision() {
-    const cb=document.getElementById("usarSocio");
-    cb.checked=!cb.checked;
-    const ativo=cb.checked;
-    document.body.classList.toggle('ba-vision', ativo);
-    document.getElementById("subtituloApp").textContent=ativo?"B&A Vision":"CPZ Digital";
-    document.getElementById("logoTopo").src=ativo?"ba-vision-assinatura.png":"cpz-assinatura.png";
-    mostrarToast(ativo?"B&A Vision ativada":"CPZ Digital ativada");
-    calcular();
-}
-
-document.getElementById("tituloApp").addEventListener("click",()=>{
-    _clickCount++;
-    clearTimeout(_clickTimer);
-    if (_clickCount>=3) { _clickCount=0; toggleBAVision(); return; }
-    _clickTimer=setTimeout(()=>{ _clickCount=0; },600);
-});
 
 document.querySelectorAll(".dias-item input").forEach(i=>{
     i.addEventListener("input", calcular);
@@ -1320,7 +1288,6 @@ document.querySelectorAll(".dias-item input").forEach(i=>{
 function salvarEstado() {
     const estado={
         tipo:document.querySelector('input[name="tipo"]:checked')?.value||"analogica",
-        socio:document.getElementById("usarSocio").checked,
         diasTrabalho:document.getElementById("diasTrabalho").value,
         diasDiarista:document.getElementById("diasDiarista").value,
         pagModo:_pagModo, subAvista:_subAvista,
@@ -1340,23 +1307,18 @@ function salvarEstado() {
         const pm=precoEl.dataset.manual?parseFloat(precoEl.dataset.valorUnit):null;
         estado.infra.push({nome:busca?busca.getValor():"", qtd:card.querySelector(".qtd-num").value, precoManual:isNaN(pm)?null:pm});
     });
-    localStorage.setItem("cpz_estado",JSON.stringify(estado));
+    localStorage.setItem("orcapro_estado",JSON.stringify(estado));
 }
 
 function restaurarEstado() {
     try {
-        const raw=localStorage.getItem("cpz_estado");
+        const raw=localStorage.getItem("orcapro_estado");
         if (!raw) return false;
         const e=JSON.parse(raw);
         document.querySelectorAll('input[name="tipo"]').forEach(cb=>{
             cb.checked=cb.value===e.tipo;
             cb.closest(".tipo-btn").classList.toggle("ativo",cb.value===e.tipo);
         });
-        const socio=document.getElementById("usarSocio");
-        socio.checked=e.socio||false;
-        document.body.classList.toggle('ba-vision', socio.checked);
-        document.getElementById("subtituloApp").textContent=socio.checked?"B&A Vision":"CPZ Digital";
-        document.getElementById("logoTopo").src=socio.checked?"ba-vision-assinatura.png":"cpz-assinatura.png";
         if (e.diasTrabalho) document.getElementById("diasTrabalho").value=e.diasTrabalho;
         if (e.diasDiarista) document.getElementById("diasDiarista").value=e.diasDiarista;
         if (e.pagModo)   _pagModo   = e.pagModo;
@@ -1384,16 +1346,12 @@ function restaurarEstado() {
 
 function limparOrcamento() {
     if (!confirm("Apagar o orçamento e começar do zero?")) return;
-    localStorage.removeItem("cpz_estado");
+    localStorage.removeItem("orcapro_estado");
     document.getElementById("listaProdutos").innerHTML="";
     document.getElementById("listaInfra").innerHTML="";
     document.querySelectorAll('input[name="tipo"]').forEach((cb,i)=>{
         cb.checked=i===0; cb.closest(".tipo-btn").classList.toggle("ativo",i===0);
     });
-    document.getElementById("usarSocio").checked=false;
-    document.body.classList.remove('ba-vision');
-    document.getElementById("subtituloApp").textContent="CPZ Digital";
-    document.getElementById("logoTopo").src="cpz-assinatura.png";
     document.getElementById("diasTrabalho").value=1;
     document.getElementById("diasDiarista").value=1;
     _pagModo='avista'; _subAvista='5050'; _nPix=4; _nBoleto=4; _nCartao=4;
@@ -1477,23 +1435,20 @@ function confirmarExportar() {
 function gerarPDF() {
     const { nome, tel, email, data, validade, prazo = '2' } = _clienteInfo;
     const fmtR  = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-    const socio = document.getElementById('usarSocio').checked;
-    const marca = socio ? 'B&A Vision' : 'CPZ Digital';
+    const marca = CONFIG.empresa;
 
     const baseMs   = data ? new Date(data + 'T12:00:00').getTime() : Date.now();
     const addDias  = d => new Date(baseMs + d * 86400000).toLocaleDateString('pt-BR');
     const dataFmt  = addDias(0);
     const dataVenc = addDias(Number(validade));
 
-    const cor  = socio ? '#059669' : '#0055b3';
-    const corL = socio ? '#d1f5e8' : '#e8eef8';
-    const corR = socio ? '#f0fbf7' : '#f7f9ff';
+    const cor  = CONFIG.corPrimaria;
+    const corL = '#e8eef8';
+    const corR = '#f7f9ff';
 
-    const msgInstitucional = socio
-        ? 'A B&A Vision agradece a oportunidade de apresentar esta proposta e coloca-se à disposição para esclarecer qualquer dúvida.'
-        : 'A CPZ Digital agradece a oportunidade de apresentar esta proposta e coloca-se à disposição para esclarecer qualquer dúvida.';
-    const responsavel = socio ? 'Bruno &amp; Adriano — B&A Vision' : 'Adriano — CPZ Digital';
-    const cnpj        = socio ? '62.456.202/0001-08' : '58.589.970/0001-54';
+    const msgInstitucional = marca + ' agradece a oportunidade de apresentar esta proposta e coloca-se à disposição para esclarecer qualquer dúvida.';
+    const responsavel = CONFIG.responsavel;
+    const cnpj        = CONFIG.cnpj;
     const TH  = 'background:' + cor + ';color:#fff;padding:8px 12px;font-size:11px;font-weight:700;text-align:left;';
     const TDL = 'padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #e8e8e8;';
     const TDC = 'padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #e8e8e8;text-align:center;';
@@ -1574,8 +1529,8 @@ function gerarPDF() {
         : '';
 
     const placeholders = {
-        '{{logo_src}}':          socio ? 'ba-vision-assinatura.png' : 'cpz-assinatura.png',
-        '{{logo_height}}':        socio ? '48' : '40',
+        '{{logo_src}}':          CONFIG.logo || '',
+        '{{logo_height}}':       '40',
         '{{marca}}':             marca,
         '{{dataFmt}}':           dataFmt,
         '{{dataVenc}}':          dataVenc,
@@ -1593,12 +1548,12 @@ function gerarPDF() {
         '{{rows_parc}}':         rowsParc,
         '{{validade}}':          validade,
         '{{prazo}}':             prazo + ' dias úteis',
-        '{{cor_pri}}':           socio ? '#059669' : '#0055b3',
-        '{{cor_light}}':         socio ? '#d1f5e8' : '#e8eef8',
-        '{{cor_bg}}':            socio ? '#f0fbf7' : '#f0f5ff',
-        '{{cor_row}}':           socio ? '#f0fbf7' : '#f7f9ff',
-        '{{contato_email}}':     socio ? 'ba.visionseguranca@gmail.com' : 'contato@cpzdigital.com.br',
-        '{{contato_tel}}':       socio ? '(21) 99664-6927' : '(21) 96745-5648',
+        '{{cor_pri}}':           CONFIG.corPrimaria,
+        '{{cor_light}}':         '#e8eef8',
+        '{{cor_bg}}':            '#f0f5ff',
+        '{{cor_row}}':           '#f7f9ff',
+        '{{contato_email}}':     CONFIG.email,
+        '{{contato_tel}}':       CONFIG.telefone,
         '{{geradoEm}}':          new Date().toLocaleDateString('pt-BR'),
     };
 
@@ -1609,10 +1564,10 @@ function gerarPDF() {
         .then(tpl => {
             let html = tpl;
             Object.entries(placeholders).forEach(([k, v]) => { html = html.split(k).join(v); });
-            const [fr,fg,fb] = socio ? [5,150,105] : [0,85,179];
-            const footerLine = socio
-                ? 'B&A Vision  |  (21) 99664-6927  |  ba.visionseguranca@gmail.com  |  CNPJ: 62.456.202/0001-08  |  Responsáveis: Bruno & Adriano'
-                : 'CPZ Digital  |  (21) 96745-5648  |  contato@cpzdigital.com.br  |  CNPJ: 58.589.970/0001-54  |  Responsável: Adriano';
+            const hex = CONFIG.corPrimaria.replace('#','');
+            const [fr,fg,fb] = [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+            const footerParts = [marca, CONFIG.telefone, CONFIG.email, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : '', CONFIG.responsavel].filter(Boolean);
+            const footerLine  = footerParts.join('  |  ');
             mostrarToast('Gerando PDF...');
             html2pdf().from(html).set({
                 margin:      [4, 4, 16, 4],
@@ -1670,18 +1625,18 @@ async function exportarXLS() {
     fecharExportar();
     mostrarToast('Gerando planilha...');
 
-    const socio  = document.getElementById('usarSocio').checked;
-    const marca  = socio ? 'B&A Vision' : 'CPZ Digital';
+    const marca  = CONFIG.empresa;
     const tipoEl = document.querySelector('input[name="tipo"]:checked');
     const tipo   = tipoEl ? tipoEl.value : 'analogica';
     const baseMs = data ? new Date(data + 'T12:00:00').getTime() : Date.now();
     const addDias = d => new Date(baseMs + d * 86400000).toLocaleDateString('pt-BR');
 
     // cores por modo
-    const COR    = socio ? 'FF059669' : 'FF0055B3';
-    const COR_DK = socio ? 'FF047857' : 'FF003D82';
-    const COR_LT = socio ? 'FFD1FAE5' : 'FFE0EEFF';
-    const COR_RW = socio ? 'FFF0FBF7' : 'FFF7F9FF';
+    const hexCor = CONFIG.corPrimaria.replace('#','').toUpperCase();
+    const COR    = 'FF' + hexCor;
+    const COR_DK = 'FF' + hexCor;
+    const COR_LT = 'FFE0EEFF';
+    const COR_RW = 'FFF7F9FF';
     const BRL    = '"R$" #,##0.00';
     const THIN   = { style: 'thin', color: { argb: 'FFDDDDDD' } };
 
@@ -1715,7 +1670,7 @@ async function exportarXLS() {
     const diasT    = Number(document.getElementById('diasTrabalho').value) || 0;
     const diasD    = Number(document.getElementById('diasDiarista').value) || 0;
     const desl     = 50 * diasT;
-    const diarias  = diasT * 500 * (socio ? 2 : 1);
+    const diarias  = diasT * 500;
     const diarista = diasD * 120;
     const totalServ = desl + diarias + diarista;
 
@@ -1920,11 +1875,8 @@ async function exportarXLS() {
 
     // rodapé
     spacer();
-    mergedRow(
-        marca + '   |   ' + (socio ? '(21) 99664-6927   |   ba.visionseguranca@gmail.com' : '(21) 96745-5648   |   contato@cpzdigital.com.br') +
-        '   |   CNPJ: ' + (socio ? '62.456.202/0001-08' : '58.589.970/0001-54'),
-        COR_LT, 'FF555555', 9, 18
-    );
+    const rodapeXls = [marca, CONFIG.telefone, CONFIG.email, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : ''].filter(Boolean).join('   |   ');
+    mergedRow(rodapeXls, COR_LT, 'FF555555', 9, 18);
 
     // ── SHEET 2: FINANCEIRO ──
     const ws2 = wb.addWorksheet('Financeiro');
@@ -1932,7 +1884,7 @@ async function exportarXLS() {
         { width: 5 }, { width: 22 }, { width: 16 }, { width: 18 }, { width: 18 }, { width: 18 }, { width: 20 }
     ];
     const NC2 = 7;
-    const contato2 = socio ? '(21) 99664-6927  ·  ba.visionseguranca@gmail.com' : '(21) 96745-5648  ·  contato@cpzdigital.com.br';
+    const contato2 = [CONFIG.telefone, CONFIG.email].filter(Boolean).join('  ·  ');
 
     function mr2(text, bg, fc, fs, h) {
         const r = ws2.addRow([text]);
@@ -2002,7 +1954,7 @@ async function exportarXLS() {
             let acum = 0;
             inst.parcelas.forEach((p, i) => {
                 acum += p.caixa;
-                const saidas = p.desp + p.adriano;
+                const saidas = p.desp + p.pessoal;
                 const bg = i % 2 === 1 ? COR_RW : 'FFFFFFFF';
                 const dr = ws2.addRow([i + 1, p.label, addDias(Number(validade) + i * 30), p.recebe, saidas, p.caixa, acum]);
                 dr.height = 18;
@@ -2025,7 +1977,8 @@ async function exportarXLS() {
     _pagModo = savedM; _subAvista = savedS; _nPix = savedNP; _nBoleto = savedNB; _nCartao = savedNC;
 
     sp2();
-    mr2(marca + '   |   ' + contato2 + '   |   CNPJ: ' + (socio ? '62.456.202/0001-08' : '58.589.970/0001-54'), COR_LT, 'FF555555', 9, 18);
+    const rodapeFin = [marca, contato2, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : ''].filter(Boolean).join('   |   ');
+    mr2(rodapeFin, COR_LT, 'FF555555', 9, 18);
 
     // download
     const buffer = await wb.xlsx.writeBuffer();
@@ -2043,8 +1996,8 @@ function simularViabilidade(modo, n) {
     const { valorFinal, totalProd, totalInfra, desl, diarias, diarista } = _pag;
     if (!valorFinal) return true;
     const r50 = v => Math.round(v / 50) * 50;
-    const caixaParc = (recebe, despMat, despInfra, despDesl, despDiar, adriano) =>
-        (recebe - despMat - despInfra - despDesl - despDiar) - adriano;
+    const caixaParc = (recebe, despMat, despInfra, despDesl, despDiar, pessoal) =>
+        (recebe - despMat - despInfra - despDesl - despDiar) - pessoal;
 
     let caixas = [];
 
@@ -2096,10 +2049,10 @@ function simularViabilidade(modo, n) {
 function calcInstallments() {
     const { valorFinal, totalProd, totalInfra, desl, diarias, diarista } = _pag;
     const r50 = v => Math.round(v / 50) * 50;
-    const mkParc = (label, recebe, despMat, despInfra, despDesl, despDiar, adriano) => {
+    const mkParc = (label, recebe, despMat, despInfra, despDesl, despDiar, pessoal) => {
         const desp  = despMat + despInfra + despDesl + despDiar;
         const saldo = recebe - desp;
-        return { label, recebe, despMat, despInfra, despDesl, despDiar, desp, adriano, saldo, caixa: saldo - adriano };
+        return { label, recebe, despMat, despInfra, despDesl, despDiar, desp, pessoal, saldo, caixa: saldo - pessoal };
     };
 
     // helper: N parcelas — infra/desl/diarista na P1, material de matStart em diante
@@ -2164,10 +2117,8 @@ function calcInstallments() {
 }
 
 function renderPagamento() {
-    const data      = calcInstallments();
-    const socio     = document.getElementById('usarSocio').checked;
-    const lblDiaria = socio ? 'Diárias' : 'Adriano';
-    const cor       = v => v >= 0 ? 'verde' : 'vermelho';
+    const data = calcInstallments();
+    const cor  = v => v >= 0 ? 'verde' : 'vermelho';
     let html = '';
 
     const totalDesc = {
@@ -2295,19 +2246,11 @@ function renderPagamento() {
                 <span class="pag-row-label">Saldo</span>
                 <span class="pag-row-val ${cor(saldoDisp)}">${fmt(saldoDisp)}</span>
             </div>
-            ${p.adriano > 0 ? (socio ? `
+            ${p.pessoal > 0 ? `
             <div class="pag-row">
-                <span class="pag-row-label">Adriano — diária</span>
-                <span class="pag-row-val amarelo">−${fmt(p.adriano / 2)}</span>
-            </div>
-            <div class="pag-row">
-                <span class="pag-row-label">Bruno — diária</span>
-                <span class="pag-row-val amarelo">−${fmt(p.adriano / 2)}</span>
-            </div>` : `
-            <div class="pag-row">
-                <span class="pag-row-label">Adriano — diária</span>
-                <span class="pag-row-val amarelo">−${fmt(p.adriano)}</span>
-            </div>`) : ''}
+                <span class="pag-row-label">Mão de obra</span>
+                <span class="pag-row-val amarelo">−${fmt(p.pessoal)}</span>
+            </div>` : ''}
             <div class="pag-sep"></div>
             <div class="pag-saldo-row">
                 <span class="pag-saldo-label">Caixa acumulado</span>
@@ -2316,36 +2259,13 @@ function renderPagamento() {
         </div>`;
     });
 
-    const totalCaixa   = data.parcelas.reduce((s,p) => s + p.caixa, 0);
-    const empresaFinal = totalCaixa * 0.20;
-    const resumoRows   = socio ? `
-        <div class="pag-row">
-            <span class="pag-row-label">Adriano (40%)</span>
-            <span class="pag-row-val amarelo">${fmt(totalCaixa * 0.40)}</span>
-        </div>
-        <div class="pag-row">
-            <span class="pag-row-label">Bruno (40%)</span>
-            <span class="pag-row-val amarelo">${fmt(totalCaixa * 0.40)}</span>
-        </div>` : `
-        <div class="pag-row">
-            <span class="pag-row-label">Adriano (80%)</span>
-            <span class="pag-row-val amarelo">${fmt(totalCaixa * 0.80)}</span>
-        </div>`;
-    html += `<div class="pag-resumo">
-        <div class="pag-resumo-titulo">Divisão final</div>
-        ${resumoRows}
-        <div class="pag-sep"></div>
-        <div class="pag-row">
-            <span class="pag-row-label">Empresa (20%)</span>
-            <span class="pag-row-val verde">${fmt(empresaFinal)}</span>
-        </div>
-    </div>`;
 
     document.getElementById('pagConteudo').innerHTML = html;
 }
 
 // ── INIT ──
 async function init() {
+    document.getElementById('subtituloApp').textContent = CONFIG.empresa;
     await carregarBanco();
     if (!restaurarEstado()) {
         adicionarProduto();
