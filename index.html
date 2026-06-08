@@ -150,6 +150,22 @@ body {
     letter-spacing: 0.8px;
     margin-bottom: 12px;
 }
+.card-titulo-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none; margin-bottom: 12px;
+}
+.card-titulo-toggle .card-titulo { margin-bottom: 0; }
+.card-titulo-toggle .toggle-seta {
+    font-size: 12px; color: var(--muted);
+    transition: transform 0.2s;
+}
+.card-titulo-toggle.recolhido .toggle-seta { transform: rotate(-90deg); }
+.card-corpo-toggle {
+    overflow: hidden;
+    transition: max-height 0.25s ease, opacity 0.2s;
+    max-height: 600px; opacity: 1;
+}
+.card-corpo-toggle.recolhido { max-height: 0; opacity: 0; }
 
 /* ── LOGO PLACEHOLDER ── */
 .logo-placeholder {
@@ -1339,7 +1355,11 @@ body {
 
     <!-- SERVIÇO -->
     <div class="card">
-        <div class="card-titulo">Serviço</div>
+        <div class="card-titulo-toggle recolhido" id="servicoToggle" onclick="toggleServico()">
+            <span class="card-titulo">Serviço</span>
+            <span class="toggle-seta">▼</span>
+        </div>
+        <div class="card-corpo-toggle recolhido" id="servicoCorpo">
         <div class="worker-desl">
             <span class="worker-desl-label">Deslocamento (dias)</span>
             <input type="number" id="deslDias" class="worker-desl-input" min="0" value="1" oninput="atualizarWorkers()">
@@ -1378,6 +1398,7 @@ body {
             <span class="worker-sum-label">Total mão de obra</span>
             <span class="worker-sum-val" id="workerSumDisplay">—</span>
         </div>
+        </div><!-- /card-corpo-toggle -->
     </div>
 
     <!-- RESULTADO -->
@@ -2601,6 +2622,11 @@ function mostrarToastWpp(url) {
 }
 function esconderToastWpp() {
     document.getElementById("toastWpp").classList.remove("visivel");
+}
+
+function toggleServico() {
+    document.getElementById('servicoToggle').classList.toggle('recolhido');
+    document.getElementById('servicoCorpo').classList.toggle('recolhido');
 }
 
 function atualizarWorkers() {
