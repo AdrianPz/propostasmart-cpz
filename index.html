@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>OrçaPro</title>
+<title>PropostaSmart</title>
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap');
@@ -879,7 +879,7 @@ body {
     <!-- TOPO -->
     <div class="topo">
         <div class="topo-texto">
-            <h2 id="tituloApp" style="cursor:default;user-select:none;">Orçamento</h2>
+            <h2 id="tituloApp" style="cursor:default;user-select:none;">PropostaSmart</h2>
             <p class="subtitulo" id="subtituloApp"></p>
         </div>
         <div class="logo-placeholder" id="logoPlaceholder" onclick="toggleLogoPopover(event)">
@@ -1105,6 +1105,28 @@ body {
         <div class="pag-header">
             <span class="pag-titulo">Configurações</span>
             <button class="pag-fechar" onclick="fecharConfig()">✕</button>
+        </div>
+
+        <!-- Nome da empresa -->
+        <div class="cfg-item">
+            <div class="cfg-item-header" onclick="toggleCfg('Empresa')">
+                <div class="cfg-item-label">
+                    <span class="cfg-item-icon">🏢</span>
+                    <span class="cfg-item-titulo">Nome da empresa</span>
+                </div>
+                <span class="cfg-item-seta" id="cfgSetaEmpresa">▼</span>
+            </div>
+            <div class="cfg-item-body" id="cfgBodyEmpresa">
+                <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                    Nome exibido abaixo de "PropostaSmart" no cabeçalho do app e nos documentos gerados.
+                </p>
+                <input class="setup-url-input" id="cfgEmpresaInput" type="text" placeholder="Ex.: Minha Empresa Segurança" style="margin-bottom:10px;">
+                <button class="setup-salvar-btn" onclick="salvarNomeEmpresa()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Salvar nome
+                </button>
+                <div class="setup-status" id="cfgEmpresaStatus"></div>
+            </div>
         </div>
 
         <!-- Banco de dados -->
@@ -2751,7 +2773,19 @@ function salvarMultiplicadores() {
 // ── MODAL CONFIG ──
 let _cfgProdCsv = null, _cfgInfraCsv = null;
 
+function salvarNomeEmpresa() {
+    const nome = document.getElementById('cfgEmpresaInput').value.trim();
+    if (!nome) return;
+    localStorage.setItem('orcapro_empresa', nome);
+    CONFIG.empresa = nome;
+    document.getElementById('subtituloApp').textContent = nome;
+    document.getElementById('cfgEmpresaStatus').textContent = '✓ Nome salvo';
+    setTimeout(() => { document.getElementById('cfgEmpresaStatus').textContent = ''; }, 2000);
+}
+
 function abrirConfig() {
+    document.getElementById('cfgEmpresaInput').value = localStorage.getItem('orcapro_empresa') || CONFIG.empresa || '';
+    document.getElementById('cfgEmpresaStatus').textContent = '';
     document.getElementById('cfgProdUrl').value  = localStorage.getItem('orcapro_prod_url')  || '';
     document.getElementById('cfgInfraUrl').value = localStorage.getItem('orcapro_infra_url') || '';
     document.getElementById('cfgProdStatus').textContent  = localStorage.getItem('orcapro_prod_csv')  ? '✓ Arquivo carregado' : '';
@@ -2937,6 +2971,8 @@ function baixarExemplo(tipo) {
 
 // ── INIT ──
 async function init() {
+    const empresaSalva = localStorage.getItem('orcapro_empresa');
+    if (empresaSalva) CONFIG.empresa = empresaSalva;
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
     const logoSalva = localStorage.getItem('orcapro_logo');
     if (logoSalva)        aplicarLogo(logoSalva);
