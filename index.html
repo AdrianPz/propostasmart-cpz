@@ -1306,6 +1306,10 @@ body {
                     </div>
                 </div>
             </div>
+            <div class="exp-field">
+                <label class="exp-label">Observações (opcional)</label>
+                <textarea class="exp-input" id="expObs" rows="3" placeholder="Condições especiais, itens fora do escopo, avisos..." style="resize:vertical;min-height:72px;"></textarea>
+            </div>
             <div style="display:flex;gap:8px;">
                 <button class="exp-btn" onclick="confirmarExportar()" style="flex:1;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -2202,6 +2206,7 @@ function restaurarEstado() {
             if (ci.data)     document.getElementById('expData').value     = ci.data;
             if (ci.validade) document.getElementById('expValidade').value = ci.validade;
             if (ci.prazo)    document.getElementById('expPrazo').value    = ci.prazo;
+            if (ci.obs)      document.getElementById('expObs').value      = ci.obs;
         }
         if (e.desconto) { _descontoPct = e.desconto; document.getElementById('descontoPct').value = e.desconto; }
         if (e.canais)   { document.getElementById('canaisGravador').value = e.canais; }
@@ -2224,7 +2229,7 @@ function limparOrcamento() {
     document.getElementById("diasTrabalho").value=1;
     document.getElementById("nFuncionarios").value=1;
     _pagModo='avista'; _subAvista='5050'; _nPix=4; _nBoleto=4; _nCartao=4;
-    _clienteInfo={ nome:'', tel:'', email:'', data:'', validade:15, prazo:'2' };
+    _clienteInfo={ nome:'', tel:'', email:'', data:'', validade:15, prazo:'2', obs:'' };
     _descontoPct=0;
     document.getElementById('descontoPct').value=0;
     document.getElementById('descontoEconomia').style.display='none';
@@ -2278,7 +2283,7 @@ function setNBoleto(n)     { _nBoleto   = n;   renderPagamento(); }
 function setNCartao(n)     { _nCartao   = n;   renderPagamento(); }
 
 // ── EXPORTAR ──
-let _clienteInfo = { nome:'', tel:'', email:'', data:'', validade:15, prazo:'2' };
+let _clienteInfo = { nome:'', tel:'', email:'', data:'', validade:15, prazo:'2', obs:'' };
 
 function abrirExportar() {
     const ci = _clienteInfo;
@@ -2286,6 +2291,7 @@ function abrirExportar() {
     if (ci.nome)     document.getElementById('expNome').value     = ci.nome;
     if (ci.tel)      document.getElementById('expTel').value      = ci.tel;
     if (ci.email)    document.getElementById('expEmail').value    = ci.email;
+    if (ci.obs)      document.getElementById('expObs').value      = ci.obs;
     document.getElementById('expValidade').value = ci.validade || p.validade || '15';
     document.getElementById('expPrazo').value    = ci.prazo    || p.prazo    || '2';
     const inputData = document.getElementById('expData');
@@ -2305,9 +2311,10 @@ function confirmarExportar() {
     const data     = document.getElementById('expData').value;
     const validade = document.getElementById('expValidade').value;
     const prazo    = document.getElementById('expPrazo').value || '2';
+    const obs      = document.getElementById('expObs').value.trim();
     if (!nome)  { document.getElementById('expNome').focus();  return; }
     if (!tel)   { document.getElementById('expTel').focus();   return; }
-    _clienteInfo = { nome, tel, email, data, validade, prazo };
+    _clienteInfo = { nome, tel, email, data, validade, prazo, obs };
     salvarEstado();
     salvarNoHistorico(nome);
     fecharExportar();
@@ -2315,7 +2322,7 @@ function confirmarExportar() {
 }
 
 function gerarPDF() {
-    const { nome, tel, email, data, validade, prazo = '2' } = _clienteInfo;
+    const { nome, tel, email, data, validade, prazo = '2', obs = '' } = _clienteInfo;
     const fmtR  = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
     const marca = CONFIG.empresa;
 
@@ -2439,6 +2446,7 @@ function gerarPDF() {
         '{{contato_email}}':     CONFIG.email,
         '{{contato_tel}}':       CONFIG.telefone,
         '{{geradoEm}}':          new Date().toLocaleDateString('pt-BR'),
+        '{{obs_extra}}':         obs ? '<p style="font-size:11px;color:#444;line-height:1.8;margin:8px 0 16px;white-space:pre-wrap;">' + obs.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>' : '',
     };
 
     const nomeArq = 'orcamento-' + nome.replace(/\s+/g, '-').toLowerCase() + '-' + (data || new Date().toISOString().slice(0,10)) + '.pdf';
