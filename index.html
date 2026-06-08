@@ -275,10 +275,12 @@ body {
 
 /* ── ASSINATURA RODAPÉ ── */
 .assinatura-area {
-    display: flex; align-items: center; justify-content: space-between;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
     padding: 20px 16px 8px; max-width: 480px; margin: auto;
 }
 .btn-config {
+    position: absolute; right: 16px;
     width: 38px; height: 38px;
     display: flex; align-items: center; justify-content: center;
     background: var(--surface); border: 1.5px solid var(--border2);
@@ -286,6 +288,57 @@ body {
     transition: border-color 0.15s, color 0.15s;
 }
 .btn-config:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ── MODAL CONFIG ── */
+.cfg-item {
+    border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 8px; overflow: hidden;
+}
+.cfg-item-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; cursor: pointer; user-select: none;
+    transition: background 0.12s;
+}
+.cfg-item-header:hover { background: var(--surface2); }
+.cfg-item-label { display: flex; align-items: center; gap: 10px; }
+.cfg-item-icon { font-size: 18px; }
+.cfg-item-titulo { font-size: 14px; font-weight: 600; color: var(--text); }
+.cfg-item-seta {
+    font-size: 10px; color: var(--muted);
+    transition: transform 0.2s;
+}
+.cfg-item-seta.aberto { transform: rotate(180deg); }
+.cfg-item-body {
+    display: none;
+    padding: 12px 16px 16px;
+    border-top: 1px solid var(--border);
+}
+.cfg-item-body.aberto { display: block; }
+
+/* ── MULTIPLICADORES ── */
+.mult-grid {
+    display: grid;
+    grid-template-columns: auto repeat(3, 1fr);
+    gap: 6px; align-items: center;
+    margin-bottom: 12px;
+}
+.mult-col-header {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; text-align: center; letter-spacing: 0.5px;
+}
+.mult-row-label {
+    font-size: 12px; font-weight: 600; color: var(--label);
+    padding-right: 6px; white-space: nowrap;
+}
+.mult-input {
+    width: 100%; text-align: center; padding: 8px 2px;
+    border: 1.5px solid var(--border2); border-radius: 8px;
+    font-size: 14px; font-weight: 700;
+    background: var(--input-bg); color: var(--text);
+    font-family: inherit; outline: none;
+    transition: border-color 0.15s;
+}
+.mult-input:focus { border-color: var(--blue); }
 
 /* ── TIPO PROJETO ── */
 .tipos-grid {
@@ -1041,9 +1094,132 @@ body {
 <!-- ASSINATURA CPZ + CONFIG -->
 <div class="assinatura-area">
     <img src="cpz-assinatura.png" alt="CPZ Digital" style="width:130px;height:auto;background:white;border-radius:8px;padding:4px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-    <button class="btn-config" onclick="abrirConfigBanco()" title="Configurações">
+    <button class="btn-config" onclick="abrirConfig()" title="Configurações">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
+</div>
+
+<!-- MODAL CONFIGURAÇÕES -->
+<div class="pag-overlay" id="configOverlay">
+    <div class="pag-modal">
+        <div class="pag-header">
+            <span class="pag-titulo">Configurações</span>
+            <button class="pag-fechar" onclick="fecharConfig()">✕</button>
+        </div>
+
+        <!-- Banco de dados -->
+        <div class="cfg-item">
+            <div class="cfg-item-header" onclick="toggleCfg('Banco')">
+                <div class="cfg-item-label">
+                    <span class="cfg-item-icon">🗄️</span>
+                    <span class="cfg-item-titulo">Banco de dados</span>
+                </div>
+                <span class="cfg-item-seta" id="cfgSetaBanco">▼</span>
+            </div>
+            <div class="cfg-item-body" id="cfgBodyBanco">
+                <div class="setup-secao" style="margin-bottom:12px;">
+                    <div class="setup-secao-titulo">Produtos</div>
+                    <div class="setup-row">
+                        <input class="setup-url-input" id="cfgProdUrl" type="url" placeholder="Link do Google Sheets (CSV)...">
+                        <button class="setup-icon-btn" onclick="document.getElementById('cfgProdFile').click()" title="Enviar arquivo CSV">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </button>
+                        <span class="setup-example-link" onclick="baixarExemplo('prod')" title="Baixar CSV de exemplo">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Exemplo
+                        </span>
+                    </div>
+                    <input type="file" id="cfgProdFile" accept=".csv,text/csv" style="display:none" onchange="handleCfgFile(this,'prod')">
+                    <div class="setup-status" id="cfgProdStatus"></div>
+                </div>
+                <div class="setup-secao" style="margin-bottom:12px;">
+                    <div class="setup-secao-titulo">Infraestrutura</div>
+                    <div class="setup-row">
+                        <input class="setup-url-input" id="cfgInfraUrl" type="url" placeholder="Link do Google Sheets (CSV)...">
+                        <button class="setup-icon-btn" onclick="document.getElementById('cfgInfraFile').click()" title="Enviar arquivo CSV">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </button>
+                        <span class="setup-example-link" onclick="baixarExemplo('infra')" title="Baixar CSV de exemplo">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Exemplo
+                        </span>
+                    </div>
+                    <input type="file" id="cfgInfraFile" accept=".csv,text/csv" style="display:none" onchange="handleCfgFile(this,'infra')">
+                    <div class="setup-status" id="cfgInfraStatus"></div>
+                </div>
+                <button class="setup-salvar-btn" onclick="salvarConfigBanco()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Salvar banco de dados
+                </button>
+            </div>
+        </div>
+
+        <!-- Logo -->
+        <div class="cfg-item">
+            <div class="cfg-item-header" onclick="toggleCfg('Logo')">
+                <div class="cfg-item-label">
+                    <span class="cfg-item-icon">🖼️</span>
+                    <span class="cfg-item-titulo">Logo da empresa</span>
+                </div>
+                <span class="cfg-item-seta" id="cfgSetaLogo">▼</span>
+            </div>
+            <div class="cfg-item-body" id="cfgBodyLogo">
+                <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                    Recomendado: <strong>130 × 34 px</strong>, PNG ou JPG com fundo branco ou transparente.
+                </p>
+                <button class="setup-file-btn" style="width:100%;" onclick="document.getElementById('cfgLogoFile').click()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar nova logo
+                </button>
+                <input type="file" id="cfgLogoFile" accept="image/*" style="display:none" onchange="handleCfgFile(this,'logo')">
+                <div class="setup-status" id="cfgLogoStatus"></div>
+            </div>
+        </div>
+
+        <!-- Multiplicadores -->
+        <div class="cfg-item">
+            <div class="cfg-item-header" onclick="toggleCfg('Mult')">
+                <div class="cfg-item-label">
+                    <span class="cfg-item-icon">✖️</span>
+                    <span class="cfg-item-titulo">Multiplicadores de preço</span>
+                </div>
+                <span class="cfg-item-seta" id="cfgSetaMult">▼</span>
+            </div>
+            <div class="cfg-item-body" id="cfgBodyMult">
+                <div class="mult-grid">
+                    <div></div>
+                    <div class="mult-col-header">Fácil</div>
+                    <div class="mult-col-header">Médio</div>
+                    <div class="mult-col-header">Difícil</div>
+                    <div class="mult-row-label">Analógica</div>
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_analogica_facil">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_analogica_medio">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_analogica_dificil">
+                    <div class="mult-row-label">IP</div>
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_ip_facil">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_ip_medio">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_ip_dificil">
+                    <div class="mult-row-label">Wi-Fi</div>
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_wifi_facil">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_wifi_medio">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_wifi_dificil">
+                    <div class="mult-row-label">Automação</div>
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_automacao_facil">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_automacao_medio">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_automacao_dificil">
+                    <div class="mult-row-label">Sensores</div>
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_sensores_facil">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_sensores_medio">
+                    <input class="mult-input" type="number" step="0.1" min="1" id="mult_sensores_dificil">
+                </div>
+                <button class="setup-salvar-btn" onclick="salvarMultiplicadores()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Salvar multiplicadores
+                </button>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <!-- BOTÕES FIXOS -->
@@ -1464,7 +1640,7 @@ function calcular() {
     let nivel=qtdCameras>=33?"dificil":qtdCameras>=9?"medio":qtdCameras>=1?"facil":"";
     cam.className="cameras-badge"+(nivel?" "+nivel:"");
 
-    const tS={analogica:{facil:1.6,medio:1.7,dificil:1.7},ip:{facil:1.7,medio:1.9,dificil:2.0},wifi:{facil:2.0,medio:2.1,dificil:2.2},automacao:{facil:2.2,medio:2.4,dificil:2.7},sensores:{facil:2.0,medio:2.2,dificil:2.3}};
+    const tS=getMultiplicadores();
     const mult=(tS[tipo]||tS.analogica)[nivel||"facil"];
 
     const diasT=Number(document.getElementById("diasTrabalho").value)||0;
@@ -1651,6 +1827,9 @@ document.getElementById('pagOverlay').addEventListener('click', function(e) {
 });
 document.getElementById('expOverlay').addEventListener('click', function(e) {
     if (e.target === this) fecharExportar();
+});
+document.getElementById('configOverlay').addEventListener('click', function(e) {
+    if (e.target === this) fecharConfig();
 });
 
 function setPagModo(modo) {
@@ -2529,6 +2708,125 @@ function renderPagamento() {
 
 
     document.getElementById('pagConteudo').innerHTML = html;
+}
+
+// ── MULTIPLICADORES ──
+const MULT_DEFAULT = {
+    analogica: {facil:1.6, medio:1.7, dificil:1.7},
+    ip:        {facil:1.7, medio:1.9, dificil:2.0},
+    wifi:      {facil:2.0, medio:2.1, dificil:2.2},
+    automacao: {facil:2.2, medio:2.4, dificil:2.7},
+    sensores:  {facil:2.0, medio:2.2, dificil:2.3}
+};
+
+function getMultiplicadores() {
+    try { const s=localStorage.getItem('orcapro_multiplicadores'); return s?JSON.parse(s):MULT_DEFAULT; }
+    catch { return MULT_DEFAULT; }
+}
+
+function preencherMultiplicadores() {
+    const tS = getMultiplicadores();
+    ['analogica','ip','wifi','automacao','sensores'].forEach(t =>
+        ['facil','medio','dificil'].forEach(n => {
+            const el = document.getElementById('mult_' + t + '_' + n);
+            if (el) el.value = tS[t][n];
+        })
+    );
+}
+
+function salvarMultiplicadores() {
+    const tS = {};
+    ['analogica','ip','wifi','automacao','sensores'].forEach(t => {
+        tS[t] = {};
+        ['facil','medio','dificil'].forEach(n => {
+            const v = parseFloat(document.getElementById('mult_' + t + '_' + n).value);
+            tS[t][n] = isNaN(v) ? MULT_DEFAULT[t][n] : v;
+        });
+    });
+    localStorage.setItem('orcapro_multiplicadores', JSON.stringify(tS));
+    calcular();
+    mostrarToast('Multiplicadores salvos!');
+}
+
+// ── MODAL CONFIG ──
+let _cfgProdCsv = null, _cfgInfraCsv = null;
+
+function abrirConfig() {
+    document.getElementById('cfgProdUrl').value  = localStorage.getItem('orcapro_prod_url')  || '';
+    document.getElementById('cfgInfraUrl').value = localStorage.getItem('orcapro_infra_url') || '';
+    document.getElementById('cfgProdStatus').textContent  = localStorage.getItem('orcapro_prod_csv')  ? '✓ Arquivo carregado' : '';
+    document.getElementById('cfgInfraStatus').textContent = localStorage.getItem('orcapro_infra_csv') ? '✓ Arquivo carregado' : '';
+    document.getElementById('cfgLogoStatus').textContent  = localStorage.getItem('orcapro_logo') ? '✓ Logo carregada' : '';
+    _cfgProdCsv = null; _cfgInfraCsv = null;
+    document.getElementById('configOverlay').classList.add('aberto');
+    document.querySelector('.fab-area').style.display = 'none';
+}
+
+function fecharConfig() {
+    document.getElementById('configOverlay').classList.remove('aberto');
+    document.querySelector('.fab-area').style.display = '';
+}
+
+function toggleCfg(secao) {
+    const body = document.getElementById('cfgBody' + secao);
+    const seta = document.getElementById('cfgSeta' + secao);
+    const abrindo = !body.classList.contains('aberto');
+    body.classList.toggle('aberto', abrindo);
+    seta.classList.toggle('aberto', abrindo);
+    if (abrindo && secao === 'Mult') preencherMultiplicadores();
+}
+
+function handleCfgFile(input, tipo) {
+    const file = input.files[0];
+    if (!file) return;
+    if (tipo === 'logo') {
+        const r = new FileReader();
+        r.onload = ev => {
+            aplicarLogo(ev.target.result);
+            localStorage.setItem('orcapro_logo', ev.target.result);
+            document.getElementById('cfgLogoStatus').textContent = '✓ ' + file.name;
+            mostrarToast('Logo atualizada!');
+        };
+        r.readAsDataURL(file);
+        return;
+    }
+    const r = new FileReader();
+    r.onload = ev => {
+        if (tipo === 'prod') {
+            _cfgProdCsv = ev.target.result;
+            document.getElementById('cfgProdStatus').textContent = '✓ ' + file.name;
+            document.getElementById('cfgProdUrl').value = '';
+        } else {
+            _cfgInfraCsv = ev.target.result;
+            document.getElementById('cfgInfraStatus').textContent = '✓ ' + file.name;
+            document.getElementById('cfgInfraUrl').value = '';
+        }
+    };
+    r.readAsText(file);
+}
+
+async function salvarConfigBanco() {
+    const prodUrl  = document.getElementById('cfgProdUrl').value.trim();
+    const infraUrl = document.getElementById('cfgInfraUrl').value.trim();
+    if (_cfgProdCsv) {
+        localStorage.setItem('orcapro_prod_csv', _cfgProdCsv);
+        localStorage.removeItem('orcapro_prod_url');
+    } else if (prodUrl) {
+        localStorage.setItem('orcapro_prod_url', prodUrl);
+        localStorage.removeItem('orcapro_prod_csv');
+    }
+    if (_cfgInfraCsv) {
+        localStorage.setItem('orcapro_infra_csv', _cfgInfraCsv);
+        localStorage.removeItem('orcapro_infra_url');
+    } else if (infraUrl) {
+        localStorage.setItem('orcapro_infra_url', infraUrl);
+        localStorage.removeItem('orcapro_infra_csv');
+    }
+    produtos = []; itensInfra = [];
+    await carregarBanco();
+    document.querySelectorAll('.item-produto .item-busca-wrapper').forEach(w => w.setOpcoes && w.setOpcoes(opcoesParaProdutos()));
+    document.querySelectorAll('.item-infra .item-busca-wrapper').forEach(w => w.setOpcoes && w.setOpcoes(opcoesParaInfra()));
+    mostrarToast('Banco de dados atualizado!');
 }
 
 // ── SETUP BANCO ──
