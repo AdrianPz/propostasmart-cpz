@@ -521,6 +521,20 @@ body {
 }
 .desconto-pct { color: rgba(255,255,255,0.65); font-size: 13px; }
 .desconto-economia { font-size: 11px; font-weight: 700; color: var(--ok-text); background: var(--ok); border-radius: 7px; padding: 3px 8px; white-space: nowrap; }
+.margem-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; margin-top: 10px; padding-top: 10px;
+    border-top: 1px dashed var(--border2);
+}
+.margem-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+.margem-badge {
+    font-size: 12px; font-weight: 700; padding: 3px 10px;
+    border-radius: 7px; white-space: nowrap;
+}
+.margem-badge.ok   { color: var(--ok-text);   background: var(--ok); }
+.margem-badge.warn { color: var(--warn-text);  background: var(--warn); }
+.margem-badge.bad  { color: var(--danger-text);background: var(--danger); }
+.margem-lucro { font-size: 12px; color: var(--muted); }
 
 /* ── ITENS ── */
 .item-card {
@@ -1229,6 +1243,11 @@ body {
             <span id="descontoEconomia" class="desconto-economia" style="display:none;"></span>
             <input type="number" id="descontoPct" class="desconto-input" min="0" max="50" value="0" oninput="aplicarDesconto()">
             <span class="desconto-pct">%</span>
+        </div>
+        <div class="margem-row" id="margemRow" style="display:none;">
+            <span class="margem-label">Margem estimada</span>
+            <span class="margem-lucro" id="margemLucro"></span>
+            <span class="margem-badge" id="margemBadge"></span>
         </div>
     </div>
 
@@ -2076,8 +2095,24 @@ function aplicarDesconto() {
         document.getElementById('descontoEconomia').style.display = 'none';
     }
 
+    atualizarMargem(desc);
+
     clearTimeout(_saveTimer);
     _saveTimer = setTimeout(salvarEstado, 600);
+}
+
+function atualizarMargem(venda) {
+    const row    = document.getElementById('margemRow');
+    const badge  = document.getElementById('margemBadge');
+    const lucroEl= document.getElementById('margemLucro');
+    if (!venda) { row.style.display = 'none'; return; }
+    const custo = (_pag.totalProd || 0) + (_pag.totalInfra || 0) + (_pag.desl || 0) + (_pag.diarias || 0);
+    const lucro = venda - custo;
+    const pct   = venda > 0 ? (lucro / venda) * 100 : 0;
+    row.style.display = '';
+    lucroEl.textContent = fmt(lucro);
+    badge.textContent   = pct.toFixed(1) + '%';
+    badge.className     = 'margem-badge ' + (pct >= 30 ? 'ok' : pct >= 15 ? 'warn' : 'bad');
 }
 
 function calcular() {
