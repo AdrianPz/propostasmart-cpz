@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>PropostaSmart</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0055b3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PropostaSmart">
+<link rel="apple-touch-icon" href="icon.svg">
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap');
@@ -3567,6 +3574,9 @@ function fecharBoasVindas() {
 }
 
 async function init() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
     const empresaSalva = localStorage.getItem('orcapro_empresa');
     if (empresaSalva) CONFIG.empresa = empresaSalva;
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
