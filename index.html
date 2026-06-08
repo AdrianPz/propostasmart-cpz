@@ -1140,10 +1140,6 @@ body {
             <h2 id="tituloApp" style="cursor:default;user-select:none;">PropostaSmart</h2>
             <p class="subtitulo" id="subtituloApp"></p>
         </div>
-        <button class="auth-pill" id="authPill" onclick="abrirAuth()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span id="authPillLabel">Entrar</span>
-        </button>
         <div class="logo-placeholder" id="logoPlaceholder" onclick="toggleLogoPopover(event)">
             <span id="logoLabel">Logo</span>
             <img id="logoImg" style="display:none;height:34px;width:auto;border-radius:6px;background:#fff;padding:4px 8px;pointer-events:none;" alt="">
@@ -3608,6 +3604,13 @@ function abrirConfig() {
     document.getElementById('cfgGarantia').value        = p.garantia || '6 meses';
     document.getElementById('cfgPadroesStatus').textContent = '';
     _cfgProdCsv = null; _cfgInfraCsv = null;
+    // Abre seção Conta automaticamente se não estiver logado
+    if (!_supaUser) {
+        const body = document.getElementById('cfgBodyConta');
+        const seta = document.getElementById('cfgSetaConta');
+        body.classList.add('aberto');
+        seta.classList.add('aberto');
+    }
     document.getElementById('configOverlay').classList.add('aberto');
     document.querySelector('.fab-area').style.display = 'none';
 }
@@ -3802,24 +3805,18 @@ async function carregarPerfil(user) {
 }
 
 function atualizarAuthUI() {
-    const pill     = document.getElementById('authPill');
-    const pillLbl  = document.getElementById('authPillLabel');
-    const logado   = document.getElementById('authLogado');
-    const deslog   = document.getElementById('authDeslogado');
+    const logado = document.getElementById('authLogado');
+    const deslog = document.getElementById('authDeslogado');
     if (_supaUser && _supaEmpresa) {
         const nome = _supaProfile?.nome || _supaUser.email;
-        pillLbl.textContent = nome.split(' ')[0];
-        pill.classList.add('logado');
         document.getElementById('authUserNome').textContent    = nome;
         document.getElementById('authUserEmpresa').textContent = _supaEmpresa.nome;
         document.getElementById('authUserCodigo').textContent  = 'Código da empresa: ' + _supaEmpresa.codigo + ' — clique para copiar';
-        logado.style.display  = 'flex';
-        deslog.style.display  = 'none';
+        logado.style.display = 'flex';
+        deslog.style.display = 'none';
     } else {
-        pillLbl.textContent = 'Entrar';
-        pill.classList.remove('logado');
-        logado.style.display  = 'none';
-        deslog.style.display  = 'flex';
+        logado.style.display = 'none';
+        deslog.style.display = 'flex';
     }
 }
 
