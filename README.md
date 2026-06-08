@@ -23,6 +23,39 @@ Direto no celular. Sem instalação. Com histórico em nuvem e sincronização d
 
 ---
 
+## 📱 Veja o app em ação
+
+<div align="center">
+
+<table>
+<tr>
+<td align="center" width="20%">
+<img src="screenshots/01-tela-principal.png" width="160" alt="Tela principal" /><br>
+<sub><b>Tela principal</b></sub>
+</td>
+<td align="center" width="20%">
+<img src="screenshots/02-resultado.png" width="160" alt="Resultado com margem" /><br>
+<sub><b>Resultado e margem</b></sub>
+</td>
+<td align="center" width="20%">
+<img src="screenshots/03-pagamento.png" width="160" alt="Fluxo de caixa" /><br>
+<sub><b>Fluxo de caixa</b></sub>
+</td>
+<td align="center" width="20%">
+<img src="screenshots/04-exportar.png" width="160" alt="Exportar proposta" /><br>
+<sub><b>Dados do cliente</b></sub>
+</td>
+<td align="center" width="20%">
+<img src="screenshots/05-historico.png" width="160" alt="Histórico de propostas" /><br>
+<sub><b>Histórico</b></sub>
+</td>
+</tr>
+</table>
+
+</div>
+
+---
+
 ## O problema que resolvemos
 
 Vendedores de segurança eletrônica perdem tempo calculando orçamentos na mão, em planilhas desorganizadas ou usando papel. O resultado: propostas inconsistentes, erros de precificação e oportunidades perdidas.
