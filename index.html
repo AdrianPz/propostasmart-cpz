@@ -852,7 +852,7 @@ body {
                 <p class="card-setup-titulo">Banco de dados</p>
                 <p class="card-setup-sub">Conecte sua planilha de produtos e infraestrutura</p>
             </div>
-            <button class="card-setup-fechar" onclick="fecharSetupBanco()">✕</button>
+            <button class="card-setup-fechar" id="setupFecharBtn" style="display:none" onclick="fecharSetupBanco()">✕</button>
         </div>
 
         <div class="setup-secao">
@@ -2536,8 +2536,8 @@ let _setupProdCsv  = null;
 let _setupInfraCsv = null;
 
 function fecharSetupBanco() {
-    localStorage.setItem('orcapro_banco_ok', '1');
     document.getElementById('cardSetupBanco').style.display = 'none';
+    document.getElementById('setupFecharBtn').style.display = 'none';
 }
 
 function abrirConfigBanco() {
@@ -2547,6 +2547,7 @@ function abrirConfigBanco() {
     document.getElementById('setupProdStatus').textContent  = localStorage.getItem('orcapro_prod_csv')  ? '✓ Arquivo carregado' : '';
     document.getElementById('setupInfraStatus').textContent = localStorage.getItem('orcapro_infra_csv') ? '✓ Arquivo carregado' : '';
     _setupProdCsv = null; _setupInfraCsv = null;
+    document.getElementById('setupFecharBtn').style.display = '';
     card.style.display = '';
     card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
