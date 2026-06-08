@@ -1,9 +1,9 @@
-const CACHE = 'propostasmart-v1';
+const CACHE = 'propostasmart-v2';
 const ASSETS = [
     '/propostasmart-cpz/',
     '/propostasmart-cpz/index.html',
     '/propostasmart-cpz/template-pdf.html',
-    '/propostasmart-cpz/icon.svg',
+    '/propostasmart-cpz/logo.png',
 ];
 
 self.addEventListener('install', e => {

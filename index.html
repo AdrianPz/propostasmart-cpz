@@ -721,11 +721,11 @@ body {
 
 /* ── RESULTADO ── */
 .resultado-card {
-    background: var(--resultado-bg, linear-gradient(135deg, #0a5fd4 0%, #0A84FF 60%, #38a1ff 100%));
+    background: linear-gradient(135deg, #0a5fd4 0%, #0A84FF 60%, #38a1ff 100%);
     border-radius: 18px;
     padding: 18px;
     margin-bottom: 10px;
-    box-shadow: var(--resultado-shdw, 0 8px 28px rgba(10,132,255,0.35));
+    box-shadow: 0 8px 28px rgba(10,132,255,0.35);
     border: 1px solid rgba(255,255,255,0.12);
 }
 .resultado-label {
@@ -1065,19 +1065,6 @@ body {
 }
 
 /* ── AUTH ── */
-.auth-pill {
-    display: flex; align-items: center; gap: 7px;
-    padding: 6px 12px; border-radius: 50px;
-    background: var(--blue); border: 1.5px solid var(--blue);
-    cursor: pointer; font-size: 12px; font-weight: 700; color: #fff;
-    transition: filter 0.15s;
-    white-space: nowrap;
-}
-.auth-pill:hover { filter: brightness(0.9); }
-.auth-pill.logado { background: var(--ok); border-color: var(--ok-text); color: var(--ok-text); filter: none; }
-.auth-pill.logado:hover { filter: brightness(0.95); }
-.auth-pill svg { flex-shrink: 0; }
-
 .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 18px; }
 .auth-tab {
     padding: 10px; text-align: center; font-size: 13px; font-weight: 700;
@@ -1157,7 +1144,7 @@ body {
     </div>
 
     <!-- BANNER ATUALIZAÇÃO DE PREÇOS -->
-    <div id="bannerAtualizacao" style="display:none;background:var(--warn);border:1.5px solid var(--warn-text);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:none;">
+    <div id="bannerAtualizacao" style="display:none;background:var(--warn);border:1.5px solid var(--warn-text);border-radius:14px;padding:12px 14px;margin-bottom:10px;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
             <div>
                 <div style="font-size:13px;font-weight:700;color:var(--warn-text);">Tabela de preços atualizada</div>
@@ -1676,7 +1663,7 @@ body {
                 <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.6;">
                     Recomendado: <strong>130 × 34 px</strong>, PNG ou JPG com fundo branco ou transparente.
                 </p>
-                <button class="setup-file-btn" style="width:100%;" onclick="document.getElementById('cfgLogoFile').click()">
+                <button class="logo-upload-btn" style="width:100%;" onclick="document.getElementById('cfgLogoFile').click()">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     Enviar nova logo
                 </button>
@@ -1843,9 +1830,6 @@ const CONFIG = {
 };
 // ─────────────────────────────────────────────────────────────────────────
 
-const URL_PRODUTOS = CONFIG.urlProdutos;
-const URL_INFRA    = CONFIG.urlInfra;
-
 let produtos   = [];
 let itensInfra = [];
 
@@ -1935,7 +1919,7 @@ let _csvNovosInfra = null;
 async function carregarBanco() {
     // Produtos
     const csvProd = localStorage.getItem('orcapro_prod_csv');
-    const urlProd = localStorage.getItem('orcapro_prod_url') || URL_PRODUTOS;
+    const urlProd = localStorage.getItem('orcapro_prod_url') || '';
     if (csvProd) {
         const l = parseCsv(csvProd, true); if (l.length) produtos = l;
     } else if (urlProd) {
@@ -1951,7 +1935,7 @@ async function carregarBanco() {
     }
     // Infra
     const csvInfra = localStorage.getItem('orcapro_infra_csv');
-    const urlInfra = localStorage.getItem('orcapro_infra_url') || URL_INFRA;
+    const urlInfra = localStorage.getItem('orcapro_infra_url') || '';
     if (csvInfra) {
         const l = parseCsv(csvInfra, false); if (l.length) itensInfra = l;
     } else if (urlInfra) {
@@ -1968,8 +1952,8 @@ async function carregarBanco() {
 }
 
 async function verificarAtualizacaoBanco() {
-    const urlProd  = localStorage.getItem('orcapro_prod_url')  || URL_PRODUTOS;
-    const urlInfra = localStorage.getItem('orcapro_infra_url') || URL_INFRA;
+    const urlProd  = localStorage.getItem('orcapro_prod_url')  || '';
+    const urlInfra = localStorage.getItem('orcapro_infra_url') || '';
     const hashProd  = localStorage.getItem('orcapro_prod_hash');
     const hashInfra = localStorage.getItem('orcapro_infra_hash');
     if (!urlProd && !urlInfra) return;
@@ -2118,7 +2102,7 @@ function opcoesParaInfra() {
 }
 
 // ── ADICIONAR PRODUTO ──
-function adicionarProduto(codigo, quantidade, precoManual) {
+function adicionarProduto(codigo, quantidade, precoManual, recalcular = true) {
     const lista=document.getElementById("listaProdutos");
     const card=document.createElement("div");
     card.className="item-card item-produto";
@@ -2157,7 +2141,7 @@ function adicionarProduto(codigo, quantidade, precoManual) {
         preco.dataset.manual = "1";
     }
     renumerarProd();
-    atualizarPrecoItem(card,true);
+    atualizarPrecoItem(card, recalcular);
 }
 
 function atualizarPrecoItem(card, recalcular) {
@@ -2184,7 +2168,7 @@ function renumerarProd() {
 }
 
 // ── ADICIONAR INFRA ──
-function adicionarInfra(nome, quantidade, precoManual) {
+function adicionarInfra(nome, quantidade, precoManual, recalcular = true) {
     const lista=document.getElementById("listaInfra");
     const card=document.createElement("div");
     card.className="item-card item-infra";
@@ -2221,7 +2205,7 @@ function adicionarInfra(nome, quantidade, precoManual) {
         preco.dataset.valorUnit = precoManual;
         preco.dataset.manual = "1";
     }
-    atualizarPrecoInfra(card,true);
+    atualizarPrecoInfra(card, recalcular);
 }
 
 function atualizarPrecoInfra(card, recalcular) {
@@ -2284,8 +2268,7 @@ let _gravarTipo   = 'continua';
 
 function setDiasArmazena(btn, dias) {
     _diasArmazena = dias;
-    document.querySelectorAll('.armazena-dias').forEach(grupo =>
-        grupo.querySelectorAll('.armazena-dia-btn').forEach(b => b.classList.remove('ativo')));
+    btn.closest('.armazena-dias').querySelectorAll('.armazena-dia-btn').forEach(b => b.classList.remove('ativo'));
     btn.classList.add('ativo');
     calcArmazenamento();
 }
@@ -2548,10 +2531,10 @@ function restaurarEstado() {
         }
         if (e.desconto) { _descontoPct = e.desconto; document.getElementById('descontoPct').value = e.desconto; }
         if (e.canais)   { document.getElementById('canaisGravador').value = e.canais; }
-        if (e.produtos&&e.produtos.length) e.produtos.forEach(p=>adicionarProduto(p.codigo,p.qtd,p.precoManual));
-        else adicionarProduto();
-        if (e.infra&&e.infra.length) e.infra.forEach(i=>adicionarInfra(i.nome,i.qtd,i.precoManual));
-        else adicionarInfra();
+        if (e.produtos&&e.produtos.length) e.produtos.forEach(p=>adicionarProduto(p.codigo,p.qtd,p.precoManual,false));
+        else adicionarProduto('',0,null,false);
+        if (e.infra&&e.infra.length) e.infra.forEach(i=>adicionarInfra(i.nome,i.qtd,i.precoManual,false));
+        else adicionarInfra('',0,null,false);
         return true;
     } catch(err) { console.error(err); return false; }
 }
@@ -2848,10 +2831,11 @@ async function exportarXLS() {
     const data     = document.getElementById('expData').value;
     const validade = document.getElementById('expValidade').value;
     const prazo    = document.getElementById('expPrazo').value || '2';
+    const obs      = document.getElementById('expObs').value.trim();
     if (!nome) { document.getElementById('expNome').focus(); return; }
     if (!tel)  { document.getElementById('expTel').focus();  return; }
 
-    _clienteInfo = { nome, tel, email, data, validade, prazo };
+    _clienteInfo = { nome, tel, email, data, validade, prazo, obs };
     salvarEstado();
     fecharExportar();
     mostrarToast('Gerando planilha...');
@@ -3679,6 +3663,7 @@ async function salvarConfigBanco() {
         localStorage.setItem('orcapro_infra_url', infraUrl);
         localStorage.removeItem('orcapro_infra_csv');
     }
+    localStorage.setItem('orcapro_banco_ok', '1');
     produtos = []; itensInfra = [];
     await carregarBanco();
     document.querySelectorAll('.item-produto .item-busca-wrapper').forEach(w => w.setOpcoes && w.setOpcoes(opcoesParaProdutos()));
@@ -3693,18 +3678,6 @@ let _setupInfraCsv = null;
 function fecharSetupBanco() {
     document.getElementById('cardSetupBanco').style.display = 'none';
     document.getElementById('setupFecharBtn').style.display = 'none';
-}
-
-function abrirConfigBanco() {
-    const card = document.getElementById('cardSetupBanco');
-    document.getElementById('setupProdUrl').value  = localStorage.getItem('orcapro_prod_url')  || '';
-    document.getElementById('setupInfraUrl').value = localStorage.getItem('orcapro_infra_url') || '';
-    document.getElementById('setupProdStatus').textContent  = localStorage.getItem('orcapro_prod_csv')  ? '✓ Arquivo carregado' : '';
-    document.getElementById('setupInfraStatus').textContent = localStorage.getItem('orcapro_infra_csv') ? '✓ Arquivo carregado' : '';
-    _setupProdCsv = null; _setupInfraCsv = null;
-    document.getElementById('setupFecharBtn').style.display = '';
-    card.style.display = '';
-    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function handleSetupFile(input, tipo) {
@@ -3745,6 +3718,7 @@ async function salvarSetupBanco() {
         localStorage.removeItem('orcapro_infra_csv');
     }
 
+    localStorage.setItem('orcapro_banco_ok', '1');
     fecharSetupBanco();
     produtos = []; itensInfra = [];
     await carregarBanco();
@@ -3963,10 +3937,10 @@ async function salvarNoHistorico(autoNome) {
 
 async function renderHistorico() {
     const lista = document.getElementById('histLista');
-    lista.innerHTML = '<div class="hist-empty">Carregando...</div>';
 
     let itens = [];
     if (_supaUser && _supaEmpresa) {
+        lista.innerHTML = '<div class="hist-empty">Carregando...</div>';
         const { data } = await supa.from('propostas')
             .select('*')
             .eq('empresa_id', _supaEmpresa.id)
@@ -4033,6 +4007,7 @@ async function reabrirProposta(id, cloud) {
 }
 
 async function excluirProposta(id, cloud) {
+    if (!confirm('Excluir esta proposta do histórico?')) return;
     if (cloud) {
         await supa.from('propostas').delete().eq('id', id);
     } else {
