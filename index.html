@@ -764,6 +764,29 @@ body {
 }
 .add-row button:active { filter: brightness(0.9); transform: scale(0.98); }
 
+/* ── BOAS-VINDAS ── */
+.bv-secao {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+}
+.bv-secao-titulo {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--blue); margin-bottom: 10px;
+}
+.bv-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+}
+.bv-item:first-of-type { border-top: none; padding-top: 0; }
+.bv-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.bv-item strong { font-size: 13px; color: var(--text); display: block; margin-bottom: 2px; }
+.bv-item p { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.55; }
+.bv-item code { font-size: 11px; background: var(--border2); padding: 1px 5px; border-radius: 4px; color: var(--text); }
+
 /* ── MODAL PAGAMENTO ── */
 .pag-overlay {
     position: fixed; inset: 0;
@@ -1123,6 +1146,56 @@ body {
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- MODAL BOAS-VINDAS -->
+<div class="pag-overlay" id="boasVindasOverlay" style="z-index:400;">
+    <div class="pag-modal" style="max-width:440px;">
+        <div style="text-align:center;padding:8px 0 16px;">
+            <div style="font-size:32px;margin-bottom:8px;">👋</div>
+            <div style="font-size:20px;font-weight:700;color:var(--text);">Bem-vindo ao PropostaSmart</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;">Seu gerador de propostas para sistemas de segurança</div>
+        </div>
+
+        <div class="bv-secao">
+            <div class="bv-secao-titulo">🚀 Para começar</div>
+            <div class="bv-item">
+                <span class="bv-icon">📊</span>
+                <div>
+                    <strong>Conecte seu banco de dados</strong>
+                    <p>Cole o link da sua planilha Google Sheets (publicada como CSV) ou envie um arquivo <code>.csv</code> com seus produtos e itens de infraestrutura. Um card de configuração aparece logo abaixo.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bv-secao">
+            <div class="bv-secao-titulo">⚙️ O que você pode configurar</div>
+            <div class="bv-item">
+                <span class="bv-icon">🏢</span>
+                <div><strong>Nome da empresa</strong><p>Aparece no subtítulo do app e em todos os documentos gerados.</p></div>
+            </div>
+            <div class="bv-item">
+                <span class="bv-icon">🖼️</span>
+                <div><strong>Logo</strong><p>Enviada do dispositivo, fica salva no app. Recomendado: 130 × 34 px.</p></div>
+            </div>
+            <div class="bv-item">
+                <span class="bv-icon">💰</span>
+                <div><strong>Valores de serviço</strong><p>Diária por funcionário e custo de deslocamento por dia. Base do cálculo de mão de obra.</p></div>
+            </div>
+            <div class="bv-item">
+                <span class="bv-icon">✖️</span>
+                <div><strong>Multiplicadores de preço</strong><p>Fator aplicado sobre os equipamentos conforme tipo e dificuldade do projeto.</p></div>
+            </div>
+            <div class="bv-item">
+                <span class="bv-icon">📋</span>
+                <div><strong>Padrões da proposta</strong><p>Prazo de execução padrão, validade e garantia oferecida — pré-preenchidos ao exportar.</p></div>
+            </div>
+        </div>
+
+        <button class="setup-salvar-btn" style="width:100%;margin-top:8px;font-size:15px;padding:14px;" onclick="fecharBoasVindas()">
+            Entendi, vamos começar!
+        </button>
+    </div>
+</div>
 
 <!-- MODAL PAGAMENTO -->
 <div class="pag-overlay" id="pagOverlay">
@@ -3282,6 +3355,11 @@ function baixarExemplo(tipo) {
 }
 
 // ── INIT ──
+function fecharBoasVindas() {
+    localStorage.setItem('orcapro_boas_vindas', '1');
+    document.getElementById('boasVindasOverlay').classList.remove('aberto');
+}
+
 async function init() {
     const empresaSalva = localStorage.getItem('orcapro_empresa');
     if (empresaSalva) CONFIG.empresa = empresaSalva;
@@ -3291,6 +3369,9 @@ async function init() {
     else if (CONFIG.logo) aplicarLogo(CONFIG.logo);
     if (!localStorage.getItem('orcapro_banco_ok')) {
         document.getElementById('cardSetupBanco').style.display = '';
+    }
+    if (!localStorage.getItem('orcapro_boas_vindas')) {
+        document.getElementById('boasVindasOverlay').classList.add('aberto');
     }
     await carregarBanco();
     if (!restaurarEstado()) {
