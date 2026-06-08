@@ -1067,13 +1067,14 @@ body {
 .auth-pill {
     display: flex; align-items: center; gap: 7px;
     padding: 6px 12px; border-radius: 50px;
-    background: var(--surface2); border: 1.5px solid var(--border2);
-    cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted);
-    transition: border-color 0.15s, color 0.15s;
+    background: var(--blue); border: 1.5px solid var(--blue);
+    cursor: pointer; font-size: 12px; font-weight: 700; color: #fff;
+    transition: filter 0.15s;
     white-space: nowrap;
 }
-.auth-pill:hover { border-color: var(--blue); color: var(--blue); }
-.auth-pill.logado { color: var(--ok-text); border-color: var(--ok-text); background: var(--ok); }
+.auth-pill:hover { filter: brightness(0.9); }
+.auth-pill.logado { background: var(--ok); border-color: var(--ok-text); color: var(--ok-text); filter: none; }
+.auth-pill.logado:hover { filter: brightness(0.95); }
 .auth-pill svg { flex-shrink: 0; }
 
 .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 18px; }
@@ -1350,11 +1351,12 @@ body {
         <div class="bv-secao">
             <div class="bv-secao-titulo">🚀 Para começar</div>
             <div class="bv-item">
+                <span class="bv-icon">👤</span>
+                <div><strong>Crie sua conta</strong><p>Clique em <strong>Entrar</strong> no topo da tela para criar sua conta e sua empresa. Compartilhe o código gerado com outros vendedores da equipe.</p></div>
+            </div>
+            <div class="bv-item">
                 <span class="bv-icon">📊</span>
-                <div>
-                    <strong>Conecte seu banco de dados</strong>
-                    <p>Cole o link da sua planilha Google Sheets (publicada como CSV) ou envie um arquivo <code>.csv</code> com seus produtos e itens de infraestrutura. Um card de configuração aparece logo abaixo.</p>
-                </div>
+                <div><strong>Conecte seu banco de dados</strong><p>Cole o link da sua planilha Google Sheets (publicada como CSV) ou envie um arquivo <code>.csv</code> com seus produtos e infraestrutura.</p></div>
             </div>
         </div>
 
@@ -1362,23 +1364,15 @@ body {
             <div class="bv-secao-titulo">⚙️ O que você pode configurar</div>
             <div class="bv-item">
                 <span class="bv-icon">🏢</span>
-                <div><strong>Nome da empresa</strong><p>Aparece no subtítulo do app e em todos os documentos gerados.</p></div>
-            </div>
-            <div class="bv-item">
-                <span class="bv-icon">🖼️</span>
-                <div><strong>Logo</strong><p>Enviada do dispositivo, fica salva no app. Recomendado: 130 × 34 px.</p></div>
+                <div><strong>Nome da empresa e logo</strong><p>Aparecem no subtítulo do app e em todos os documentos gerados. Configure pelo ícone de engrenagem no rodapé.</p></div>
             </div>
             <div class="bv-item">
                 <span class="bv-icon">💰</span>
-                <div><strong>Valores de serviço</strong><p>Diária por funcionário e custo de deslocamento por dia. Base do cálculo de mão de obra.</p></div>
+                <div><strong>Valores de serviço e multiplicadores</strong><p>Diária, deslocamento e fator de markup por tipo de projeto — base do cálculo automático.</p></div>
             </div>
             <div class="bv-item">
-                <span class="bv-icon">✖️</span>
-                <div><strong>Multiplicadores de preço</strong><p>Fator aplicado sobre os equipamentos conforme tipo e dificuldade do projeto.</p></div>
-            </div>
-            <div class="bv-item">
-                <span class="bv-icon">📋</span>
-                <div><strong>Padrões da proposta</strong><p>Prazo de execução padrão, validade e garantia oferecida — pré-preenchidos ao exportar.</p></div>
+                <span class="bv-icon">🕐</span>
+                <div><strong>Histórico de propostas</strong><p>Clique no ícone de relógio no rodapé. Quando logado, as propostas ficam salvas na nuvem e aparecem para toda a equipe.</p></div>
             </div>
         </div>
 
@@ -1572,6 +1566,31 @@ body {
         <div class="pag-header">
             <span class="pag-titulo">Configurações</span>
             <button class="pag-fechar" onclick="fecharConfig()">✕</button>
+        </div>
+
+        <!-- Conta -->
+        <div class="cfg-item" id="cfgItemConta">
+            <div class="cfg-item-header" onclick="toggleCfg('Conta')">
+                <div class="cfg-item-label">
+                    <span class="cfg-item-icon">👤</span>
+                    <span class="cfg-item-titulo" id="cfgContaTitulo">Conta</span>
+                </div>
+                <span class="cfg-item-seta" id="cfgSetaConta">▼</span>
+            </div>
+            <div class="cfg-item-body" id="cfgBodyConta">
+                <div id="cfgContaLogado" style="display:none;flex-direction:column;gap:10px;">
+                    <div class="auth-user-info">
+                        <div class="auth-user-nome" id="cfgContaNome"></div>
+                        <div class="auth-user-empresa" id="cfgContaEmpresa"></div>
+                        <div class="auth-user-codigo" id="cfgContaCodigo" onclick="copiarCodigo()" title="Clique para copiar"></div>
+                    </div>
+                    <button class="auth-logout-btn" onclick="fazerLogout();fecharConfig();">Sair da conta</button>
+                </div>
+                <div id="cfgContaDeslogado" style="display:none;flex-direction:column;gap:10px;">
+                    <p style="font-size:13px;color:var(--muted);margin:0;">Faça login para salvar propostas na nuvem e sincronizar com sua equipe.</p>
+                    <button class="hist-salvar-btn" onclick="fecharConfig();abrirAuth();">Entrar / Criar conta</button>
+                </div>
+            </div>
         </div>
 
         <!-- Nome da empresa -->
@@ -3556,6 +3575,21 @@ function salvarNomeEmpresa() {
 }
 
 function abrirConfig() {
+    // Seção conta
+    const logado   = document.getElementById('cfgContaLogado');
+    const deslogado = document.getElementById('cfgContaDeslogado');
+    if (_supaUser && _supaEmpresa) {
+        logado.style.display   = 'flex';
+        deslogado.style.display = 'none';
+        document.getElementById('cfgContaNome').textContent    = _supaProfile?.nome || _supaUser.email;
+        document.getElementById('cfgContaEmpresa').textContent = _supaEmpresa.nome;
+        document.getElementById('cfgContaCodigo').textContent  = 'Código da empresa: ' + _supaEmpresa.codigo + ' — clique para copiar';
+        document.getElementById('cfgContaTitulo').textContent  = _supaProfile?.nome?.split(' ')[0] || 'Conta';
+    } else {
+        logado.style.display   = 'none';
+        deslogado.style.display = 'flex';
+        document.getElementById('cfgContaTitulo').textContent  = 'Conta — não logado';
+    }
     document.getElementById('cfgEmpresaInput').value = localStorage.getItem('orcapro_empresa') || CONFIG.empresa || '';
     document.getElementById('cfgEmpresaStatus').textContent = '';
     document.getElementById('cfgProdUrl').value  = localStorage.getItem('orcapro_prod_url')  || '';
