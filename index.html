@@ -693,31 +693,97 @@ body {
 .opcao-preco-txt { font-size: 12px; color: var(--ok-text); font-weight: 700; white-space: nowrap; }
 .busca-vazio { padding: 16px 13px; color: var(--muted); font-size: 13px; text-align: center; }
 
-/* ── DIAS ── */
-.dias-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+/* ── WORKER GRID ── */
+.worker-desl {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; margin-bottom: 8px;
+    background: var(--item-bg); border: 1px solid var(--border2); border-radius: 10px;
 }
-.dias-item label {
-    display: block; font-size: 12px; font-weight: 700;
-    color: var(--muted); margin-bottom: 6px; letter-spacing: 0.2px;
+.worker-desl-label { font-size: 13px; font-weight: 600; color: var(--muted); flex: 1; }
+.worker-desl-input {
+    width: 56px; padding: 6px 4px; text-align: center;
+    background: var(--surface2); color: var(--text);
+    border: 1.5px solid var(--border2); border-radius: 8px;
+    font-size: 15px; font-weight: 700; font-family: inherit; outline: none;
 }
-.dias-item input {
-    width: 100%; min-height: 46px;
-    padding: 10px 12px;
+.worker-desl-input:focus { border-color: var(--blue); }
+.worker-hdr {
+    display: grid; grid-template-columns: 1fr 46px 46px 72px;
+    gap: 4px; padding: 0 2px 5px; border-bottom: 1px solid var(--border);
+}
+.worker-hdr span {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; text-align: center;
+}
+.worker-hdr span:first-child { text-align: left; }
+.worker-row {
+    display: grid; grid-template-columns: 1fr 46px 46px 72px;
+    gap: 4px; align-items: center; padding: 6px 2px;
+    border-bottom: 1px solid var(--border);
+}
+.worker-label { font-size: 13px; font-weight: 600; color: var(--label); }
+.worker-num {
+    width: 100%; padding: 6px 2px; text-align: center;
+    border: 1.5px solid var(--border2); border-radius: 8px;
+    font-size: 14px; font-weight: 700;
+    background: var(--input-bg); color: var(--text);
+    font-family: inherit; outline: none; -moz-appearance: textfield;
+    transition: border-color 0.15s;
+}
+.worker-num::-webkit-outer-spin-button, .worker-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.worker-num:focus { border-color: var(--blue); }
+.worker-total-val { font-size: 12px; font-weight: 700; color: var(--ok-text); text-align: right; }
+.worker-total-val.vazio { color: var(--muted); }
+.worker-sum {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 2px 0; margin-top: 4px;
+}
+.worker-sum-label { font-size: 13px; font-weight: 700; color: var(--label); }
+.worker-sum-val { font-size: 14px; font-weight: 700; color: var(--blue); }
+
+/* ── ENTRADA ── */
+.entrada-wrap {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+}
+.entrada-titulo {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px;
+}
+.entrada-ctrl { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.entrada-tipo-btn {
+    padding: 5px 11px; border-radius: 8px;
     border: 1.5px solid var(--border2);
-    border-radius: 10px;
-    font-size: 18px; font-weight: 700;
-    text-align: center;
-    background: var(--input-bg);
-    color: var(--input-color);
-    outline: none;
-    font-family: inherit;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    background: var(--item-bg); color: var(--muted);
+    font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
-.dias-item input:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px var(--blue-glow);
+.entrada-tipo-btn.ativo { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+.entrada-input {
+    width: 80px; padding: 7px 8px;
+    border: 1.5px solid var(--border2); border-radius: 8px;
+    font-size: 15px; font-weight: 700; text-align: center;
+    background: var(--input-bg); color: var(--text);
+    font-family: inherit; outline: none; -moz-appearance: textfield;
 }
+.entrada-input::-webkit-outer-spin-button, .entrada-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.entrada-input:focus { border-color: var(--blue); }
+.entrada-saldo { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.entrada-saldo strong { color: var(--ok-text); }
+
+/* ── DASHBOARD FINANCEIRO ── */
+.fin-dashboard {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px dashed rgba(255,255,255,0.22);
+}
+.fin-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; padding: 3px 0;
+}
+.fin-label { font-size: 12px; color: rgba(255,255,255,0.72); font-weight: 500; }
+.fin-vals { display: flex; align-items: center; gap: 6px; }
+.fin-val { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.92); }
+.fin-sep { border-top: 1px solid rgba(255,255,255,0.15); margin: 5px 0; }
 
 /* ── RESULTADO ── */
 .resultado-card {
@@ -1271,18 +1337,46 @@ body {
         </div>
     </div>
 
-    <!-- DIAS -->
+    <!-- SERVIÇO -->
     <div class="card">
         <div class="card-titulo">Serviço</div>
-        <div class="dias-grid">
-            <div class="dias-item">
-                <label>Dias de trabalho</label>
-                <input type="number" id="diasTrabalho" min="0" value="1">
-            </div>
-            <div class="dias-item">
-                <label>Funcionários no local</label>
-                <input type="number" id="nFuncionarios" min="1" value="1">
-            </div>
+        <div class="worker-desl">
+            <span class="worker-desl-label">Deslocamento (dias)</span>
+            <input type="number" id="deslDias" class="worker-desl-input" min="0" value="1" oninput="atualizarWorkers()">
+        </div>
+        <div class="worker-hdr">
+            <span>Função</span>
+            <span>Qtd</span>
+            <span>Dias</span>
+            <span>Total</span>
+        </div>
+        <div class="worker-row" data-tipo="tecnico">
+            <span class="worker-label">Técnico</span>
+            <input type="number" class="worker-num worker-qty" min="0" value="1" oninput="atualizarWorkers()">
+            <input type="number" class="worker-num worker-dias" min="0" value="1" oninput="atualizarWorkers()">
+            <span class="worker-total-val">—</span>
+        </div>
+        <div class="worker-row" data-tipo="supervisor">
+            <span class="worker-label">Supervisor</span>
+            <input type="number" class="worker-num worker-qty" min="0" value="0" oninput="atualizarWorkers()">
+            <input type="number" class="worker-num worker-dias" min="0" value="0" oninput="atualizarWorkers()">
+            <span class="worker-total-val vazio">—</span>
+        </div>
+        <div class="worker-row" data-tipo="auxiliar">
+            <span class="worker-label">Auxiliar</span>
+            <input type="number" class="worker-num worker-qty" min="0" value="0" oninput="atualizarWorkers()">
+            <input type="number" class="worker-num worker-dias" min="0" value="0" oninput="atualizarWorkers()">
+            <span class="worker-total-val vazio">—</span>
+        </div>
+        <div class="worker-row" data-tipo="diarista">
+            <span class="worker-label">Diarista</span>
+            <input type="number" class="worker-num worker-qty" min="0" value="0" oninput="atualizarWorkers()">
+            <input type="number" class="worker-num worker-dias" min="0" value="0" oninput="atualizarWorkers()">
+            <span class="worker-total-val vazio">—</span>
+        </div>
+        <div class="worker-sum">
+            <span class="worker-sum-label">Total mão de obra</span>
+            <span class="worker-sum-val" id="workerSumDisplay">—</span>
         </div>
     </div>
 
@@ -1308,10 +1402,26 @@ body {
             <input type="number" id="descontoPct" class="desconto-input" min="0" max="50" value="0" oninput="aplicarDesconto()">
             <span class="desconto-pct">%</span>
         </div>
-        <div class="margem-row" id="margemRow" style="display:none;">
-            <span class="margem-label">Margem estimada</span>
-            <span class="margem-lucro" id="margemLucro"></span>
-            <span class="margem-badge" id="margemBadge"></span>
+        <div class="fin-dashboard" id="finDashboard" style="display:none;">
+            <div class="fin-row">
+                <span class="fin-label">Margem bruta</span>
+                <div class="fin-vals">
+                    <span class="fin-val" id="finMBval"></span>
+                    <span class="margem-badge" id="finMBpct"></span>
+                </div>
+            </div>
+            <div class="fin-row">
+                <span class="fin-label">Margem líquida</span>
+                <div class="fin-vals">
+                    <span class="fin-val" id="finMLval"></span>
+                    <span class="margem-badge" id="finMLpct"></span>
+                </div>
+            </div>
+            <div class="fin-sep"></div>
+            <div class="fin-row">
+                <span class="fin-label">Lucro estimado</span>
+                <span class="fin-val" id="finLucro"></span>
+            </div>
         </div>
     </div>
 
@@ -1726,20 +1836,41 @@ body {
             </div>
             <div class="cfg-item-body" id="cfgBodyServico">
                 <p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.6;">
-                    Custo diário por funcionário e deslocamento. Usados no cálculo do valor final.
+                    Custo diário por categoria e deslocamento. Usados no cálculo do valor final.
                 </p>
-                <div style="display:flex;gap:12px;margin-bottom:10px;">
-                    <div class="exp-field" style="flex:1;">
-                        <label class="exp-label">Diária por funcionário</label>
-                        <div style="display:flex;gap:6px;align-items:center;">
-                            <span style="color:var(--muted);font-size:13px;">R$</span>
-                            <input class="exp-input" id="cfgDiaria" type="number" min="0" value="250" style="flex:1;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                    <div class="exp-field">
+                        <label class="exp-label">Técnico/dia</label>
+                        <div style="display:flex;gap:5px;align-items:center;">
+                            <span style="color:var(--muted);font-size:12px;">R$</span>
+                            <input class="exp-input" id="cfgTecnico" type="number" min="0" value="250" style="flex:1;">
                         </div>
                     </div>
-                    <div class="exp-field" style="flex:1;">
+                    <div class="exp-field">
+                        <label class="exp-label">Supervisor/dia</label>
+                        <div style="display:flex;gap:5px;align-items:center;">
+                            <span style="color:var(--muted);font-size:12px;">R$</span>
+                            <input class="exp-input" id="cfgSupervisor" type="number" min="0" value="400" style="flex:1;">
+                        </div>
+                    </div>
+                    <div class="exp-field">
+                        <label class="exp-label">Auxiliar/dia</label>
+                        <div style="display:flex;gap:5px;align-items:center;">
+                            <span style="color:var(--muted);font-size:12px;">R$</span>
+                            <input class="exp-input" id="cfgAuxiliar" type="number" min="0" value="150" style="flex:1;">
+                        </div>
+                    </div>
+                    <div class="exp-field">
+                        <label class="exp-label">Diarista/dia</label>
+                        <div style="display:flex;gap:5px;align-items:center;">
+                            <span style="color:var(--muted);font-size:12px;">R$</span>
+                            <input class="exp-input" id="cfgDiarista" type="number" min="0" value="120" style="flex:1;">
+                        </div>
+                    </div>
+                    <div class="exp-field" style="grid-column:1/-1;">
                         <label class="exp-label">Deslocamento/dia</label>
-                        <div style="display:flex;gap:6px;align-items:center;">
-                            <span style="color:var(--muted);font-size:13px;">R$</span>
+                        <div style="display:flex;gap:5px;align-items:center;">
+                            <span style="color:var(--muted);font-size:12px;">R$</span>
                             <input class="exp-input" id="cfgDeslocamento" type="number" min="0" value="50" style="flex:1;">
                         </div>
                     </div>
@@ -2329,17 +2460,23 @@ function aplicarDesconto() {
 }
 
 function atualizarMargem(venda) {
-    const row    = document.getElementById('margemRow');
-    const badge  = document.getElementById('margemBadge');
-    const lucroEl= document.getElementById('margemLucro');
-    if (!venda) { row.style.display = 'none'; return; }
-    const custo = (_pag.totalProd || 0) + (_pag.totalInfra || 0) + (_pag.desl || 0) + (_pag.diarias || 0);
-    const lucro = venda - custo;
-    const pct   = venda > 0 ? (lucro / venda) * 100 : 0;
-    row.style.display = '';
-    lucroEl.textContent = fmt(lucro);
-    badge.textContent   = pct.toFixed(1) + '%';
-    badge.className     = 'margem-badge ' + (pct >= 30 ? 'ok' : pct >= 15 ? 'warn' : 'bad');
+    const dash = document.getElementById('finDashboard');
+    if (!venda) { dash.style.display = 'none'; return; }
+    const materiais  = (_pag.totalProd || 0) + (_pag.totalInfra || 0);
+    const operacional = (_pag.desl || 0) + (_pag.diarias || 0);
+    const mb    = venda - materiais;
+    const lucro = venda - materiais - operacional;
+    const mbPct = venda > 0 ? (mb    / venda) * 100 : 0;
+    const mlPct = venda > 0 ? (lucro / venda) * 100 : 0;
+    const cls   = pct => 'margem-badge ' + (pct >= 30 ? 'ok' : pct >= 15 ? 'warn' : 'bad');
+    document.getElementById('finMBval').textContent = fmt(mb);
+    document.getElementById('finMLval').textContent = fmt(lucro);
+    document.getElementById('finLucro').textContent = fmt(lucro);
+    document.getElementById('finMBpct').textContent = mbPct.toFixed(1) + '%';
+    document.getElementById('finMLpct').textContent = mlPct.toFixed(1) + '%';
+    document.getElementById('finMBpct').className   = cls(mbPct);
+    document.getElementById('finMLpct').className   = cls(mlPct);
+    dash.style.display = '';
 }
 
 function calcular() {
@@ -2374,18 +2511,16 @@ function calcular() {
     const mult=(tS[tipo]||tS.analogica)[nivel||"facil"];
 
     const sv=getServico();
-    const diasT=Number(document.getElementById("diasTrabalho").value)||0;
-    const nFunc=Number(document.getElementById("nFuncionarios").value)||1;
-    const desl=sv.deslocamento*diasT;
-    const diarias=diasT*nFunc*sv.diaria;
-    const despesas=desl+totalInfra+diarias;
+    const desl=sv.deslocamento*_deslDias;
+    const totalMDO=_workers.reduce((s,w)=>s+w.qty*w.dias*(sv[w.tipo]||0),0);
+    const despesas=desl+totalInfra+totalMDO;
     const valorBruto=Math.round((totalProd*mult+despesas)/50)*50;
 
     document.getElementById("rEquip").textContent=fmt(totalProd);
     document.getElementById("rInfra").textContent=fmt(totalInfra);
-    document.getElementById("rServico").textContent=fmt(despesas-totalInfra);
+    document.getElementById("rServico").textContent=fmt(desl+totalMDO);
 
-    _pag = { valorFinal: valorBruto, valorBruto, totalProd, totalInfra, desl, diarias, diarista: 0 };
+    _pag = { valorFinal: valorBruto, valorBruto, totalProd, totalInfra, desl, diarias: totalMDO, diarista: 0 };
     aplicarDesconto();
 
     const temCam = qtdCameras > 0;
@@ -2468,20 +2603,41 @@ function esconderToastWpp() {
     document.getElementById("toastWpp").classList.remove("visivel");
 }
 
-document.querySelectorAll(".dias-item input").forEach(i=>{
-    i.addEventListener("input", calcular);
-    i.addEventListener("focus", ()=>{ if(i.value==="0") i.value=""; });
-    i.addEventListener("blur",  ()=>{ if(i.value==="") { i.value="0"; calcular(); } });
-});
+function atualizarWorkers() {
+    const sv = getServico();
+    _deslDias = Number(document.getElementById('deslDias').value) || 0;
+    document.querySelectorAll('.worker-row').forEach((row, i) => {
+        const tipo = row.dataset.tipo;
+        const qty  = Number(row.querySelector('.worker-qty').value)  || 0;
+        const dias = Number(row.querySelector('.worker-dias').value) || 0;
+        if (_workers[i]) _workers[i] = { tipo, qty, dias };
+        const rate  = sv[tipo] || 0;
+        const total = qty * dias * rate;
+        const el    = row.querySelector('.worker-total-val');
+        if (total > 0) {
+            el.textContent = fmt(total);
+            el.classList.remove('vazio');
+        } else {
+            el.textContent = '—';
+            el.classList.add('vazio');
+        }
+    });
+    const totalMDO = _workers.reduce((s, w) => s + w.qty * w.dias * (sv[w.tipo] || 0), 0);
+    const sumEl = document.getElementById('workerSumDisplay');
+    if (sumEl) sumEl.textContent = totalMDO > 0 ? fmt(totalMDO) : '—';
+    calcular();
+}
 
 // ── PERSISTÊNCIA ──
 function salvarEstado() {
+    const deslEl = document.getElementById('deslDias');
     const estado={
         tipo:document.querySelector('input[name="tipo"]:checked')?.value||"analogica",
-        diasTrabalho:document.getElementById("diasTrabalho").value,
-        nFuncionarios:document.getElementById("nFuncionarios").value,
+        workers: JSON.parse(JSON.stringify(_workers)),
+        deslDias: deslEl ? Number(deslEl.value) : _deslDias,
         pagModo:_pagModo, subAvista:_subAvista,
         nPix:_nPix, nBoleto:_nBoleto, nCartao:_nCartao,
+        entradaTipo: _entradaTipo, entradaValor: _entradaValor,
         clienteInfo:{ ..._clienteInfo },
         desconto: _descontoPct,
         canais: document.getElementById('canaisGravador').value,
@@ -2511,8 +2667,32 @@ function restaurarEstado() {
             cb.checked=cb.value===e.tipo;
             cb.closest(".tipo-btn").classList.toggle("ativo",cb.value===e.tipo);
         });
-        if (e.diasTrabalho)  document.getElementById("diasTrabalho").value=e.diasTrabalho;
-        if (e.nFuncionarios) document.getElementById("nFuncionarios").value=e.nFuncionarios;
+        // workers (novo formato) ou fallback do formato antigo
+        if (e.workers && Array.isArray(e.workers)) {
+            _workers = e.workers;
+            _deslDias = e.deslDias ?? 1;
+            const deslEl = document.getElementById('deslDias');
+            if (deslEl) deslEl.value = _deslDias;
+            document.querySelectorAll('.worker-row').forEach((row, i) => {
+                if (!_workers[i]) return;
+                row.querySelector('.worker-qty').value  = _workers[i].qty;
+                row.querySelector('.worker-dias').value = _workers[i].dias;
+            });
+            atualizarWorkers();
+        } else if (e.diasTrabalho || e.nFuncionarios) {
+            // migração do formato antigo
+            const dias = Number(e.diasTrabalho) || 1;
+            const nFunc = Number(e.nFuncionarios) || 1;
+            _workers[0] = { tipo: 'tecnico', qty: nFunc, dias };
+            _deslDias = dias;
+            const deslEl = document.getElementById('deslDias');
+            if (deslEl) deslEl.value = dias;
+            const rows = document.querySelectorAll('.worker-row');
+            if (rows[0]) { rows[0].querySelector('.worker-qty').value = nFunc; rows[0].querySelector('.worker-dias').value = dias; }
+            atualizarWorkers();
+        }
+        if (e.entradaTipo)  _entradaTipo  = e.entradaTipo;
+        if (e.entradaValor) _entradaValor = e.entradaValor;
         if (e.pagModo)   _pagModo   = e.pagModo;
         if (e.subAvista) _subAvista = e.subAvista;
         if (e.nPix)      _nPix      = e.nPix;
@@ -2547,8 +2727,21 @@ function limparOrcamento() {
     document.querySelectorAll('input[name="tipo"]').forEach((cb,i)=>{
         cb.checked=i===0; cb.closest(".tipo-btn").classList.toggle("ativo",i===0);
     });
-    document.getElementById("diasTrabalho").value=1;
-    document.getElementById("nFuncionarios").value=1;
+    _workers = [
+        { tipo: 'tecnico', qty: 1, dias: 1 },
+        { tipo: 'supervisor', qty: 0, dias: 0 },
+        { tipo: 'auxiliar', qty: 0, dias: 0 },
+        { tipo: 'diarista', qty: 0, dias: 0 },
+    ];
+    _deslDias = 1;
+    const deslEl = document.getElementById('deslDias');
+    if (deslEl) deslEl.value = 1;
+    document.querySelectorAll('.worker-row').forEach((row, i) => {
+        row.querySelector('.worker-qty').value  = _workers[i].qty;
+        row.querySelector('.worker-dias').value = _workers[i].dias;
+    });
+    atualizarWorkers();
+    _entradaTipo = 'none'; _entradaValor = 0;
     _pagModo='avista'; _subAvista='5050'; _nPix=4; _nBoleto=4; _nCartao=4;
     _clienteInfo={ nome:'', tel:'', email:'', data:'', validade:15, prazo:'2', obs:'' };
     _descontoPct=0;
@@ -2566,6 +2759,17 @@ let _subAvista = '5050';    // '5050'  | '4pix'
 let _nPix      = 4;         // 2-6
 let _nBoleto   = 4;         // 2-6
 let _nCartao   = 4;         // 2-6
+let _entradaTipo  = 'none'; // 'none' | 'pct' | 'val'
+let _entradaValor = 0;
+
+// ── TRABALHADORES ──
+let _workers = [
+    { tipo: 'tecnico',    qty: 1, dias: 1 },
+    { tipo: 'supervisor', qty: 0, dias: 0 },
+    { tipo: 'auxiliar',   qty: 0, dias: 0 },
+    { tipo: 'diarista',   qty: 0, dias: 0 },
+];
+let _deslDias = 1;
 
 function abrirPagamentos() {
     renderPagamento();
@@ -2590,6 +2794,16 @@ document.getElementById('configOverlay').addEventListener('click', function(e) {
 document.getElementById('historicoOverlay').addEventListener('click', function(e) {
     if (e.target === this) fecharHistorico();
 });
+
+function setEntrada(tipo) {
+    _entradaTipo = tipo;
+    if (tipo === 'none') _entradaValor = 0;
+    renderPagamento();
+}
+function setEntradaValor(val) {
+    _entradaValor = val || 0;
+    renderPagamento();
+}
 
 function setPagModo(modo) {
     _pagModo = modo;
@@ -2883,10 +3097,8 @@ async function exportarXLS() {
     });
 
     const sv_xls   = getServico();
-    const diasT    = Number(document.getElementById('diasTrabalho').value) || 0;
-    const nFunc    = Number(document.getElementById('nFuncionarios').value) || 1;
-    const desl     = sv_xls.deslocamento * diasT;
-    const diarias  = diasT * nFunc * sv_xls.diaria;
+    const desl     = sv_xls.deslocamento * _deslDias;
+    const diarias  = _workers.reduce((s, w) => s + w.qty * w.dias * (sv_xls[w.tipo] || 0), 0);
     const totalServ = desl + diarias;
 
     const inst = calcInstallments();
@@ -3031,19 +3243,29 @@ async function exportarXLS() {
 
     // SERVIÇO
     sectionHdr('SERVIÇO');
-    duoCellRow('Dias de trabalho', diasT + ' dias', 'Deslocamento', desl);
+    duoCellRow('Deslocamento', _deslDias + ' dias', 'Total deslocamento', desl);
     ws.lastRow.getCell(6).numFmt = BRL;
-    duoCellRow('Funcionários no local', nFunc + ' pessoa(s)', 'Diárias (R$ ' + sv_xls.diaria + '/pessoa/dia)', diarias);
-    ws.lastRow.getCell(6).numFmt = BRL;
+    _workers.filter(w => w.qty > 0).forEach(w => {
+        const rate = sv_xls[w.tipo] || 0;
+        const total = w.qty * w.dias * rate;
+        const labels = { tecnico: 'Técnico', supervisor: 'Supervisor', auxiliar: 'Auxiliar', diarista: 'Diarista' };
+        duoCellRow(labels[w.tipo] + ' (' + w.qty + ' × ' + w.dias + ' dias × R$' + rate + ')', '', 'Total', total);
+        ws.lastRow.getCell(6).numFmt = BRL;
+    });
     subtotalRow('TOTAL SERVIÇO', totalServ);
     spacer();
 
     // RESUMO FINANCEIRO
     sectionHdr('RESUMO FINANCEIRO');
+    const mbVal  = inst.total - totalProdVal - totalInfVal;
+    const mlVal  = inst.total - totalProdVal - totalInfVal - totalServ;
+    const mbPct  = inst.total > 0 ? (mbVal / inst.total * 100).toFixed(1) : '0.0';
+    const mlPct  = inst.total > 0 ? (mlVal / inst.total * 100).toFixed(1) : '0.0';
     [
-        ['Equipamentos', totalProdVal],
-        ['Infraestrutura', totalInfVal],
-        ['Serviço', totalServ],
+        ['Custos de materiais (equip. + infra)', totalProdVal + totalInfVal],
+        ['Custos operacionais (serviço)', totalServ],
+        ['Margem bruta (' + mbPct + '%)', mbVal],
+        ['Margem líquida (' + mlPct + '%)', mlVal],
     ].forEach(([label, val]) => {
         const r = ws.addRow(['', label, '', '', '', val]);
         r.height = 20;
@@ -3090,6 +3312,14 @@ async function exportarXLS() {
     spacer();
     const rodapeXls = [marca, CONFIG.telefone, CONFIG.email, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : ''].filter(Boolean).join('   |   ');
     mergedRow(rodapeXls, COR_LT, 'FF555555', 9, 18);
+
+    // proteção da planilha (RF012–RF015)
+    ws.protect('', {
+        selectLockedCells: true, selectUnlockedCells: true,
+        formatCells: false, formatColumns: false, formatRows: false,
+        insertRows: false, insertColumns: false, deleteRows: false, deleteColumns: false,
+        sort: false, autoFilter: false, pivotTables: false
+    });
 
     // ── SHEET 2: FINANCEIRO ──
     const ws2 = wb.addWorksheet('Financeiro');
@@ -3193,6 +3423,14 @@ async function exportarXLS() {
     const rodapeFin = [marca, contato2, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : ''].filter(Boolean).join('   |   ');
     mr2(rodapeFin, COR_LT, 'FF555555', 9, 18);
 
+    // proteção da aba financeira
+    ws2.protect('', {
+        selectLockedCells: true, selectUnlockedCells: true,
+        formatCells: false, formatColumns: false, formatRows: false,
+        insertRows: false, insertColumns: false, deleteRows: false, deleteColumns: false,
+        sort: false, autoFilter: false, pivotTables: false
+    });
+
     // download
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -3259,6 +3497,13 @@ function simularViabilidade(modo, n) {
     return true;
 }
 
+function calcEntrada() {
+    if (_entradaTipo === 'none' || !_entradaValor) return 0;
+    const base = _pag.valorFinal;
+    const val  = _entradaTipo === 'pct' ? base * (_entradaValor / 100) : _entradaValor;
+    return Math.max(0, Math.min(Math.round(val / 50) * 50, Math.round(base * 0.9 / 50) * 50));
+}
+
 function calcInstallments() {
     const { valorFinal, totalProd, totalInfra, desl, diarias, diarista } = _pag;
     const r50 = v => Math.round(v / 50) * 50;
@@ -3268,9 +3513,26 @@ function calcInstallments() {
         return { label, recebe, despMat, despInfra, despDesl, despDiar, desp, pessoal, saldo, caixa: saldo - pessoal };
     };
 
-    // helper: N parcelas — infra/desl/diarista na P1, material de matStart em diante
-    function gerarParcelas(total, N, matStart) {
-        const parc   = total / N;
+    // N parcelas com suporte a entrada
+    function gerarParcelas(totalComTaxa, N, matStart) {
+        const entrada = (_pagModo !== 'avista' || _subAvista !== '5050') ? calcEntrada() : 0;
+        // escala a entrada pelo multiplicador de taxa (ex: boleto +5%)
+        const entradaEscalada = valorFinal > 0 ? Math.round((entrada * totalComTaxa / valorFinal) / 50) * 50 : entrada;
+
+        if (entrada > 0 && N > 1) {
+            const saldo  = totalComTaxa - entradaEscalada;
+            const nRest  = N - 1;
+            const parcR  = saldo / nRest;
+            const adR    = diarias / N;
+            const matPerR = totalProd / nRest;
+            const result = [mkParc('Entrada', entradaEscalada, 0, totalInfra, desl, 0, 0)];
+            for (let i = 1; i <= nRest; i++) {
+                result.push(mkParc(`${i}ª parcela`, parcR, matPerR, 0, 0, i === nRest ? diarista : 0, adR));
+            }
+            return { total: totalComTaxa, parcelas: result };
+        }
+
+        const parc   = totalComTaxa / N;
         const adPerc = diarias / N;
         const matN   = N - matStart + 1;
         const matPer = matN > 0 ? totalProd / matN : 0;
@@ -3286,7 +3548,7 @@ function calcInstallments() {
                 adPerc
             ));
         }
-        return { total, parcelas: result };
+        return { total: totalComTaxa, parcelas: result };
     }
 
     if (_pagModo === 'avista') {
@@ -3294,23 +3556,36 @@ function calcInstallments() {
         if (_subAvista === '5050') {
             const meia = total / 2;
             return { total, parcelas: [
-                mkParc('Sinal (50%)', meia, 0,          totalInfra, desl, 0,        0),
-                mkParc('Final (50%)', meia, totalProd,  0,          0,    diarista,  diarias)
+                mkParc('Sinal (50%)', meia, 0,         totalInfra, desl, 0,       0),
+                mkParc('Final (50%)', meia, totalProd, 0,          0,   diarista, diarias)
             ]};
         }
-        // N× Pix — material nas parcelas 2-N
         return gerarParcelas(total, _nPix, 2);
     }
 
     if (_pagModo === 'boleto') {
-        const total = r50(valorFinal * 1.05);
-        return gerarParcelas(total, _nBoleto, 2);
+        return gerarParcelas(r50(valorFinal * 1.05), _nBoleto, 2);
     }
 
     if (_pagModo === 'cartao') {
-        // Cartão +10% | material distribuído em todas as N parcelas
         const N      = _nCartao;
         const total  = r50(valorFinal * 1.10);
+        const entrada = calcEntrada();
+        const entradaE = valorFinal > 0 ? Math.round((entrada * total / valorFinal) / 50) * 50 : entrada;
+
+        if (entrada > 0 && N > 1) {
+            const saldo  = total - entradaE;
+            const nRest  = N - 1;
+            const parcR  = saldo / nRest;
+            const adR    = diarias / N;
+            const matPerR = totalProd / nRest;
+            const result = [mkParc('Entrada', entradaE, 0, totalInfra, desl, 0, 0)];
+            for (let i = 1; i <= nRest; i++) {
+                result.push(mkParc(`${i}ª parcela`, parcR, matPerR, 0, 0, i === nRest ? diarista : 0, adR));
+            }
+            return { total, parcelas: result };
+        }
+
         const parc   = total / N;
         const adPerc = diarias / N;
         const matPer = totalProd / N;
@@ -3340,13 +3615,40 @@ function renderPagamento() {
         cartao: `Cartão — ${_nCartao}×`
     }[_pagModo];
 
+    const avistaRef = _pagModo !== 'avista'
+        ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">Ref. à vista: ${fmt(_pag.valorFinal)}</div>` : '';
     html += `<div class="pag-total-card">
         <div>
             <div class="pag-total-label">Total</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px">${totalDesc}</div>
+            ${avistaRef}
         </div>
         <span class="pag-total-valor">${fmt(data.total)}</span>
     </div>`;
+
+    // ── ENTRADA (RF002/RF003) — não aparece no modo 50%+50%
+    if (_pagModo !== 'avista' || _subAvista !== '5050') {
+        const eVal    = calcEntrada();
+        const saldoP  = data.total - eVal;
+        const inputHtml = _entradaTipo !== 'none'
+            ? `<input class="entrada-input" type="number" min="0" value="${_entradaValor}"
+                   placeholder="${_entradaTipo === 'pct' ? '%' : 'R$'}"
+                   onchange="setEntradaValor(Number(this.value))">`
+            : '';
+        const saldoHtml = eVal > 0
+            ? `<div class="entrada-saldo">Entrada: <strong>${fmt(eVal)}</strong> · Saldo: <strong>${fmt(saldoP)}</strong></div>`
+            : '';
+        html += `<div class="entrada-wrap">
+            <div class="entrada-titulo">Entrada</div>
+            <div class="entrada-ctrl">
+                <button class="entrada-tipo-btn ${_entradaTipo==='none'?'ativo':''}" onclick="setEntrada('none')">Sem entrada</button>
+                <button class="entrada-tipo-btn ${_entradaTipo==='pct'?'ativo':''}" onclick="setEntrada('pct')">%</button>
+                <button class="entrada-tipo-btn ${_entradaTipo==='val'?'ativo':''}" onclick="setEntrada('val')">R$</button>
+                ${inputHtml}
+            </div>
+            ${saldoHtml}
+        </div>`;
+    }
 
     // auto-corrige seleção inviável para o menor N viável
     const corrigirN = (opts, nAtual, setter, modo) => {
@@ -3520,14 +3822,23 @@ let _cfgProdCsv = null, _cfgInfraCsv = null;
 function getServico() {
     try {
         const s = JSON.parse(localStorage.getItem('orcapro_servico') || '{}');
-        return { diaria: s.diaria ?? 250, deslocamento: s.deslocamento ?? 50 };
-    } catch { return { diaria: 250, deslocamento: 50 }; }
+        return {
+            tecnico:      s.tecnico      ?? (s.diaria ?? 250),
+            supervisor:   s.supervisor   ?? 400,
+            auxiliar:     s.auxiliar     ?? 150,
+            diarista:     s.diarista     ?? 120,
+            deslocamento: s.deslocamento ?? 50,
+        };
+    } catch { return { tecnico: 250, supervisor: 400, auxiliar: 150, diarista: 120, deslocamento: 50 }; }
 }
 
 function salvarServico() {
     const sv = {
-        diaria:       Number(document.getElementById('cfgDiaria').value)       || 250,
-        deslocamento: Number(document.getElementById('cfgDeslocamento').value)  || 50,
+        tecnico:      Number(document.getElementById('cfgTecnico').value)      || 250,
+        supervisor:   Number(document.getElementById('cfgSupervisor').value)   || 400,
+        auxiliar:     Number(document.getElementById('cfgAuxiliar').value)     || 150,
+        diarista:     Number(document.getElementById('cfgDiarista').value)     || 120,
+        deslocamento: Number(document.getElementById('cfgDeslocamento').value) || 50,
     };
     localStorage.setItem('orcapro_servico', JSON.stringify(sv));
     document.getElementById('cfgServicoStatus').textContent = '✓ Valores salvos';
@@ -3583,7 +3894,10 @@ function abrirConfig() {
     document.getElementById('cfgInfraStatus').textContent = localStorage.getItem('orcapro_infra_csv') ? '✓ Arquivo carregado' : '';
     document.getElementById('cfgLogoStatus').textContent  = localStorage.getItem('orcapro_logo') ? '✓ Logo carregada' : '';
     const sv = getServico();
-    document.getElementById('cfgDiaria').value       = sv.diaria;
+    document.getElementById('cfgTecnico').value      = sv.tecnico;
+    document.getElementById('cfgSupervisor').value   = sv.supervisor;
+    document.getElementById('cfgAuxiliar').value     = sv.auxiliar;
+    document.getElementById('cfgDiarista').value     = sv.diarista;
     document.getElementById('cfgDeslocamento').value = sv.deslocamento;
     document.getElementById('cfgServicoStatus').textContent = '';
     const p = getPadroes();
@@ -4062,6 +4376,7 @@ async function init() {
     if (!restaurarEstado()) {
         adicionarProduto();
         adicionarInfra();
+        atualizarWorkers();
     }
     calcular();
     // Verifica atualizações em background sem bloquear o carregamento
