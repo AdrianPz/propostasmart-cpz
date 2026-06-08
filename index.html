@@ -796,6 +796,35 @@ body {
     transform: translateX(-50%) translateY(0);
 }
 
+/* ── TOAST WHATSAPP ── */
+.toast-wpp {
+    position: fixed;
+    bottom: 82px; left: 50%;
+    transform: translateX(-50%) translateY(14px);
+    background: #1a2e1a;
+    border: 1px solid #2d4f2d;
+    color: #fff;
+    font-size: 13px; font-weight: 600;
+    padding: 10px 14px 10px 18px;
+    border-radius: 50px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    z-index: 9999;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+    display: flex; align-items: center; gap: 10px;
+}
+.toast-wpp.visivel {
+    opacity: 1; pointer-events: all;
+    transform: translateX(-50%) translateY(0);
+}
+.toast-wpp-btn {
+    background: #25d366; border: none; border-radius: 50px;
+    color: #fff; font-size: 12px; font-weight: 700;
+    padding: 6px 14px; cursor: pointer; font-family: inherit;
+    white-space: nowrap;
+}
+
 /* ── ADD ROW ── */
 .add-row {
     display: flex; gap: 8px; margin-top: 6px;
@@ -1193,6 +1222,10 @@ body {
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="toast-wpp" id="toastWpp">
+    📄 PDF gerado!
+    <button class="toast-wpp-btn" id="toastWppBtn">Enviar no WhatsApp</button>
+</div>
 
 <!-- MODAL BOAS-VINDAS -->
 <div class="pag-overlay" id="boasVindasOverlay" style="z-index:400;">
@@ -2147,6 +2180,19 @@ function mostrarToast(msg) {
     _toastTimer=setTimeout(()=>t.classList.remove("visivel"),2500);
 }
 
+let _wppTimer=null;
+function mostrarToastWpp(url) {
+    const tw=document.getElementById("toastWpp");
+    const btn=document.getElementById("toastWppBtn");
+    btn.onclick=()=>{ window.open(url,'_blank'); esconderToastWpp(); };
+    tw.classList.add("visivel");
+    clearTimeout(_wppTimer);
+    _wppTimer=setTimeout(esconderToastWpp, 9000);
+}
+function esconderToastWpp() {
+    document.getElementById("toastWpp").classList.remove("visivel");
+}
+
 document.querySelectorAll(".dias-item input").forEach(i=>{
     i.addEventListener("input", calcular);
     i.addEventListener("focus", ()=>{ if(i.value==="0") i.value=""; });
@@ -2484,6 +2530,7 @@ function gerarPDF() {
 
                 const fone = '55' + tel.replace(/\D/g, '').replace(/^55/, '');
                 const msgWpp = encodeURIComponent('Olá ' + nome + ', segue a proposta comercial.');
+                const wppUrl = 'https://wa.me/' + fone + '?text=' + msgWpp;
                 const blob = new Blob([pdf.output('arraybuffer')], { type: 'application/pdf' });
                 const file = new File([blob], nomeArq, { type: 'application/pdf' });
 
@@ -2495,7 +2542,7 @@ function gerarPDF() {
                     }
                 } else {
                     pdf.save(nomeArq);
-                    if (tel) setTimeout(() => window.open('https://wa.me/' + fone + '?text=' + msgWpp, '_blank'), 1000);
+                    if (tel) mostrarToastWpp(wppUrl);
                 }
             });
         })
