@@ -1090,8 +1090,8 @@ body {
                 <input type="number" id="diasTrabalho" min="0" value="1">
             </div>
             <div class="dias-item">
-                <label>Dias com diarista</label>
-                <input type="number" id="diasDiarista" min="0" value="1">
+                <label>Funcionários no local</label>
+                <input type="number" id="nFuncionarios" min="1" value="1">
             </div>
         </div>
     </div>
@@ -1347,6 +1347,43 @@ body {
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     Salvar multiplicadores
                 </button>
+            </div>
+        </div>
+
+        <!-- Valores de serviço -->
+        <div class="cfg-item">
+            <div class="cfg-item-header" onclick="toggleCfg('Servico')">
+                <div class="cfg-item-label">
+                    <span class="cfg-item-icon">💰</span>
+                    <span class="cfg-item-titulo">Valores de serviço</span>
+                </div>
+                <span class="cfg-item-seta" id="cfgSetaServico">▼</span>
+            </div>
+            <div class="cfg-item-body" id="cfgBodyServico">
+                <p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.6;">
+                    Custo diário por funcionário e deslocamento. Usados no cálculo do valor final.
+                </p>
+                <div style="display:flex;gap:12px;margin-bottom:10px;">
+                    <div class="exp-field" style="flex:1;">
+                        <label class="exp-label">Diária por funcionário</label>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            <span style="color:var(--muted);font-size:13px;">R$</span>
+                            <input class="exp-input" id="cfgDiaria" type="number" min="0" value="250" style="flex:1;">
+                        </div>
+                    </div>
+                    <div class="exp-field" style="flex:1;">
+                        <label class="exp-label">Deslocamento/dia</label>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            <span style="color:var(--muted);font-size:13px;">R$</span>
+                            <input class="exp-input" id="cfgDeslocamento" type="number" min="0" value="50" style="flex:1;">
+                        </div>
+                    </div>
+                </div>
+                <button class="setup-salvar-btn" onclick="salvarServico()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Salvar valores
+                </button>
+                <div class="setup-status" id="cfgServicoStatus"></div>
             </div>
         </div>
 
@@ -1886,19 +1923,19 @@ function calcular() {
     const tS=getMultiplicadores();
     const mult=(tS[tipo]||tS.analogica)[nivel||"facil"];
 
+    const sv=getServico();
     const diasT=Number(document.getElementById("diasTrabalho").value)||0;
-    const diasD=Number(document.getElementById("diasDiarista").value)||0;
-    const desl=50*diasT;
-    const diarias=diasT*500;
-    const diarista=diasD*120;
-    const despesas=desl+totalInfra+diarias+diarista;
+    const nFunc=Number(document.getElementById("nFuncionarios").value)||1;
+    const desl=sv.deslocamento*diasT;
+    const diarias=diasT*nFunc*sv.diaria;
+    const despesas=desl+totalInfra+diarias;
     const valorBruto=Math.round((totalProd*mult+despesas)/50)*50;
 
     document.getElementById("rEquip").textContent=fmt(totalProd);
     document.getElementById("rInfra").textContent=fmt(totalInfra);
     document.getElementById("rServico").textContent=fmt(despesas-totalInfra);
 
-    _pag = { valorFinal: valorBruto, valorBruto, totalProd, totalInfra, desl, diarias, diarista };
+    _pag = { valorFinal: valorBruto, valorBruto, totalProd, totalInfra, desl, diarias, diarista: 0 };
     aplicarDesconto();
 
     const temCam = qtdCameras > 0;
@@ -1979,7 +2016,7 @@ function salvarEstado() {
     const estado={
         tipo:document.querySelector('input[name="tipo"]:checked')?.value||"analogica",
         diasTrabalho:document.getElementById("diasTrabalho").value,
-        diasDiarista:document.getElementById("diasDiarista").value,
+        nFuncionarios:document.getElementById("nFuncionarios").value,
         pagModo:_pagModo, subAvista:_subAvista,
         nPix:_nPix, nBoleto:_nBoleto, nCartao:_nCartao,
         clienteInfo:{ ..._clienteInfo },
@@ -2011,8 +2048,8 @@ function restaurarEstado() {
             cb.checked=cb.value===e.tipo;
             cb.closest(".tipo-btn").classList.toggle("ativo",cb.value===e.tipo);
         });
-        if (e.diasTrabalho) document.getElementById("diasTrabalho").value=e.diasTrabalho;
-        if (e.diasDiarista) document.getElementById("diasDiarista").value=e.diasDiarista;
+        if (e.diasTrabalho)  document.getElementById("diasTrabalho").value=e.diasTrabalho;
+        if (e.nFuncionarios) document.getElementById("nFuncionarios").value=e.nFuncionarios;
         if (e.pagModo)   _pagModo   = e.pagModo;
         if (e.subAvista) _subAvista = e.subAvista;
         if (e.nPix)      _nPix      = e.nPix;
@@ -2047,7 +2084,7 @@ function limparOrcamento() {
         cb.checked=i===0; cb.closest(".tipo-btn").classList.toggle("ativo",i===0);
     });
     document.getElementById("diasTrabalho").value=1;
-    document.getElementById("diasDiarista").value=1;
+    document.getElementById("nFuncionarios").value=1;
     _pagModo='avista'; _subAvista='5050'; _nPix=4; _nBoleto=4; _nCartao=4;
     _clienteInfo={ nome:'', tel:'', email:'', data:'', validade:15, prazo:'2' };
     _descontoPct=0;
@@ -2372,12 +2409,12 @@ async function exportarXLS() {
         itensInf.push({ descricao: nomeItem, qtd, valorUnit, total: valorUnit * qtd });
     });
 
+    const sv_xls   = getServico();
     const diasT    = Number(document.getElementById('diasTrabalho').value) || 0;
-    const diasD    = Number(document.getElementById('diasDiarista').value) || 0;
-    const desl     = 50 * diasT;
-    const diarias  = diasT * 500;
-    const diarista = diasD * 120;
-    const totalServ = desl + diarias + diarista;
+    const nFunc    = Number(document.getElementById('nFuncionarios').value) || 1;
+    const desl     = sv_xls.deslocamento * diasT;
+    const diarias  = diasT * nFunc * sv_xls.diaria;
+    const totalServ = desl + diarias;
 
     const inst = calcInstallments();
     const modoLabel  = { avista:'À Vista (Pix)', boleto:'Boleto Bancário', cartao:'Cartão de Crédito' }[_pagModo];
@@ -2523,9 +2560,7 @@ async function exportarXLS() {
     sectionHdr('SERVIÇO');
     duoCellRow('Dias de trabalho', diasT + ' dias', 'Deslocamento', desl);
     ws.lastRow.getCell(6).numFmt = BRL;
-    duoCellRow('Dias com diarista', diasD + ' dias', 'Diarista', diarista);
-    ws.lastRow.getCell(6).numFmt = BRL;
-    duoCellRow('', '', 'Diárias', diarias);
+    duoCellRow('Funcionários no local', nFunc + ' pessoa(s)', 'Diárias (R$ ' + sv_xls.diaria + '/pessoa/dia)', diarias);
     ws.lastRow.getCell(6).numFmt = BRL;
     subtotalRow('TOTAL SERVIÇO', totalServ);
     spacer();
@@ -3009,6 +3044,23 @@ function salvarMultiplicadores() {
 // ── MODAL CONFIG ──
 let _cfgProdCsv = null, _cfgInfraCsv = null;
 
+function getServico() {
+    try {
+        const s = JSON.parse(localStorage.getItem('orcapro_servico') || '{}');
+        return { diaria: s.diaria ?? 250, deslocamento: s.deslocamento ?? 50 };
+    } catch { return { diaria: 250, deslocamento: 50 }; }
+}
+
+function salvarServico() {
+    const sv = {
+        diaria:       Number(document.getElementById('cfgDiaria').value)       || 250,
+        deslocamento: Number(document.getElementById('cfgDeslocamento').value)  || 50,
+    };
+    localStorage.setItem('orcapro_servico', JSON.stringify(sv));
+    document.getElementById('cfgServicoStatus').textContent = '✓ Valores salvos';
+    setTimeout(() => { document.getElementById('cfgServicoStatus').textContent = ''; }, 2000);
+}
+
 function getPadroes() {
     try { return JSON.parse(localStorage.getItem('orcapro_padroes') || '{}'); } catch { return {}; }
 }
@@ -3042,6 +3094,10 @@ function abrirConfig() {
     document.getElementById('cfgProdStatus').textContent  = localStorage.getItem('orcapro_prod_csv')  ? '✓ Arquivo carregado' : '';
     document.getElementById('cfgInfraStatus').textContent = localStorage.getItem('orcapro_infra_csv') ? '✓ Arquivo carregado' : '';
     document.getElementById('cfgLogoStatus').textContent  = localStorage.getItem('orcapro_logo') ? '✓ Logo carregada' : '';
+    const sv = getServico();
+    document.getElementById('cfgDiaria').value       = sv.diaria;
+    document.getElementById('cfgDeslocamento').value = sv.deslocamento;
+    document.getElementById('cfgServicoStatus').textContent = '';
     const p = getPadroes();
     document.getElementById('cfgPrazoDefault').value    = p.prazo    || '2';
     document.getElementById('cfgValidadeDefault').value = p.validade || '15';
