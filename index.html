@@ -1063,9 +1063,70 @@ body {
     text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px;
 }
 
+/* ── AUTH ── */
+.auth-pill {
+    display: flex; align-items: center; gap: 7px;
+    padding: 6px 12px; border-radius: 50px;
+    background: var(--surface2); border: 1.5px solid var(--border2);
+    cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted);
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+.auth-pill:hover { border-color: var(--blue); color: var(--blue); }
+.auth-pill.logado { color: var(--ok-text); border-color: var(--ok-text); background: var(--ok); }
+.auth-pill svg { flex-shrink: 0; }
+
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 18px; }
+.auth-tab {
+    padding: 10px; text-align: center; font-size: 13px; font-weight: 700;
+    border-radius: 10px; border: 1.5px solid var(--border2);
+    background: var(--item-bg); color: var(--muted); cursor: pointer; font-family: inherit;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.auth-tab.ativo { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+.auth-section { display: none; flex-direction: column; gap: 12px; }
+.auth-section.ativo { display: flex; }
+.auth-sub { font-size: 12px; color: var(--muted); text-align: center; margin: -4px 0 4px; }
+.auth-divider {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; color: var(--muted); margin: 2px 0;
+}
+.auth-divider::before, .auth-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border2);
+}
+.auth-user-info {
+    display: flex; flex-direction: column; gap: 8px;
+    background: var(--item-bg); border: 1.5px solid var(--border2);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 8px;
+}
+.auth-user-nome { font-size: 15px; font-weight: 700; color: var(--text); }
+.auth-user-empresa { font-size: 12px; color: var(--muted); }
+.auth-user-codigo {
+    font-size: 12px; color: var(--blue); font-weight: 700;
+    letter-spacing: 2px; cursor: pointer;
+}
+.auth-logout-btn {
+    width: 100%; padding: 13px; background: var(--danger);
+    border: none; border-radius: 12px; font-size: 14px; font-weight: 700;
+    color: var(--danger-text); cursor: pointer; font-family: inherit;
+    transition: filter 0.15s;
+}
+.auth-logout-btn:active { filter: brightness(0.88); }
+.auth-empresa-toggle {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 4px 0;
+}
+.auth-empresa-btn {
+    padding: 9px; text-align: center; font-size: 12px; font-weight: 600;
+    border-radius: 10px; border: 1.5px solid var(--border2);
+    background: var(--item-bg); color: var(--muted); cursor: pointer; font-family: inherit;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.auth-empresa-btn.ativo { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1077,6 +1138,10 @@ body {
             <h2 id="tituloApp" style="cursor:default;user-select:none;">PropostaSmart</h2>
             <p class="subtitulo" id="subtituloApp"></p>
         </div>
+        <button class="auth-pill" id="authPill" onclick="abrirAuth()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="authPillLabel">Entrar</span>
+        </button>
         <div class="logo-placeholder" id="logoPlaceholder" onclick="toggleLogoPopover(event)">
             <span id="logoLabel">Logo</span>
             <img id="logoImg" style="display:none;height:34px;width:auto;border-radius:6px;background:#fff;padding:4px 8px;pointer-events:none;" alt="">
@@ -1398,6 +1463,78 @@ body {
     <button class="btn-config" onclick="abrirConfig()" title="Configurações">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
+</div>
+
+<!-- MODAL AUTH -->
+<div class="pag-overlay" id="authOverlay">
+    <div class="pag-modal">
+        <div class="pag-header">
+            <span class="pag-titulo" id="authModalTitulo">Conta</span>
+            <button class="pag-fechar" onclick="fecharAuth()">✕</button>
+        </div>
+
+        <!-- LOGADO -->
+        <div id="authLogado" style="display:none;flex-direction:column;gap:10px;">
+            <div class="auth-user-info">
+                <div class="auth-user-nome" id="authUserNome"></div>
+                <div class="auth-user-empresa" id="authUserEmpresa"></div>
+                <div class="auth-user-codigo" id="authUserCodigo" onclick="copiarCodigo()" title="Clique para copiar"></div>
+            </div>
+            <button class="auth-logout-btn" onclick="fazerLogout()">Sair da conta</button>
+        </div>
+
+        <!-- NÃO LOGADO -->
+        <div id="authDeslogado" style="display:none;flex-direction:column;gap:0;">
+            <div class="auth-tabs">
+                <button class="auth-tab ativo" onclick="setAuthTab('login')">Entrar</button>
+                <button class="auth-tab" onclick="setAuthTab('cadastro')">Criar conta</button>
+            </div>
+
+            <!-- LOGIN -->
+            <div class="auth-section ativo" id="authSecaoLogin">
+                <div class="exp-field">
+                    <label class="exp-label">E-mail</label>
+                    <input class="exp-input" id="loginEmail" type="email" placeholder="seu@email.com" autocomplete="email">
+                </div>
+                <div class="exp-field">
+                    <label class="exp-label">Senha</label>
+                    <input class="exp-input" id="loginSenha" type="password" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button class="hist-salvar-btn" onclick="fazerLogin()" id="loginBtn">Entrar</button>
+                <div class="auth-sub" id="loginErro" style="color:var(--danger-text);display:none;"></div>
+            </div>
+
+            <!-- CADASTRO -->
+            <div class="auth-section" id="authSecaoCadastro">
+                <div class="exp-field">
+                    <label class="exp-label">Seu nome</label>
+                    <input class="exp-input" id="cadNome" type="text" placeholder="Ex: João Silva" autocomplete="name">
+                </div>
+                <div class="exp-field">
+                    <label class="exp-label">E-mail</label>
+                    <input class="exp-input" id="cadEmail" type="email" placeholder="seu@email.com" autocomplete="email">
+                </div>
+                <div class="exp-field">
+                    <label class="exp-label">Senha</label>
+                    <input class="exp-input" id="cadSenha" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                </div>
+                <div class="auth-empresa-toggle">
+                    <button class="auth-empresa-btn ativo" onclick="setEmpresaMode('criar')">Criar empresa</button>
+                    <button class="auth-empresa-btn" onclick="setEmpresaMode('entrar')">Entrar em empresa</button>
+                </div>
+                <div class="exp-field" id="cadEmpresaNomeField">
+                    <label class="exp-label">Nome da empresa</label>
+                    <input class="exp-input" id="cadEmpresaNome" type="text" placeholder="Ex: Segurança Total Ltda">
+                </div>
+                <div class="exp-field" id="cadEmpresaCodigoField" style="display:none;">
+                    <label class="exp-label">Código da empresa</label>
+                    <input class="exp-input" id="cadEmpresaCodigo" type="text" placeholder="Ex: AB12CD" maxlength="6" style="text-transform:uppercase;letter-spacing:3px;">
+                </div>
+                <button class="hist-salvar-btn" onclick="fazerCadastro()" id="cadBtn">Criar conta</button>
+                <div class="auth-sub" id="cadErro" style="color:var(--danger-text);display:none;"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- MODAL HISTÓRICO -->
@@ -3526,6 +3663,144 @@ function baixarExemplo(tipo) {
     URL.revokeObjectURL(url);
 }
 
+// ── SUPABASE / AUTH ──
+const SUPA_URL = 'https://dfjvlpsthsqahjhrtwgg.supabase.co';
+const SUPA_KEY = 'sb_publishable_x0lXba-LKEvPqcA1ozIERQ_W7itEz4B';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let _supaUser    = null;
+let _supaProfile = null;
+let _supaEmpresa = null;
+let _empresaMode = 'criar';
+
+async function carregarPerfil(user) {
+    const { data: profile } = await supa.from('profiles').select('*, empresas(*)').eq('id', user.id).single();
+    _supaProfile = profile;
+    _supaEmpresa = profile?.empresas || null;
+}
+
+function atualizarAuthUI() {
+    const pill     = document.getElementById('authPill');
+    const pillLbl  = document.getElementById('authPillLabel');
+    const logado   = document.getElementById('authLogado');
+    const deslog   = document.getElementById('authDeslogado');
+    if (_supaUser && _supaEmpresa) {
+        const nome = _supaProfile?.nome || _supaUser.email;
+        pillLbl.textContent = nome.split(' ')[0];
+        pill.classList.add('logado');
+        document.getElementById('authUserNome').textContent    = nome;
+        document.getElementById('authUserEmpresa').textContent = _supaEmpresa.nome;
+        document.getElementById('authUserCodigo').textContent  = 'Código da empresa: ' + _supaEmpresa.codigo + ' — clique para copiar';
+        logado.style.display  = 'flex';
+        deslog.style.display  = 'none';
+    } else {
+        pillLbl.textContent = 'Entrar';
+        pill.classList.remove('logado');
+        logado.style.display  = 'none';
+        deslog.style.display  = 'flex';
+    }
+}
+
+function abrirAuth() {
+    atualizarAuthUI();
+    document.getElementById('authOverlay').classList.add('aberto');
+    document.querySelector('.fab-area').style.display = 'none';
+}
+function fecharAuth() {
+    document.getElementById('authOverlay').classList.remove('aberto');
+    document.querySelector('.fab-area').style.display = '';
+}
+
+function setAuthTab(aba) {
+    document.querySelectorAll('.auth-tab').forEach((b,i) => b.classList.toggle('ativo', (i===0&&aba==='login')||(i===1&&aba==='cadastro')));
+    document.getElementById('authSecaoLogin').classList.toggle('ativo', aba==='login');
+    document.getElementById('authSecaoCadastro').classList.toggle('ativo', aba==='cadastro');
+}
+
+function setEmpresaMode(modo) {
+    _empresaMode = modo;
+    document.querySelectorAll('.auth-empresa-btn').forEach((b,i) => b.classList.toggle('ativo', (i===0&&modo==='criar')||(i===1&&modo==='entrar')));
+    document.getElementById('cadEmpresaNomeField').style.display   = modo==='criar' ? '' : 'none';
+    document.getElementById('cadEmpresaCodigoField').style.display = modo==='entrar' ? '' : 'none';
+}
+
+async function fazerLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const senha = document.getElementById('loginSenha').value;
+    const erroEl = document.getElementById('loginErro');
+    const btn = document.getElementById('loginBtn');
+    if (!email || !senha) return;
+    btn.textContent = 'Entrando...'; btn.disabled = true;
+    erroEl.style.display = 'none';
+    const { data, error } = await supa.auth.signInWithPassword({ email, password: senha });
+    btn.textContent = 'Entrar'; btn.disabled = false;
+    if (error) { erroEl.textContent = 'E-mail ou senha incorretos.'; erroEl.style.display = ''; return; }
+    _supaUser = data.user;
+    await carregarPerfil(data.user);
+    atualizarAuthUI();
+    fecharAuth();
+    mostrarToast('Bem-vindo, ' + (_supaProfile?.nome?.split(' ')[0] || '') + '!');
+    renderHistorico();
+}
+
+async function fazerCadastro() {
+    const nome       = document.getElementById('cadNome').value.trim();
+    const email      = document.getElementById('cadEmail').value.trim();
+    const senha      = document.getElementById('cadSenha').value;
+    const empNome    = document.getElementById('cadEmpresaNome').value.trim();
+    const empCodigo  = document.getElementById('cadEmpresaCodigo').value.trim().toUpperCase();
+    const erroEl     = document.getElementById('cadErro');
+    const btn        = document.getElementById('cadBtn');
+    erroEl.style.display = 'none';
+    if (!nome || !email || !senha) { erroEl.textContent = 'Preencha todos os campos.'; erroEl.style.display = ''; return; }
+    if (senha.length < 6) { erroEl.textContent = 'Senha deve ter pelo menos 6 caracteres.'; erroEl.style.display = ''; return; }
+    if (_empresaMode === 'criar' && !empNome) { erroEl.textContent = 'Informe o nome da empresa.'; erroEl.style.display = ''; return; }
+    if (_empresaMode === 'entrar' && !empCodigo) { erroEl.textContent = 'Informe o código da empresa.'; erroEl.style.display = ''; return; }
+    btn.textContent = 'Criando...'; btn.disabled = true;
+
+    const { data, error } = await supa.auth.signUp({ email, password: senha, options: { data: { nome } } });
+    if (error) { erroEl.textContent = error.message; erroEl.style.display = ''; btn.textContent = 'Criar conta'; btn.disabled = false; return; }
+
+    _supaUser = data.user;
+    let empresaId;
+    if (_empresaMode === 'criar') {
+        const { data: emp, error: empErr } = await supa.from('empresas').insert({ nome: empNome }).select().single();
+        if (empErr) { erroEl.textContent = 'Erro ao criar empresa.'; erroEl.style.display = ''; btn.textContent = 'Criar conta'; btn.disabled = false; return; }
+        empresaId = emp.id;
+        _supaEmpresa = emp;
+    } else {
+        const { data: emp } = await supa.from('empresas').select().eq('codigo', empCodigo).single();
+        if (!emp) { erroEl.textContent = 'Código de empresa não encontrado.'; erroEl.style.display = ''; btn.textContent = 'Criar conta'; btn.disabled = false; return; }
+        empresaId = emp.id;
+        _supaEmpresa = emp;
+    }
+    await supa.from('profiles').update({ empresa_id: empresaId, nome }).eq('id', _supaUser.id);
+    await carregarPerfil(_supaUser);
+    btn.textContent = 'Criar conta'; btn.disabled = false;
+    atualizarAuthUI();
+    fecharAuth();
+    mostrarToast('Conta criada! Bem-vindo(a), ' + nome.split(' ')[0] + '!');
+    renderHistorico();
+}
+
+async function fazerLogout() {
+    await supa.auth.signOut();
+    _supaUser = null; _supaProfile = null; _supaEmpresa = null;
+    atualizarAuthUI();
+    fecharAuth();
+    mostrarToast('Sessão encerrada.');
+    renderHistorico();
+}
+
+function copiarCodigo() {
+    if (!_supaEmpresa) return;
+    navigator.clipboard.writeText(_supaEmpresa.codigo).then(() => mostrarToast('Código copiado: ' + _supaEmpresa.codigo));
+}
+
+document.getElementById('authOverlay').addEventListener('click', function(e) {
+    if (e.target === this) fecharAuth();
+});
+
 // ── HISTÓRICO ──
 const HIST_KEY = 'orcapro_historico';
 
@@ -3534,7 +3809,7 @@ function getHistorico() {
     catch { return []; }
 }
 
-function salvarNoHistorico(autoNome) {
+async function salvarNoHistorico(autoNome) {
     salvarEstado();
     const raw = localStorage.getItem('orcapro_estado');
     if (!raw) return;
@@ -3542,34 +3817,67 @@ function salvarNoHistorico(autoNome) {
     const nome = autoNome || estado.clienteInfo?.nome || '';
     const nomeLabel = nome || 'Sem nome';
     const total = _pag.valorFinal || 0;
-    const hist = getHistorico();
-    const id = Date.now();
-    hist.unshift({ id, nome: nomeLabel, total, savedAt: new Date().toLocaleDateString('pt-BR'), estado });
-    if (hist.length > 30) hist.length = 30;
-    localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+
+    if (_supaUser && _supaEmpresa) {
+        await supa.from('propostas').insert({
+            empresa_id: _supaEmpresa.id,
+            user_id: _supaUser.id,
+            user_nome: _supaProfile?.nome || '',
+            nome_cliente: nomeLabel,
+            total,
+            estado,
+        });
+    } else {
+        const hist = getHistorico();
+        const id = Date.now();
+        hist.unshift({ id, nome: nomeLabel, total, savedAt: new Date().toLocaleDateString('pt-BR'), estado });
+        if (hist.length > 30) hist.length = 30;
+        localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+    }
     mostrarToast('Proposta salva no histórico!');
     renderHistorico();
 }
 
-function renderHistorico() {
+async function renderHistorico() {
     const lista = document.getElementById('histLista');
-    const hist = getHistorico();
-    if (!hist.length) {
+    lista.innerHTML = '<div class="hist-empty">Carregando...</div>';
+
+    let itens = [];
+    if (_supaUser && _supaEmpresa) {
+        const { data } = await supa.from('propostas')
+            .select('*')
+            .eq('empresa_id', _supaEmpresa.id)
+            .order('saved_at', { ascending: false })
+            .limit(50);
+        itens = (data || []).map(p => ({
+            id: p.id,
+            nome: p.nome_cliente,
+            total: p.total,
+            savedAt: new Date(p.saved_at).toLocaleDateString('pt-BR'),
+            vendedor: p.user_nome,
+            estado: p.estado,
+            cloud: true,
+        }));
+    } else {
+        itens = getHistorico();
+    }
+
+    if (!itens.length) {
         lista.innerHTML = '<div class="hist-empty">Nenhuma proposta salva ainda.<br>Clique em "Salvar proposta atual" para começar.</div>';
         return;
     }
-    lista.innerHTML = hist.map(h => `
+    lista.innerHTML = itens.map(h => `
         <div class="hist-card">
             <div class="hist-card-info">
                 <div class="hist-card-nome">${h.nome}</div>
-                <div class="hist-card-meta">${h.savedAt}</div>
-                <div class="hist-card-total">${h.total > 0 ? h.total.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '—'}</div>
+                <div class="hist-card-meta">${h.savedAt}${h.vendedor ? ' · ' + h.vendedor : ''}</div>
+                <div class="hist-card-total">${h.total > 0 ? Number(h.total).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '—'}</div>
             </div>
             <div class="hist-card-actions">
-                <button class="hist-btn" onclick="reabrirProposta(${h.id})" title="Reabrir">
+                <button class="hist-btn" onclick="reabrirProposta(${h.id}, ${!!h.cloud})" title="Reabrir">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
                 </button>
-                <button class="hist-btn del" onclick="excluirProposta(${h.id})" title="Excluir">
+                <button class="hist-btn del" onclick="excluirProposta(${h.id}, ${!!h.cloud})" title="Excluir">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                 </button>
             </div>
@@ -3577,12 +3885,22 @@ function renderHistorico() {
     `).join('');
 }
 
-function reabrirProposta(id) {
-    const hist = getHistorico();
-    const entry = hist.find(h => h.id === id);
-    if (!entry) return;
-    if (!confirm('Reabrir a proposta de "' + entry.nome + '"? O orçamento atual será substituído.')) return;
-    localStorage.setItem('orcapro_estado', JSON.stringify(entry.estado));
+async function reabrirProposta(id, cloud) {
+    let estado;
+    let nomeCliente;
+    if (cloud) {
+        const { data } = await supa.from('propostas').select('estado, nome_cliente').eq('id', id).single();
+        if (!data) return;
+        estado = data.estado;
+        nomeCliente = data.nome_cliente;
+    } else {
+        const entry = getHistorico().find(h => h.id === id);
+        if (!entry) return;
+        estado = entry.estado;
+        nomeCliente = entry.nome;
+    }
+    if (!confirm('Reabrir a proposta de "' + nomeCliente + '"? O orçamento atual será substituído.')) return;
+    localStorage.setItem('orcapro_estado', JSON.stringify(estado));
     fecharHistorico();
     document.getElementById('listaProdutos').innerHTML = '';
     document.getElementById('listaInfra').innerHTML = '';
@@ -3591,9 +3909,13 @@ function reabrirProposta(id) {
     mostrarToast('Proposta reaberta!');
 }
 
-function excluirProposta(id) {
-    const hist = getHistorico().filter(h => h.id !== id);
-    localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+async function excluirProposta(id, cloud) {
+    if (cloud) {
+        await supa.from('propostas').delete().eq('id', id);
+    } else {
+        const hist = getHistorico().filter(h => h.id !== id);
+        localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+    }
     renderHistorico();
 }
 
@@ -3618,6 +3940,14 @@ async function init() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(() => {});
     }
+    // Restaura sessão Supabase
+    const { data: { session } } = await supa.auth.getSession();
+    if (session?.user) {
+        _supaUser = session.user;
+        await carregarPerfil(session.user);
+    }
+    atualizarAuthUI();
+
     const empresaSalva = localStorage.getItem('orcapro_empresa');
     if (empresaSalva) CONFIG.empresa = empresaSalva;
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
