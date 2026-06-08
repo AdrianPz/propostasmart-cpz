@@ -1092,6 +1092,7 @@ body {
     <div class="resultado-card">
         <div class="resultado-label">Valor final do projeto</div>
         <div class="resultado-valor" id="resultadoValor">R$ 0,00</div>
+        <div id="resultadoOriginal" style="display:none;font-size:12px;color:rgba(255,255,255,0.5);text-decoration:line-through;margin-top:2px;"></div>
 
         <div class="resumo-toggle" id="resumoToggle" onclick="toggleResumo()">
             <span>Ver detalhes</span>
@@ -1810,21 +1811,30 @@ function verificarCanais() {
 
 // ── DESCONTO ──
 let _descontoPct = 0;
+let _saveTimer = null;
 
 function aplicarDesconto() {
     _descontoPct = Math.min(50, Math.max(0, Number(document.getElementById('descontoPct').value) || 0));
     const base = _pag.valorBruto || 0;
     const desc = _descontoPct > 0 ? Math.round(base * (1 - _descontoPct / 100) / 50) * 50 : base;
     _pag.valorFinal = desc;
-    document.getElementById('resultadoValor').textContent = fmt(desc);
-    const economiaEl = document.getElementById('descontoEconomia');
+
+    const valorEl = document.getElementById('resultadoValor');
+    const originalEl = document.getElementById('resultadoOriginal');
+    valorEl.textContent = fmt(desc);
+
     if (_descontoPct > 0 && base > desc) {
-        economiaEl.textContent = '−' + fmt(base - desc);
-        economiaEl.style.display = '';
+        originalEl.textContent = 'de ' + fmt(base);
+        originalEl.style.display = '';
+        document.getElementById('descontoEconomia').textContent = '−' + fmt(base - desc);
+        document.getElementById('descontoEconomia').style.display = '';
     } else {
-        economiaEl.style.display = 'none';
+        originalEl.style.display = 'none';
+        document.getElementById('descontoEconomia').style.display = 'none';
     }
-    salvarEstado();
+
+    clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(salvarEstado, 600);
 }
 
 function calcular() {
@@ -2025,6 +2035,7 @@ function limparOrcamento() {
     _descontoPct=0;
     document.getElementById('descontoPct').value=0;
     document.getElementById('descontoEconomia').style.display='none';
+    document.getElementById('resultadoOriginal').style.display='none';
     document.getElementById('canaisGravador').value=8;
     adicionarProduto(); adicionarInfra(); calcular();
 }
