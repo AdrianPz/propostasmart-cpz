@@ -3482,37 +3482,44 @@ function simularViabilidade(modo, n) {
         if (n === '5050') {
             const meia = valorFinal / 2;
             caixas = [
-                caixaParc(meia, 0,         totalInfra, desl, 0,        0),
-                caixaParc(meia, totalProd, 0,          0,    diarista,  diarias)
+                caixaParc(meia, 0,         totalInfra, desl, 0,       diarias),
+                caixaParc(meia, totalProd, 0,          0,   diarista, 0)
             ];
+        } else if (n === '1pix' || n === 1) {
+            caixas = [caixaParc(valorFinal, totalProd, totalInfra, desl, diarista, diarias)];
         } else {
             const total  = valorFinal;
             const parc   = total / n;
-            const adPerc = diarias / n;
             const matPer = n > 1 ? totalProd / (n - 1) : 0;
             for (let i = 1; i <= n; i++)
                 caixas.push(caixaParc(parc, i >= 2 ? matPer : 0,
                     i === 1 ? totalInfra : 0, i === 1 ? desl : 0,
-                    i === 1 ? diarista : 0, adPerc));
+                    i === 1 ? diarista : 0, i === 1 ? diarias : 0));
         }
     } else if (modo === 'boleto') {
         const total  = r50(valorFinal * 1.05);
-        const parc   = total / n;
-        const adPerc = diarias / n;
-        const matPer = n > 1 ? totalProd / (n - 1) : 0;
-        for (let i = 1; i <= n; i++)
-            caixas.push(caixaParc(parc, i >= 2 ? matPer : 0,
-                i === 1 ? totalInfra : 0, i === 1 ? desl : 0,
-                i === 1 ? diarista : 0, adPerc));
+        if (n === 1) {
+            caixas = [caixaParc(total, totalProd, totalInfra, desl, diarista, diarias)];
+        } else {
+            const parc   = total / n;
+            const matPer = totalProd / (n - 1);
+            for (let i = 1; i <= n; i++)
+                caixas.push(caixaParc(parc, i >= 2 ? matPer : 0,
+                    i === 1 ? totalInfra : 0, i === 1 ? desl : 0,
+                    i === 1 ? diarista : 0, i === 1 ? diarias : 0));
+        }
     } else if (modo === 'cartao') {
         const total  = r50(valorFinal * 1.10);
-        const parc   = total / n;
-        const adPerc = diarias / n;
-        const matPer = totalProd / n;
-        for (let i = 1; i <= n; i++)
-            caixas.push(caixaParc(parc, matPer,
-                i === 1 ? totalInfra : 0, i === 1 ? desl : 0,
-                i === 1 ? diarista : 0, adPerc));
+        if (n === 1) {
+            caixas = [caixaParc(total, totalProd, totalInfra, desl, diarista, diarias)];
+        } else {
+            const parc   = total / n;
+            const matPer = totalProd / n;
+            for (let i = 1; i <= n; i++)
+                caixas.push(caixaParc(parc, matPer,
+                    i === 1 ? totalInfra : 0, i === 1 ? desl : 0,
+                    i === 1 ? diarista : 0, i === 1 ? diarias : 0));
+        }
     }
 
     let acum = 0;
@@ -3539,27 +3546,25 @@ function calcInstallments() {
         return { label, recebe, despMat, despInfra, despDesl, despDiar, desp, pessoal, saldo, caixa: saldo - pessoal };
     };
 
-    // N parcelas com suporte a entrada
+    // N parcelas com suporte a entrada — mão de obra sempre na P1
     function gerarParcelas(totalComTaxa, N, matStart) {
         const entrada = (_pagModo !== 'avista' || _subAvista !== '5050') ? calcEntrada() : 0;
-        // escala a entrada pelo multiplicador de taxa (ex: boleto +5%)
         const entradaEscalada = valorFinal > 0 ? Math.round((entrada * totalComTaxa / valorFinal) / 50) * 50 : entrada;
 
         if (entrada > 0 && N > 1) {
-            const saldo  = totalComTaxa - entradaEscalada;
-            const nRest  = N - 1;
-            const parcR  = saldo / nRest;
-            const adR    = diarias / N;
+            // mão de obra inteira na Entrada
+            const saldo   = totalComTaxa - entradaEscalada;
+            const nRest   = N - 1;
+            const parcR   = saldo / nRest;
             const matPerR = totalProd / nRest;
-            const result = [mkParc('Entrada', entradaEscalada, 0, totalInfra, desl, 0, 0)];
+            const result  = [mkParc('Entrada', entradaEscalada, 0, totalInfra, desl, 0, diarias)];
             for (let i = 1; i <= nRest; i++) {
-                result.push(mkParc(`${i}ª parcela`, parcR, matPerR, 0, 0, i === nRest ? diarista : 0, adR));
+                result.push(mkParc(`${i}ª parcela`, parcR, matPerR, 0, 0, i === nRest ? diarista : 0, 0));
             }
             return { total: totalComTaxa, parcelas: result };
         }
 
         const parc   = totalComTaxa / N;
-        const adPerc = diarias / N;
         const matN   = N - matStart + 1;
         const matPer = matN > 0 ? totalProd / matN : 0;
         const result = [];
@@ -3571,7 +3576,7 @@ function calcInstallments() {
                 i === 1 ? totalInfra : 0,
                 i === 1 ? desl : 0,
                 i === 1 ? diarista : 0,
-                adPerc
+                i === 1 ? diarias : 0  // mão de obra inteira na P1
             ));
         }
         return { total: totalComTaxa, parcelas: result };
@@ -3582,38 +3587,54 @@ function calcInstallments() {
         if (_subAvista === '5050') {
             const meia = total / 2;
             return { total, parcelas: [
-                mkParc('Sinal (50%)', meia, 0,         totalInfra, desl, 0,       0),
-                mkParc('Final (50%)', meia, totalProd, 0,          0,   diarista, diarias)
+                mkParc('Sinal (50%)', meia, 0,         totalInfra, desl, 0,       diarias),
+                mkParc('Final (50%)', meia, totalProd, 0,          0,   diarista, 0)
+            ]};
+        }
+        if (_subAvista === '1pix') {
+            return { total, parcelas: [
+                mkParc('À vista', total, totalProd, totalInfra, desl, diarista, diarias)
             ]};
         }
         return gerarParcelas(total, _nPix, 2);
     }
 
     if (_pagModo === 'boleto') {
+        if (_nBoleto === 1) {
+            const total = r50(valorFinal * 1.05);
+            return { total, parcelas: [
+                mkParc('À vista', total, totalProd, totalInfra, desl, diarista, diarias)
+            ]};
+        }
         return gerarParcelas(r50(valorFinal * 1.05), _nBoleto, 2);
     }
 
     if (_pagModo === 'cartao') {
         const N      = _nCartao;
         const total  = r50(valorFinal * 1.10);
+
+        if (N === 1) {
+            return { total, parcelas: [
+                mkParc('À vista', total, totalProd, totalInfra, desl, diarista, diarias)
+            ]};
+        }
+
         const entrada = calcEntrada();
         const entradaE = valorFinal > 0 ? Math.round((entrada * total / valorFinal) / 50) * 50 : entrada;
 
         if (entrada > 0 && N > 1) {
-            const saldo  = total - entradaE;
-            const nRest  = N - 1;
-            const parcR  = saldo / nRest;
-            const adR    = diarias / N;
+            const saldo   = total - entradaE;
+            const nRest   = N - 1;
+            const parcR   = saldo / nRest;
             const matPerR = totalProd / nRest;
-            const result = [mkParc('Entrada', entradaE, 0, totalInfra, desl, 0, 0)];
+            const result  = [mkParc('Entrada', entradaE, 0, totalInfra, desl, 0, diarias)];
             for (let i = 1; i <= nRest; i++) {
-                result.push(mkParc(`${i}ª parcela`, parcR, matPerR, 0, 0, i === nRest ? diarista : 0, adR));
+                result.push(mkParc(`${i}ª parcela`, parcR, matPerR, 0, 0, i === nRest ? diarista : 0, 0));
             }
             return { total, parcelas: result };
         }
 
         const parc   = total / N;
-        const adPerc = diarias / N;
         const matPer = totalProd / N;
         const parcelas = [];
         for (let i = 1; i <= N; i++) {
@@ -3623,7 +3644,7 @@ function calcInstallments() {
                 i === 1 ? totalInfra : 0,
                 i === 1 ? desl : 0,
                 i === 1 ? diarista : 0,
-                adPerc
+                i === 1 ? diarias : 0
             ));
         }
         return { total, parcelas };
@@ -3636,9 +3657,9 @@ function renderPagamento() {
     let html = '';
 
     const totalDesc = {
-        avista: _subAvista === '5050' ? 'Pix — 50% + 50%' : `Pix — ${_nPix}×`,
-        boleto: `Boleto — ${_nBoleto}×`,
-        cartao: `Cartão — ${_nCartao}×`
+        avista: _subAvista === '5050' ? 'Pix — 50% + 50%' : _subAvista === '1pix' ? 'Pix — À vista' : `Pix — ${_nPix}×`,
+        boleto: _nBoleto === 1 ? 'Boleto — À vista' : `Boleto — ${_nBoleto}×`,
+        cartao: _nCartao === 1 ? 'Cartão — À vista' : `Cartão — ${_nCartao}×`
     }[_pagModo];
 
     const avistaRef = _pagModo !== 'avista'
@@ -3652,8 +3673,11 @@ function renderPagamento() {
         <span class="pag-total-valor">${fmt(data.total)}</span>
     </div>`;
 
-    // ── ENTRADA (RF002/RF003) — não aparece no modo 50%+50%
-    if (_pagModo !== 'avista' || _subAvista !== '5050') {
+    // ── ENTRADA (RF002/RF003) — só aparece em modos parcelados
+    const modoUnico = (_pagModo === 'avista' && (_subAvista === '5050' || _subAvista === '1pix'))
+                   || (_pagModo === 'boleto' && _nBoleto === 1)
+                   || (_pagModo === 'cartao' && _nCartao === 1);
+    if (!modoUnico) {
         const eVal    = calcEntrada();
         const saldoP  = data.total - eVal;
         const inputHtml = _entradaTipo !== 'none'
@@ -3685,15 +3709,16 @@ function renderPagamento() {
         return false;
     };
     if (_pagModo === 'avista' && _subAvista === '4pix') corrigirN([2,3,4,5,6], _nPix, 'setNPix', 'avista');
-    if (_pagModo === 'boleto')                          corrigirN([2,3,4,5,6], _nBoleto, 'setNBoleto', 'boleto');
-    if (_pagModo === 'cartao')                          corrigirN([2,3,4,5,6], _nCartao, 'setNCartao', 'cartao');
+    if (_pagModo === 'boleto')                          corrigirN([1,2,3,4,5,6], _nBoleto, 'setNBoleto', 'boleto');
+    if (_pagModo === 'cartao')                          corrigirN([1,2,3,4,5,6], _nCartao, 'setNCartao', 'cartao');
 
     const mkOpts = (opts, nAtual, setter, modo) =>
         opts.map(n => {
             const viavel = simularViabilidade(modo, n);
             const cls = `pag-boleto-opt ${n === nAtual ? 'ativo' : ''} ${!viavel ? 'inviavel' : ''}`;
             const click = viavel ? `onclick="${setter}(${n})"` : '';
-            return `<button class="${cls}" ${click} ${!viavel ? 'title="Caixa fica negativo neste parcelamento"' : ''}>${n}×</button>`;
+            const lbl = n === 1 ? 'À vista' : n + '×';
+            return `<button class="${cls}" ${click} ${!viavel ? 'title="Caixa fica negativo neste parcelamento"' : ''}>${lbl}</button>`;
         }).join('');
 
     const avisoInviavel = (modo, n) => !simularViabilidade(modo, n)
@@ -3704,8 +3729,9 @@ function renderPagamento() {
         html += `<div class="pag-boleto-ctrl">
             <span class="pag-boleto-label">Forma:</span>
             <div class="pag-boleto-sel">
+                <button class="pag-boleto-opt ${_subAvista==='1pix'?'ativo':''}" onclick="setSubAvista('1pix')">À vista</button>
                 <button class="pag-boleto-opt ${_subAvista==='5050'?'ativo':''}" onclick="setSubAvista('5050')">50%+50%</button>
-                <button class="pag-boleto-opt ${_subAvista==='4pix'?'ativo':''}" onclick="setSubAvista('4pix')">Pix</button>
+                <button class="pag-boleto-opt ${_subAvista==='4pix'?'ativo':''}" onclick="setSubAvista('4pix')">Pix N×</button>
             </div>
         </div>`;
         if (_subAvista === '4pix') {
@@ -3723,20 +3749,20 @@ function renderPagamento() {
         html += `<div class="pag-boleto-ctrl">
             <span class="pag-boleto-label">Parcelas:</span>
             <div class="pag-boleto-sel">
-                ${mkOpts([2,3,4,5,6], _nBoleto, 'setNBoleto', 'boleto')}
+                ${mkOpts([1,2,3,4,5,6], _nBoleto, 'setNBoleto', 'boleto')}
             </div>
         </div>
-        ${avisoInviavel('boleto', _nBoleto)}`;
+        ${_nBoleto > 1 ? avisoInviavel('boleto', _nBoleto) : ''}`;
     }
 
     if (_pagModo === 'cartao') {
         html += `<div class="pag-boleto-ctrl">
             <span class="pag-boleto-label">Parcelas:</span>
             <div class="pag-boleto-sel">
-                ${mkOpts([2,3,4,5,6], _nCartao, 'setNCartao', 'cartao')}
+                ${mkOpts([1,2,3,4,5,6], _nCartao, 'setNCartao', 'cartao')}
             </div>
         </div>
-        ${avisoInviavel('cartao', _nCartao)}`;
+        ${_nCartao > 1 ? avisoInviavel('cartao', _nCartao) : ''}`;
     }
 
     let acum = 0;
