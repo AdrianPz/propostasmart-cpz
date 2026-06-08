@@ -157,16 +157,6 @@ Vendedor 2          →  entra com o código ABC123
 
 ---
 
-## ⚙️ Configuração para uso próprio
-
-1. Faça um fork deste repositório
-2. Edite o objeto `CONFIG` no topo do `index.html` com os dados da sua empresa
-3. Ative o **GitHub Pages** nas configurações do repositório (`main` → `/root`)
-4. Crie um projeto no [Supabase](https://supabase.com) e rode o script `supabase-schema.sql` no SQL Editor
-5. Substitua `SUPA_URL` e `SUPA_KEY` no `index.html` pelas chaves do seu projeto
-
----
-
 <div align="center">
 
 **Desenvolvido por [CPZ Digital](https://cpzdigital.com.br)**
