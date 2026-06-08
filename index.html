@@ -1052,6 +1052,14 @@ body {
                 </div>
                 <span id="armazenaResult" class="armazena-result">—</span>
             </div>
+            <div class="armazena-row" style="margin-top:7px;">
+                <span style="font-size:12px;color:var(--muted);font-weight:600;flex:none;">Gravação</span>
+                <div class="armazena-dias">
+                    <button class="armazena-dia-btn ativo" id="btnGravarContinua" onclick="setGravacao(this,'continua')">Contínua</button>
+                    <button class="armazena-dia-btn" id="btnGravarMovimento" onclick="setGravacao(this,'movimento')">Movimento</button>
+                </div>
+                <span id="gravarNota" style="font-size:11px;color:var(--muted);margin-left:auto;"></span>
+            </div>
         </div>
     </div>
 
@@ -1784,11 +1792,21 @@ function ativarEdicaoPreco(card) {
 // ── CÁLCULO ──
 // ── ARMAZENAMENTO ──
 let _diasArmazena = 7;
+let _gravarTipo   = 'continua';
 
 function setDiasArmazena(btn, dias) {
     _diasArmazena = dias;
-    document.querySelectorAll('.armazena-dia-btn').forEach(b => b.classList.remove('ativo'));
+    document.querySelectorAll('.armazena-dias').forEach(grupo =>
+        grupo.querySelectorAll('.armazena-dia-btn').forEach(b => b.classList.remove('ativo')));
     btn.classList.add('ativo');
+    calcArmazenamento();
+}
+
+function setGravacao(btn, tipo) {
+    _gravarTipo = tipo;
+    document.getElementById('btnGravarContinua').classList.toggle('ativo', tipo === 'continua');
+    document.getElementById('btnGravarMovimento').classList.toggle('ativo', tipo === 'movimento');
+    document.getElementById('gravarNota').textContent = tipo === 'movimento' ? '≈ 25% do tempo' : '';
     calcArmazenamento();
 }
 
@@ -1796,9 +1814,9 @@ function calcArmazenamento() {
     const qtd = Number(document.getElementById('totalCameras').textContent) || 0;
     if (!qtd) return;
     const bitrate = Number(document.getElementById('resSelect').value);
-    const gb = qtd * bitrate * 10.8 * _diasArmazena;
-    const tb = (gb / 1000).toFixed(1);
-    document.getElementById('armazenaResult').textContent = tb + ' TB';
+    const fator   = _gravarTipo === 'movimento' ? 0.25 : 1;
+    const gb = qtd * bitrate * 10.8 * _diasArmazena * fator;
+    document.getElementById('armazenaResult').textContent = (gb / 1000).toFixed(1) + ' TB';
 }
 
 // ── CANAIS ──
