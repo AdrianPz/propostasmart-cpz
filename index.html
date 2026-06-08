@@ -214,6 +214,86 @@ body {
 }
 .logo-popover-fechar:hover { background: var(--border2); }
 
+/* ── SETUP BANCO ── */
+.card-setup { border-left: 3px solid var(--blue); }
+.card-setup-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 14px;
+}
+.card-setup-titulo { font-size: 14px; font-weight: 700; color: var(--text); margin: 0 0 2px; }
+.card-setup-sub { font-size: 11px; color: var(--muted); margin: 0; }
+.card-setup-fechar {
+    width: 28px; height: 28px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: 1px solid var(--border2);
+    border-radius: 8px; color: var(--muted); font-size: 14px;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.12s;
+}
+.card-setup-fechar:hover { background: var(--border2); }
+.setup-secao { margin-bottom: 16px; }
+.setup-secao-titulo {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px;
+}
+.setup-url-input {
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid var(--border2); border-radius: 10px;
+    font-size: 13px; color: var(--text); background: var(--input-bg);
+    font-family: inherit; outline: none; box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+.setup-url-input:focus { border-color: var(--blue); }
+.setup-url-input::placeholder { color: var(--muted); font-size: 12px; }
+.setup-divider {
+    display: flex; align-items: center; gap: 8px;
+    margin: 10px 0; font-size: 11px; color: var(--muted); font-weight: 600;
+}
+.setup-divider::before, .setup-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border2);
+}
+.setup-row { display: flex; gap: 8px; align-items: center; }
+.setup-file-btn {
+    flex: 1; min-height: 38px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    background: var(--item-bg); border: 1.5px solid var(--border2);
+    border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--label);
+    cursor: pointer; font-family: inherit;
+    transition: border-color 0.15s, color 0.15s;
+}
+.setup-file-btn:hover { border-color: var(--blue); color: var(--blue); }
+.setup-example-link {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    cursor: pointer; white-space: nowrap; padding: 4px;
+    transition: color 0.15s;
+}
+.setup-example-link:hover { color: var(--blue); }
+.setup-status { font-size: 11px; color: var(--ok-text); margin-top: 6px; min-height: 16px; }
+.setup-salvar-btn {
+    width: 100%; min-height: 46px; margin-top: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: var(--blue); border: none; border-radius: 12px;
+    font-size: 14px; font-weight: 700; color: white;
+    cursor: pointer; font-family: inherit;
+    transition: filter 0.15s, transform 0.1s;
+}
+.setup-salvar-btn:active { filter: brightness(0.88); transform: scale(0.98); }
+
+/* ── ASSINATURA RODAPÉ ── */
+.assinatura-area {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 16px 8px; max-width: 480px; margin: auto;
+}
+.btn-config {
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface); border: 1.5px solid var(--border2);
+    border-radius: 12px; color: var(--muted); cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+.btn-config:hover { border-color: var(--blue); color: var(--blue); }
+
 /* ── TIPO PROJETO ── */
 .tipos-grid {
     display: grid;
@@ -772,6 +852,60 @@ body {
         </div>
     </div>
 
+    <!-- SETUP BANCO -->
+    <div class="card card-setup" id="cardSetupBanco" style="display:none;">
+        <div class="card-setup-header">
+            <div>
+                <p class="card-setup-titulo">Banco de dados</p>
+                <p class="card-setup-sub">Conecte sua planilha de produtos e infraestrutura</p>
+            </div>
+            <button class="card-setup-fechar" onclick="fecharSetupBanco()">✕</button>
+        </div>
+
+        <div class="setup-secao">
+            <div class="setup-secao-titulo">Produtos</div>
+            <input class="setup-url-input" id="setupProdUrl" type="url"
+                placeholder="Cole o link do Google Sheets publicado como CSV...">
+            <div class="setup-divider">ou</div>
+            <div class="setup-row">
+                <button class="setup-file-btn" onclick="document.getElementById('setupProdFile').click()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar arquivo CSV
+                </button>
+                <span class="setup-example-link" onclick="baixarExemplo('prod')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Exemplo
+                </span>
+            </div>
+            <input type="file" id="setupProdFile" accept=".csv,text/csv" style="display:none" onchange="handleSetupFile(this,'prod')">
+            <div class="setup-status" id="setupProdStatus"></div>
+        </div>
+
+        <div class="setup-secao">
+            <div class="setup-secao-titulo">Infraestrutura</div>
+            <input class="setup-url-input" id="setupInfraUrl" type="url"
+                placeholder="Cole o link do Google Sheets publicado como CSV...">
+            <div class="setup-divider">ou</div>
+            <div class="setup-row">
+                <button class="setup-file-btn" onclick="document.getElementById('setupInfraFile').click()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar arquivo CSV
+                </button>
+                <span class="setup-example-link" onclick="baixarExemplo('infra')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Exemplo
+                </span>
+            </div>
+            <input type="file" id="setupInfraFile" accept=".csv,text/csv" style="display:none" onchange="handleSetupFile(this,'infra')">
+            <div class="setup-status" id="setupInfraStatus"></div>
+        </div>
+
+        <button class="setup-salvar-btn" onclick="salvarSetupBanco()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Salvar e continuar
+        </button>
+    </div>
+
     <!-- TIPO -->
     <div class="card">
         <div class="card-titulo">Tipo do projeto</div>
@@ -917,9 +1051,12 @@ body {
     </div>
 </div>
 
-<!-- ASSINATURA CPZ -->
-<div style="display:flex;align-items:center;justify-content:center;padding:20px 16px 8px;">
+<!-- ASSINATURA CPZ + CONFIG -->
+<div class="assinatura-area">
     <img src="cpz-assinatura.png" alt="CPZ Digital" style="width:130px;height:auto;background:white;border-radius:8px;padding:4px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <button class="btn-config" onclick="abrirConfigBanco()" title="Configurações">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
 </div>
 
 <!-- BOTÕES FIXOS -->
@@ -1019,9 +1156,10 @@ function parseCsv(texto, temCodigo) {
             if (!codigo||!nome||isNaN(valor)) continue;
             res.push({codigo, nome:simplificarNome(nome), valor});
         } else {
-            if (campos.length<5) continue;
-            const nome=campos[1].replace(/^"|"$/g,"").trim();
-            const valor=parseFloat(campos[4].replace(/^"|"$/g,"").replace(",",".").replace(/[^\d.]/g,"").trim());
+            if (campos.length<2) continue;
+            const nome=(campos.length>=5?campos[1]:campos[0]).replace(/^"|"$/g,"").trim();
+            const rawV=(campos.length>=5?campos[4]:campos[1]).replace(/^"|"$/g,"");
+            const valor=parseFloat(rawV.replace(",",".").replace(/[^\d.]/g,"").trim());
             if (!nome||isNaN(valor)) continue;
             res.push({nome:simplificarNome(nome), valor});
         }
@@ -1030,14 +1168,24 @@ function parseCsv(texto, temCodigo) {
 }
 
 async function carregarBanco() {
-    try {
-        const r = await fetch(URL_PRODUTOS);
-        if (r.ok) { const l=parseCsv(await r.text(),true); if(l.length) produtos=l; }
-    } catch(e) { console.error("Produtos:",e.message); }
-    try {
-        const r = await fetch(URL_INFRA);
-        if (r.ok) { const l=parseCsv(await r.text(),false); if(l.length) itensInfra=l; }
-    } catch(e) { console.error("Infra:",e.message); }
+    // Produtos
+    const csvProd = localStorage.getItem('orcapro_prod_csv');
+    const urlProd = localStorage.getItem('orcapro_prod_url') || URL_PRODUTOS;
+    if (csvProd) {
+        const l = parseCsv(csvProd, true); if (l.length) produtos = l;
+    } else if (urlProd) {
+        try { const r=await fetch(urlProd); if(r.ok){const l=parseCsv(await r.text(),true);if(l.length)produtos=l;} }
+        catch(e) { console.error("Produtos:",e.message); }
+    }
+    // Infra
+    const csvInfra = localStorage.getItem('orcapro_infra_csv');
+    const urlInfra = localStorage.getItem('orcapro_infra_url') || URL_INFRA;
+    if (csvInfra) {
+        const l = parseCsv(csvInfra, false); if (l.length) itensInfra = l;
+    } else if (urlInfra) {
+        try { const r=await fetch(urlInfra); if(r.ok){const l=parseCsv(await r.text(),false);if(l.length)itensInfra=l;} }
+        catch(e) { console.error("Infra:",e.message); }
+    }
 }
 
 // ── COMPONENTE DE BUSCA ──
@@ -2396,12 +2544,120 @@ function renderPagamento() {
     document.getElementById('pagConteudo').innerHTML = html;
 }
 
+// ── SETUP BANCO ──
+let _setupProdCsv  = null;
+let _setupInfraCsv = null;
+
+function fecharSetupBanco() {
+    localStorage.setItem('orcapro_banco_ok', '1');
+    document.getElementById('cardSetupBanco').style.display = 'none';
+}
+
+function abrirConfigBanco() {
+    const card = document.getElementById('cardSetupBanco');
+    document.getElementById('setupProdUrl').value  = localStorage.getItem('orcapro_prod_url')  || '';
+    document.getElementById('setupInfraUrl').value = localStorage.getItem('orcapro_infra_url') || '';
+    document.getElementById('setupProdStatus').textContent  = localStorage.getItem('orcapro_prod_csv')  ? '✓ Arquivo carregado' : '';
+    document.getElementById('setupInfraStatus').textContent = localStorage.getItem('orcapro_infra_csv') ? '✓ Arquivo carregado' : '';
+    _setupProdCsv = null; _setupInfraCsv = null;
+    card.style.display = '';
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function handleSetupFile(input, tipo) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        if (tipo === 'prod') {
+            _setupProdCsv = ev.target.result;
+            document.getElementById('setupProdStatus').textContent = '✓ ' + file.name;
+            document.getElementById('setupProdUrl').value = '';
+        } else {
+            _setupInfraCsv = ev.target.result;
+            document.getElementById('setupInfraStatus').textContent = '✓ ' + file.name;
+            document.getElementById('setupInfraUrl').value = '';
+        }
+    };
+    reader.readAsText(file);
+}
+
+async function salvarSetupBanco() {
+    const prodUrl  = document.getElementById('setupProdUrl').value.trim();
+    const infraUrl = document.getElementById('setupInfraUrl').value.trim();
+
+    if (_setupProdCsv) {
+        localStorage.setItem('orcapro_prod_csv', _setupProdCsv);
+        localStorage.removeItem('orcapro_prod_url');
+    } else if (prodUrl) {
+        localStorage.setItem('orcapro_prod_url', prodUrl);
+        localStorage.removeItem('orcapro_prod_csv');
+    }
+
+    if (_setupInfraCsv) {
+        localStorage.setItem('orcapro_infra_csv', _setupInfraCsv);
+        localStorage.removeItem('orcapro_infra_url');
+    } else if (infraUrl) {
+        localStorage.setItem('orcapro_infra_url', infraUrl);
+        localStorage.removeItem('orcapro_infra_csv');
+    }
+
+    fecharSetupBanco();
+    produtos = []; itensInfra = [];
+    await carregarBanco();
+    document.querySelectorAll('.item-produto .item-busca-wrapper').forEach(w => w.setOpcoes && w.setOpcoes(opcoesParaProdutos()));
+    document.querySelectorAll('.item-infra .item-busca-wrapper').forEach(w => w.setOpcoes && w.setOpcoes(opcoesParaInfra()));
+    mostrarToast('Banco de dados atualizado!');
+}
+
+function baixarExemplo(tipo) {
+    let csv, nome;
+    if (tipo === 'prod') {
+        csv = 'Código,Nome,Valor\n' +
+              'CAM-001,Câmera Bullet 2MP Full HD,150.00\n' +
+              'CAM-002,Câmera Dome 4MP IP,280.00\n' +
+              'CAM-003,Câmera PTZ 4MP IP,650.00\n' +
+              'DVR-001,DVR 8 canais Full HD,320.00\n' +
+              'DVR-002,NVR 8 canais IP,480.00\n' +
+              'ARM-001,HD 1TB para CFTV,250.00\n' +
+              'ARM-002,HD 2TB para CFTV,420.00\n' +
+              'CAB-001,Cabo coaxial RG59 100m,85.00\n' +
+              'CAB-002,Cabo UTP Cat5e 100m,110.00\n' +
+              'ENG-001,Fonte chaveada 5A,45.00\n' +
+              'SW-001,Switch 8 portas 10/100,120.00\n' +
+              'INF-001,Caixa de passagem 4x4,8.00\n' +
+              'AUT-001,Central de alarme 8 zonas,380.00\n' +
+              'AUT-002,Sensor de presença IR,55.00';
+        nome = 'exemplo-produtos.csv';
+    } else {
+        csv = 'Nome,Valor\n' +
+              'Eletroduto 3/4" 3m,12.50\n' +
+              'Caixa de passagem 4x4,8.00\n' +
+              'Conector BNC (par),2.50\n' +
+              'Abraçadeira plástica (pc 100),18.00\n' +
+              'Fita isolante,6.00\n' +
+              'Bucha e parafuso (pc 50),12.00\n' +
+              'Calha 20x10 1m,7.00\n' +
+              'Terminal ilhós 6mm (pc 50),14.00\n' +
+              'Duto flexível 1/2" 1m,5.50';
+        nome = 'exemplo-infra.csv';
+    }
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = nome; a.click();
+    URL.revokeObjectURL(url);
+}
+
 // ── INIT ──
 async function init() {
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
     const logoSalva = localStorage.getItem('orcapro_logo');
-    if (logoSalva)    aplicarLogo(logoSalva);
+    if (logoSalva)        aplicarLogo(logoSalva);
     else if (CONFIG.logo) aplicarLogo(CONFIG.logo);
+    if (!localStorage.getItem('orcapro_banco_ok')) {
+        document.getElementById('cardSetupBanco').style.display = '';
+    }
     await carregarBanco();
     if (!restaurarEstado()) {
         adicionarProduto();
