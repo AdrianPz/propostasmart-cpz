@@ -1,52 +1,90 @@
 # PropostaSmart — Manual do Usuário
 
-Gerador de propostas comerciais para empresas de segurança eletrônica e CFTV. Funciona 100% no navegador, sem instalação, sem internet obrigatória (após configuração inicial).
+Gerador de propostas comerciais para empresas de segurança eletrônica e CFTV. Funciona 100% no navegador, pode ser instalado como app no celular e sincroniza propostas na nuvem entre dispositivos e equipe.
 
 ---
 
 ## Índice
 
-1. [Primeira configuração](#1-primeira-configuração)
-2. [Montando o orçamento](#2-montando-o-orçamento)
-3. [Cálculo do valor final](#3-cálculo-do-valor-final)
-4. [Formas de pagamento](#4-formas-de-pagamento)
-5. [Exportar proposta](#5-exportar-proposta)
-6. [Menu de configurações](#6-menu-de-configurações-️)
-7. [Formato das planilhas](#7-formato-das-planilhas)
-8. [Dúvidas frequentes](#8-dúvidas-frequentes)
+1. [Primeiros passos](#1-primeiros-passos)
+2. [Conta e equipe](#2-conta-e-equipe)
+3. [Banco de dados](#3-banco-de-dados)
+4. [Montando o orçamento](#4-montando-o-orçamento)
+5. [Cálculo do valor final](#5-cálculo-do-valor-final)
+6. [Desconto e margem](#6-desconto-e-margem)
+7. [Formas de pagamento](#7-formas-de-pagamento)
+8. [Exportar proposta](#8-exportar-proposta)
+9. [Histórico de propostas](#9-histórico-de-propostas)
+10. [Menu de configurações](#10-menu-de-configurações-️)
+11. [Instalar como app (PWA)](#11-instalar-como-app-pwa)
+12. [Formato das planilhas](#12-formato-das-planilhas)
+13. [Dúvidas frequentes](#13-dúvidas-frequentes)
 
 ---
 
-## 1. Primeira configuração
+## 1. Primeiros passos
 
-Na primeira vez que abrir o app, aparece o card **Banco de dados**.
+Na primeira abertura, um modal de boas-vindas explica o fluxo inicial. Para começar:
 
-### Conectar planilha de produtos
+1. Toque no ícone **⚙️ engrenagem** no rodapé
+2. Na seção **Conta**, crie sua conta ou faça login
+3. Na seção **Banco de dados**, conecte sua planilha de produtos
+4. Configure nome da empresa, logo e valores de serviço
 
-Você tem duas opções:
+---
 
-**Opção A — Google Sheets (recomendado)**
+## 2. Conta e equipe
+
+O PropostaSmart tem sistema de contas para sincronizar propostas entre dispositivos e equipe.
+
+### Criar conta
+1. Abra **⚙️ Configurações → Conta**
+2. Escolha a aba **Criar conta**
+3. Preencha nome, e-mail e senha
+4. Escolha **Criar empresa** e informe o nome da empresa
+5. Após o cadastro, um **código de 6 caracteres** é gerado para sua empresa
+
+### Convidar vendedores
+Compartilhe o código de 6 caracteres com outros vendedores. Eles criam a própria conta escolhendo **Entrar em empresa** e digitando o código.
+
+### Quando logado
+- Propostas salvas ficam na nuvem e aparecem para todos da equipe
+- Cada proposta exibe o nome do vendedor que a criou
+- Sincronização automática entre celular, tablet e computador
+
+### Login / Logout
+Acesse sempre por **⚙️ Configurações → Conta**.
+
+---
+
+## 3. Banco de dados
+
+O app usa duas planilhas: uma de **produtos** (com código e preço) e uma de **infraestrutura** (itens de instalação).
+
+### Conectar planilha Google Sheets (recomendado)
+
 1. Abra sua planilha no Google Sheets
 2. Vá em **Arquivo → Compartilhar → Publicar na web**
-3. Escolha a aba de produtos, formato **CSV** e clique em **Publicar**
-4. Copie o link gerado e cole no campo **Produtos**
+3. Selecione a aba correta, formato **CSV** e clique em **Publicar**
+4. Copie o link e cole no campo correspondente em **⚙️ Configurações → Banco de dados**
 
-**Opção B — Arquivo CSV local**
-1. Clique no botão de upload (ícone ↑) ao lado do campo
-2. Selecione seu arquivo `.csv`
-3. O arquivo é lido e armazenado localmente — não precisa de internet depois
+### Conectar arquivo CSV local
 
-Repita o processo para **Infraestrutura** e clique em **Salvar e continuar**.
+1. Clique no botão ↑ ao lado do campo
+2. Selecione o arquivo `.csv`
+3. O arquivo é armazenado localmente — sem necessidade de internet depois
 
-> **Dica:** Baixe os arquivos de exemplo clicando em **Exemplo** para ver o formato esperado antes de montar sua planilha.
+> **Dica:** Clique em **Exemplo** para baixar um CSV de exemplo com o formato correto.
+
+### Atualização automática de preços
+
+Se você usar URL do Google Sheets, o app verifica automaticamente ao abrir se a planilha foi alterada. Quando detecta mudança, exibe um banner amarelo com opção de **Atualizar** ou **Ignorar**.
 
 ---
 
-## 2. Montando o orçamento
+## 4. Montando o orçamento
 
 ### Tipo de projeto
-
-Selecione o tipo que melhor descreve o projeto:
 
 | Tipo | Quando usar |
 |------|-------------|
@@ -59,34 +97,34 @@ Selecione o tipo que melhor descreve o projeto:
 ### Adicionando produtos
 
 1. Clique em **+ Produto**
-2. Digite o nome ou código no campo de busca — os resultados aparecem em tempo real
-3. Ajuste a quantidade com os botões **+** e **−**
-4. Para alterar o valor unitário, toque no preço em verde — um campo de edição aparece
+2. Digite nome ou código no campo de busca — resultados aparecem em tempo real
+3. Ajuste a quantidade com **+** e **−**
+4. Para alterar o valor unitário, toque no preço em verde
 
-> O badge **Total de câmeras** atualiza automaticamente contando todos os itens com código `CAM-`.
+> O badge **Total de câmeras** atualiza automaticamente contando itens com código `CAM-`.
 
 ### Adicionando infraestrutura
 
-Itens de infra (eletrodutos, caixas, cabos de força, abraçadeiras, etc.) ficam em uma seção separada e **não entram no multiplicador** — são somados diretamente ao custo.
+Itens de infra (eletrodutos, caixas, cabos, abraçadeiras etc.) ficam em seção separada e **não entram no multiplicador** — são somados diretamente ao custo.
 
 ### Serviço
 
-- **Dias de trabalho:** dias que a equipe estará no local (gera custo de diária + deslocamento)
-- **Dias com diarista:** dias com ajudante extra (custo adicional por dia)
+- **Dias de trabalho:** dias que a equipe ficará no local
+- **Funcionários no local:** número de pessoas por dia
+
+Os valores de diária e deslocamento são configuráveis por funcionário em **⚙️ Configurações → Valores de serviço**.
 
 ---
 
-## 3. Cálculo do valor final
-
-O valor final é calculado pela fórmula:
+## 5. Cálculo do valor final
 
 ```
-Valor Final = arredondado(( Equipamentos × Multiplicador + Despesas ) / 50) × 50
+Valor Final = arredondado((Equipamentos × Multiplicador + Despesas) / 50) × 50
 ```
 
-**Despesas** = Deslocamento + Diárias + Diarista + Infraestrutura
+**Despesas** = Deslocamento + Diárias + Infraestrutura
 
-O **Multiplicador** varia por tipo de projeto e dificuldade:
+O **Multiplicador** varia por tipo de projeto e dificuldade (número de câmeras):
 
 | Tipo | Fácil (≤8 câm.) | Médio (9–32 câm.) | Difícil (≥33 câm.) |
 |------|:-:|:-:|:-:|
@@ -96,15 +134,35 @@ O **Multiplicador** varia por tipo de projeto e dificuldade:
 | Automação | 2,2× | 2,4× | 2,7× |
 | Sensores | 2,0× | 2,2× | 2,3× |
 
-> Os multiplicadores podem ser ajustados em **⚙ Configurações → Multiplicadores de preço**.
+> Multiplicadores ajustáveis em **⚙️ Configurações → Multiplicadores de preço**.
 
-Toque em **Ver detalhes** no card azul para ver o breakdown de equipamentos, infra e serviço.
+Toque em **Ver detalhes** no card de resultado para ver o breakdown completo.
 
 ---
 
-## 4. Formas de pagamento
+## 6. Desconto e margem
 
-Toque em **💳 Pagamento** para abrir a análise financeira. O app simula o fluxo de caixa para cada opção e avisa quando uma parcela deixa o caixa negativo.
+### Desconto
+
+O campo de desconto (0–50%) fica no card de resultado. O valor é arredondado para o múltiplo de R$ 50 mais próximo e aplicado em tempo real.
+
+### Margem estimada
+
+Abaixo do desconto, o app exibe a **margem bruta estimada** e o **lucro em R$** calculados com base nos custos reais (produtos + infra + deslocamento + diárias):
+
+| Cor | Significado |
+|-----|-------------|
+| 🟢 Verde | Margem ≥ 30% — saudável |
+| 🟡 Amarelo | Margem entre 15% e 30% — atenção |
+| 🔴 Vermelho | Margem < 15% — perigoso |
+
+> A margem é visível apenas no app — não aparece no PDF nem no Excel.
+
+---
+
+## 7. Formas de pagamento
+
+Toque em **💳 Pagamento** para abrir a análise financeira.
 
 ### À vista (Pix)
 - **50% + 50%:** metade na aprovação, metade na conclusão
@@ -116,57 +174,94 @@ Toque em **💳 Pagamento** para abrir a análise financeira. O app simula o flu
 ### Cartão de crédito (+10%)
 - 2× a 6× com acréscimo de 10% no total
 
-Opções marcadas como **inviáveis** (caixa acumulado negativo) ficam riscadas e bloqueadas — o app seleciona automaticamente a menor opção viável.
-
-Cada parcela exibe:
-- Valor que entra (recebe)
-- Saídas previstas (material, infra, deslocamento, diarista, mão de obra)
-- Saldo do período e caixa acumulado
+Opções inviáveis (caixa acumulado negativo) ficam riscadas. Cada parcela exibe: valor recebido, saídas previstas e saldo acumulado.
 
 ---
 
-## 5. Exportar proposta
+## 8. Exportar proposta
 
-Dentro do modal de pagamento, clique em **Exportar**.
-
-Preencha os dados do cliente:
+Dentro do modal de pagamento, clique em **Exportar**. Preencha os dados do cliente:
 
 | Campo | Descrição |
 |-------|-----------|
-| **Nome** | Nome completo do cliente (obrigatório) |
+| **Nome** | Nome do cliente (obrigatório) |
 | **Telefone** | Para link automático do WhatsApp (obrigatório) |
 | **E-mail** | Opcional, aparece na proposta |
 | **Data** | Data do orçamento (padrão: hoje) |
-| **Validade** | Prazo de validade em dias (padrão: 15) |
-| **Prazo execução** | Dias úteis para conclusão (padrão: 2) |
+| **Validade** | Prazo de validade em dias |
+| **Prazo execução** | Dias úteis para conclusão |
+| **Observações** | Texto livre que aparece no final do PDF |
 
 ### PDF
-- Proposta profissional com: dados do cliente, relação de materiais, tabela de pagamento e assinaturas
-- No **celular:** abre o compartilhamento nativo (WhatsApp, e-mail, etc.)
-- No **computador:** salva o arquivo e abre o WhatsApp Web automaticamente
+- Proposta profissional com dados do cliente, relação de materiais, tabela de pagamento e assinaturas
+- **Celular:** abre o compartilhamento nativo (WhatsApp, e-mail, Drive etc.)
+- **Computador:** salva o arquivo e exibe um botão **Enviar no WhatsApp** por 9 segundos
 
 ### Excel (.xlsx)
 - **Aba Orçamento:** proposta completa formatada
-- **Aba Financeiro:** análise de todas as formas de pagamento (à vista, boleto e cartão) com viabilidade de caixa
+- **Aba Financeiro:** análise de todas as formas de pagamento com viabilidade de caixa
+
+> A proposta é salva automaticamente no histórico ao gerar o PDF.
 
 ---
 
-## 6. Menu de configurações ⚙️
+## 9. Histórico de propostas
 
-Acesse pelo botão de engrenagem no rodapé do app (canto inferior direito).
+Acesse pelo ícone de **🕐 relógio** no rodapé (ao lado da assinatura).
+
+- **Salvar proposta atual:** salva o orçamento com nome do cliente e valor total
+- **Reabrir:** substitui o orçamento atual pela proposta salva (com confirmação)
+- **Excluir:** remove a proposta do histórico
+
+**Quando logado:** propostas ficam na nuvem, visíveis para todos da equipe, com o nome do vendedor que criou cada uma. Limite de 50 propostas.
+
+**Quando deslogado:** propostas ficam no navegador (localStorage). Limite de 30.
+
+---
+
+## 10. Menu de configurações ⚙️
+
+Acesse pelo ícone de engrenagem no rodapé (canto inferior direito).
+
+### 👤 Conta
+Login, cadastro e logout. Exibe nome, empresa e código de convite quando logado.
+
+### 🏢 Nome da empresa
+Nome exibido no subtítulo do app e em todos os documentos gerados.
 
 ### 🗄️ Banco de dados
-Atualize os links ou arquivos CSV de produtos e infraestrutura a qualquer momento.
+Atualize os links ou arquivos CSV de produtos e infraestrutura.
 
 ### 🖼️ Logo da empresa
-Envie a logo da empresa do seu dispositivo. A imagem é salva localmente no navegador e aparece no topo do app. Dimensões recomendadas: **130 × 34 px**, PNG ou JPG.
+Envie a logo do dispositivo. Salva localmente e aparece no topo do app. Recomendado: **130 × 34 px**, PNG ou JPG.
 
 ### ✖️ Multiplicadores de preço
-Edite os fatores de multiplicação para cada combinação de tipo e dificuldade. As alterações são salvas automaticamente e aplicadas no próximo cálculo.
+Fatores de markup por tipo de projeto e dificuldade.
+
+### 💰 Valores de serviço
+Diária por funcionário e custo de deslocamento por dia.
+
+### 📋 Padrões da proposta
+Prazo de execução, validade e garantia pré-preenchidos ao exportar.
 
 ---
 
-## 7. Formato das planilhas
+## 11. Instalar como app (PWA)
+
+O PropostaSmart pode ser instalado no celular como um app nativo, sem precisar da loja de aplicativos.
+
+**Android (Chrome):**
+- Acesse o app no Chrome → toque nos **3 pontos** → **Adicionar à tela inicial**
+- Ou aguarde o banner de instalação aparecer automaticamente
+
+**iPhone (Safari):**
+- Acesse o app no Safari → toque em **Compartilhar** (ícone de caixa com seta) → **Adicionar à Tela de Início**
+
+Após instalado, o app abre em tela cheia, sem barra do navegador, e funciona offline após a configuração inicial.
+
+---
+
+## 12. Formato das planilhas
 
 ### Planilha de produtos
 
@@ -199,22 +294,25 @@ Edite os fatores de multiplicação para cada combinação de tipo e dificuldade
 
 ---
 
-## 8. Dúvidas frequentes
+## 13. Dúvidas frequentes
 
 **O app funciona sem internet?**
-Sim. Após a configuração inicial (carregamento dos produtos), o app funciona offline. Se usar arquivo CSV em vez de URL, nunca precisa de internet.
+Sim. Após a configuração inicial, funciona offline. Se usar arquivo CSV em vez de URL, nunca precisa de internet.
 
 **Os dados ficam salvos se eu fechar o app?**
-Sim. O orçamento em andamento, as configurações, a logo e os dados do banco são salvos automaticamente no navegador (localStorage).
+Sim. O orçamento em andamento, configurações e logo são salvos automaticamente. Quando logado, as propostas ficam na nuvem.
 
 **Como limpar o orçamento atual?**
-Toque no botão circular (↺) ao lado de **💳 Pagamento** para apagar o orçamento atual e começar do zero. Os dados de configuração não são afetados.
+Toque no botão **↺** ao lado de **💳 Pagamento** para começar do zero. As configurações não são afetadas.
 
 **Posso usar em vários dispositivos?**
-As configurações ficam salvas por dispositivo/navegador. Para usar em outro dispositivo, repita a configuração inicial (logo, banco de dados, multiplicadores).
+Sim, quando logado. As propostas sincronizam automaticamente. As configurações locais (logo, banco de dados) precisam ser feitas em cada dispositivo.
 
 **Como atualizo minha lista de produtos?**
-Se estiver usando URL do Google Sheets, basta atualizar a planilha — o app carrega a versão mais recente ao abrir. Se estiver usando arquivo CSV, vá em **⚙ Configurações → Banco de dados** e envie o novo arquivo.
+Se usar URL do Google Sheets, o app detecta automaticamente quando a planilha muda e exibe um banner de atualização. Se usar arquivo CSV, vá em **⚙️ Configurações → Banco de dados** e envie o novo arquivo.
+
+**Como compartilho o código da empresa com minha equipe?**
+Vá em **⚙️ Configurações → Conta** e toque no código — ele é copiado automaticamente para a área de transferência.
 
 ---
 
