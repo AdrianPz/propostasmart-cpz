@@ -245,23 +245,16 @@ body {
 }
 .setup-url-input:focus { border-color: var(--blue); }
 .setup-url-input::placeholder { color: var(--muted); font-size: 12px; }
-.setup-divider {
-    display: flex; align-items: center; gap: 8px;
-    margin: 10px 0; font-size: 11px; color: var(--muted); font-weight: 600;
-}
-.setup-divider::before, .setup-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border2);
-}
 .setup-row { display: flex; gap: 8px; align-items: center; }
-.setup-file-btn {
-    flex: 1; min-height: 38px;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
+.setup-icon-btn {
+    width: 40px; height: 40px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
     background: var(--item-bg); border: 1.5px solid var(--border2);
-    border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--label);
+    border-radius: 10px; color: var(--muted);
     cursor: pointer; font-family: inherit;
     transition: border-color 0.15s, color 0.15s;
 }
-.setup-file-btn:hover { border-color: var(--blue); color: var(--blue); }
+.setup-icon-btn:hover { border-color: var(--blue); color: var(--blue); }
 .setup-example-link {
     display: flex; align-items: center; gap: 5px;
     font-size: 12px; font-weight: 600; color: var(--muted);
@@ -864,15 +857,12 @@ body {
 
         <div class="setup-secao">
             <div class="setup-secao-titulo">Produtos</div>
-            <input class="setup-url-input" id="setupProdUrl" type="url"
-                placeholder="Cole o link do Google Sheets publicado como CSV...">
-            <div class="setup-divider">ou</div>
             <div class="setup-row">
-                <button class="setup-file-btn" onclick="document.getElementById('setupProdFile').click()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Enviar arquivo CSV
+                <input class="setup-url-input" id="setupProdUrl" type="url" placeholder="Link do Google Sheets (CSV)...">
+                <button class="setup-icon-btn" onclick="document.getElementById('setupProdFile').click()" title="Enviar arquivo CSV">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 </button>
-                <span class="setup-example-link" onclick="baixarExemplo('prod')">
+                <span class="setup-example-link" onclick="baixarExemplo('prod')" title="Baixar CSV de exemplo">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Exemplo
                 </span>
@@ -883,15 +873,12 @@ body {
 
         <div class="setup-secao">
             <div class="setup-secao-titulo">Infraestrutura</div>
-            <input class="setup-url-input" id="setupInfraUrl" type="url"
-                placeholder="Cole o link do Google Sheets publicado como CSV...">
-            <div class="setup-divider">ou</div>
             <div class="setup-row">
-                <button class="setup-file-btn" onclick="document.getElementById('setupInfraFile').click()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Enviar arquivo CSV
+                <input class="setup-url-input" id="setupInfraUrl" type="url" placeholder="Link do Google Sheets (CSV)...">
+                <button class="setup-icon-btn" onclick="document.getElementById('setupInfraFile').click()" title="Enviar arquivo CSV">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 </button>
-                <span class="setup-example-link" onclick="baixarExemplo('infra')">
+                <span class="setup-example-link" onclick="baixarExemplo('infra')" title="Baixar CSV de exemplo">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Exemplo
                 </span>
