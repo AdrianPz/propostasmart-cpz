@@ -1759,6 +1759,13 @@ body {
                         <label>CNPJ</label>
                         <input class="exp-input" id="cfgCnpjInput" type="text" placeholder="00.000.000/0001-00">
                     </div>
+                    <div class="exp-field" style="grid-column:1/-1;">
+                        <label>Cor da marca</label>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <input type="color" id="cfgCorInput" value="#0055b3" style="width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px;" oninput="document.getElementById('cfgCorHex').value=this.value">
+                            <input class="exp-input" id="cfgCorHex" type="text" placeholder="#0055b3" style="flex:1;font-family:monospace;" oninput="sincronizarCor(this.value)">
+                        </div>
+                    </div>
                 </div>
                 <button class="setup-salvar-btn" onclick="salvarDadosEmpresa()">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1985,6 +1992,39 @@ body {
             </div>
         </div>
 
+        <!-- Textos da proposta -->
+        <div class="cfg-item">
+            <div class="cfg-item-header" onclick="toggleCfg('Textos')">
+                <div class="cfg-item-label">
+                    <span class="cfg-item-icon">📝</span>
+                    <span class="cfg-item-titulo">Textos da proposta</span>
+                </div>
+                <span class="cfg-item-seta" id="cfgSetaTextos">▼</span>
+            </div>
+            <div class="cfg-item-body" id="cfgBodyTextos">
+                <p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.6;">
+                    Textos padrão que aparecem em todas as propostas geradas.
+                </p>
+                <div class="exp-field" style="margin-bottom:10px;">
+                    <label class="exp-label">Mensagem institucional</label>
+                    <textarea class="exp-input" id="cfgMsgInstitucional" rows="2" style="resize:vertical;min-height:56px;" placeholder="Ex.: Nossa empresa agradece a oportunidade..."></textarea>
+                </div>
+                <div class="exp-field" style="margin-bottom:10px;">
+                    <label class="exp-label">Texto do escopo</label>
+                    <textarea class="exp-input" id="cfgEscopo" rows="3" style="resize:vertical;min-height:72px;" placeholder="Ex.: Fornecimento e instalação de sistema de vigilância..."></textarea>
+                </div>
+                <div class="exp-field" style="margin-bottom:12px;">
+                    <label class="exp-label">Observações padrão</label>
+                    <textarea class="exp-input" id="cfgObsPadrao" rows="2" style="resize:vertical;min-height:56px;" placeholder="Texto pré-preenchido no campo de observações ao exportar..."></textarea>
+                </div>
+                <button class="setup-salvar-btn" onclick="salvarTextos()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Salvar textos
+                </button>
+                <div class="setup-status" id="cfgTextosStatus"></div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -2009,7 +2049,10 @@ const CONFIG = {
     telefone:    '',                    // telefone de contato
     email:       '',                    // e-mail de contato
     logo:        '',                    // caminho da imagem de logo (ex: "logo.png")
-    corPrimaria: '#0055b3',             // cor principal dos documentos gerados
+    corPrimaria:        '#0055b3',      // cor principal dos documentos gerados
+    msgInstitucional:   '',             // mensagem institucional no topo do PDF
+    escopo:             '',             // texto do escopo da proposta
+    obsPadrao:          '',             // observações pré-preenchidas ao exportar
     // URLs da planilha Google Sheets publicada como CSV
     urlProdutos: '',                    // link da aba de produtos
     urlInfra:    '',                    // link da aba de infraestrutura
@@ -2904,7 +2947,7 @@ function abrirExportar() {
     if (ci.nome)     document.getElementById('expNome').value     = ci.nome;
     if (ci.tel)      document.getElementById('expTel').value      = ci.tel;
     if (ci.email)    document.getElementById('expEmail').value    = ci.email;
-    if (ci.obs)      document.getElementById('expObs').value      = ci.obs;
+    document.getElementById('expObs').value = ci.obs || CONFIG.obsPadrao || '';
     document.getElementById('expValidade').value = ci.validade || p.validade || '15';
     document.getElementById('expPrazo').value    = ci.prazo    || p.prazo    || '2';
     document.getElementById('expGarantia').value = ci.garantia || p.garantia || '6 meses';
@@ -2950,7 +2993,7 @@ function gerarPDF() {
     const corL = '#e8eef8';
     const corR = '#f7f9ff';
 
-    const msgInstitucional = marca + ' agradece a oportunidade de apresentar esta proposta e coloca-se à disposição para esclarecer qualquer dúvida.';
+    const msgInstitucional = CONFIG.msgInstitucional || (marca + ' agradece a oportunidade de apresentar esta proposta e coloca-se à disposição para esclarecer qualquer dúvida.');
     const garantia = _clienteInfo.garantia || getPadroes().garantia || '';
     const responsavel = CONFIG.responsavel;
     const cnpj        = CONFIG.cnpj;
@@ -3042,6 +3085,7 @@ function gerarPDF() {
         '{{tel}}':               tel,
         '{{email_row}}':         email ? '<tr><td style="color:#888;">E-mail</td><td colspan="3" style="font-weight:700;">' + email + '</td></tr>' : '',
         '{{msg_institucional}}': msgInstitucional,
+        '{{escopo_texto}}':      CONFIG.escopo || 'Fornecimento e instalação de sistema de segurança eletrônica conforme especificações abaixo.',
         '{{qtd_cameras_row}}':   qtdCamerasRow,
         '{{relacao_materiais}}': relacaoMateriais,
         '{{responsavel}}':       responsavel,
@@ -3993,19 +4037,46 @@ function salvarPadroes() {
     setTimeout(() => { document.getElementById('cfgPadroesStatus').textContent = ''; }, 2000);
 }
 
+function sincronizarCor(hex) {
+    const limpo = hex.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(limpo)) {
+        document.getElementById('cfgCorInput').value = limpo;
+    }
+}
+
 function salvarDadosEmpresa() {
     const nome       = document.getElementById('cfgEmpresaInput').value.trim();
     const responsavel= document.getElementById('cfgResponsavelInput').value.trim();
     const telefone   = document.getElementById('cfgTelefoneInput').value.trim();
     const email      = document.getElementById('cfgEmailInput').value.trim();
     const cnpj       = document.getElementById('cfgCnpjInput').value.trim();
+    const cor        = document.getElementById('cfgCorInput').value.trim();
     if (nome)        { localStorage.setItem('orcapro_empresa',     nome);        CONFIG.empresa     = nome;        document.getElementById('subtituloApp').textContent = nome; }
     if (responsavel !== undefined) { localStorage.setItem('orcapro_responsavel', responsavel); CONFIG.responsavel = responsavel; }
     if (telefone    !== undefined) { localStorage.setItem('orcapro_telefone',    telefone);    CONFIG.telefone    = telefone; }
     if (email       !== undefined) { localStorage.setItem('orcapro_email',       email);       CONFIG.email       = email; }
     if (cnpj        !== undefined) { localStorage.setItem('orcapro_cnpj',        cnpj);        CONFIG.cnpj        = cnpj; }
+    if (cor && /^#[0-9a-fA-F]{6}$/.test(cor)) {
+        localStorage.setItem('orcapro_cor_primaria', cor);
+        CONFIG.corPrimaria = cor;
+        document.getElementById('cfgCorHex').value = cor;
+    }
     document.getElementById('cfgEmpresaStatus').textContent = '✓ Dados salvos';
     setTimeout(() => { document.getElementById('cfgEmpresaStatus').textContent = ''; }, 2000);
+}
+
+function salvarTextos() {
+    const msg    = document.getElementById('cfgMsgInstitucional').value.trim();
+    const escopo = document.getElementById('cfgEscopo').value.trim();
+    const obs    = document.getElementById('cfgObsPadrao').value.trim();
+    localStorage.setItem('orcapro_msg_institucional', msg);
+    localStorage.setItem('orcapro_escopo',            escopo);
+    localStorage.setItem('orcapro_obs_padrao',        obs);
+    CONFIG.msgInstitucional = msg;
+    CONFIG.escopo           = escopo;
+    CONFIG.obsPadrao        = obs;
+    document.getElementById('cfgTextosStatus').textContent = '✓ Textos salvos';
+    setTimeout(() => { document.getElementById('cfgTextosStatus').textContent = ''; }, 2000);
 }
 
 function abrirConfig() {
@@ -4029,6 +4100,9 @@ function abrirConfig() {
     document.getElementById('cfgTelefoneInput').value    = localStorage.getItem('orcapro_telefone')    || CONFIG.telefone    || '';
     document.getElementById('cfgEmailInput').value       = localStorage.getItem('orcapro_email')       || CONFIG.email       || '';
     document.getElementById('cfgCnpjInput').value        = localStorage.getItem('orcapro_cnpj')        || CONFIG.cnpj        || '';
+    const corSalva = localStorage.getItem('orcapro_cor_primaria') || CONFIG.corPrimaria || '#0055b3';
+    document.getElementById('cfgCorInput').value = corSalva;
+    document.getElementById('cfgCorHex').value   = corSalva;
     document.getElementById('cfgEmpresaStatus').textContent = '';
     document.getElementById('cfgProdUrl').value  = localStorage.getItem('orcapro_prod_url')  || '';
     document.getElementById('cfgInfraUrl').value = localStorage.getItem('orcapro_infra_url') || '';
@@ -4047,6 +4121,10 @@ function abrirConfig() {
     document.getElementById('cfgValidadeDefault').value = p.validade || '15';
     document.getElementById('cfgGarantia').value        = p.garantia || '6 meses';
     document.getElementById('cfgPadroesStatus').textContent = '';
+    document.getElementById('cfgMsgInstitucional').value = localStorage.getItem('orcapro_msg_institucional') || CONFIG.msgInstitucional || '';
+    document.getElementById('cfgEscopo').value           = localStorage.getItem('orcapro_escopo')            || CONFIG.escopo           || '';
+    document.getElementById('cfgObsPadrao').value        = localStorage.getItem('orcapro_obs_padrao')        || CONFIG.obsPadrao        || '';
+    document.getElementById('cfgTextosStatus').textContent = '';
     _cfgProdCsv = null; _cfgInfraCsv = null;
     // Abre seção Conta automaticamente se não estiver logado
     if (!_supaUser) {
@@ -4514,6 +4592,14 @@ async function init() {
     if (emailSalvo !== null) CONFIG.email = emailSalvo;
     const cnpjSalvo = localStorage.getItem('orcapro_cnpj');
     if (cnpjSalvo !== null) CONFIG.cnpj = cnpjSalvo;
+    const corSalva = localStorage.getItem('orcapro_cor_primaria');
+    if (corSalva) CONFIG.corPrimaria = corSalva;
+    const msgSalva = localStorage.getItem('orcapro_msg_institucional');
+    if (msgSalva !== null) CONFIG.msgInstitucional = msgSalva;
+    const escopoSalvo = localStorage.getItem('orcapro_escopo');
+    if (escopoSalvo !== null) CONFIG.escopo = escopoSalvo;
+    const obsPadraoSalvo = localStorage.getItem('orcapro_obs_padrao');
+    if (obsPadraoSalvo !== null) CONFIG.obsPadrao = obsPadraoSalvo;
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
     const logoSalva = localStorage.getItem('orcapro_logo');
     if (logoSalva)        aplicarLogo(logoSalva);
