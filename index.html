@@ -1216,7 +1216,7 @@ body {
             <div class="logo-popover" id="logoPopover" onclick="event.stopPropagation()">
                 <button class="logo-popover-fechar" onclick="fecharLogoPopover()">✕</button>
                 <div class="logo-popover-titulo">Logo da empresa</div>
-                <p>Recomendado: <strong>130 × 34 px</strong>, PNG ou JPG com fundo branco ou transparente.</p>
+                <p>PNG ou JPG, qualquer tamanho. O app ajusta automaticamente.</p>
                 <button class="logo-upload-btn" onclick="document.getElementById('logoFileInput').click()">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     Enviar do dispositivo
@@ -1804,7 +1804,7 @@ body {
             </div>
             <div class="cfg-item-body" id="cfgBodyLogo">
                 <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                    Recomendado: <strong>130 × 34 px</strong>, PNG ou JPG com fundo branco ou transparente.
+                    PNG ou JPG, qualquer tamanho. O app ajusta automaticamente.
                 </p>
                 <button class="logo-upload-btn" style="width:100%;" onclick="document.getElementById('cfgLogoFile').click()">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -2601,15 +2601,32 @@ function aplicarLogo(src) {
     ph.style.cursor = 'default';
 }
 
+function redimensionarLogo(src, cb) {
+    const img = new Image();
+    img.onload = () => {
+        const MAX_W = 240, MAX_H = 68;
+        const scale = Math.min(MAX_W / img.width, MAX_H / img.height, 1);
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        cb(cv.toDataURL('image/png'));
+    };
+    img.src = src;
+}
+
 function handleLogoUpload(input) {
     const file = input.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
-        aplicarLogo(ev.target.result);
-        localStorage.setItem('orcapro_logo', ev.target.result);
-        fecharLogoPopover();
-        mostrarToast('Logo atualizada!');
+        redimensionarLogo(ev.target.result, dataUrl => {
+            aplicarLogo(dataUrl);
+            localStorage.setItem('orcapro_logo', dataUrl);
+            fecharLogoPopover();
+            mostrarToast('Logo atualizada!');
+        });
     };
     reader.readAsDataURL(file);
 }
@@ -4013,10 +4030,12 @@ function handleCfgFile(input, tipo) {
     if (tipo === 'logo') {
         const r = new FileReader();
         r.onload = ev => {
-            aplicarLogo(ev.target.result);
-            localStorage.setItem('orcapro_logo', ev.target.result);
-            document.getElementById('cfgLogoStatus').textContent = '✓ ' + file.name;
-            mostrarToast('Logo atualizada!');
+            redimensionarLogo(ev.target.result, dataUrl => {
+                aplicarLogo(dataUrl);
+                localStorage.setItem('orcapro_logo', dataUrl);
+                document.getElementById('cfgLogoStatus').textContent = '✓ ' + file.name;
+                mostrarToast('Logo atualizada!');
+            });
         };
         r.readAsDataURL(file);
         return;
