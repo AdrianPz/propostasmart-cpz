@@ -3053,50 +3053,65 @@ function gerarPDF() {
             const footerParts = [marca, CONFIG.telefone, CONFIG.email, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : '', CONFIG.responsavel].filter(Boolean);
             const footerLine  = footerParts.join('  |  ');
             mostrarToast('Gerando PDF...');
-            html2pdf().from(html).set({
-                margin:      [4, 4, 16, 4],
-                filename:    nomeArq,
-                image:       { type:'jpeg', quality:0.95 },
-                html2canvas: {
-                    scale: 2, useCORS: true, windowWidth: 756, scrollX: 0, scrollY: 0,
-                    onclone: (clonedDoc) => {
-                        clonedDoc.documentElement.style.cssText = 'margin:0;padding:0;';
-                        clonedDoc.body.style.cssText = 'margin:0;padding:0;background:#fff;';
-                    }
-                },
-                jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
-            }).toPdf().get('pdf').then(async pdf => {
-                const n = pdf.internal.getNumberOfPages();
-                const w = pdf.internal.pageSize.getWidth();
-                const h = pdf.internal.pageSize.getHeight();
-                for (let i = 1; i <= n; i++) {
-                    pdf.setPage(i);
-                    pdf.setDrawColor(fr, fg, fb);
-                    pdf.setLineWidth(0.4);
-                    pdf.line(4, h - 11, w - 4, h - 11);
-                    pdf.setFontSize(7);
-                    pdf.setFont('helvetica', 'normal');
-                    pdf.setTextColor(100, 100, 100);
-                    pdf.text(footerLine, w / 2, h - 7, { align: 'center' });
-                }
 
-                const fone = '55' + tel.replace(/\D/g, '').replace(/^55/, '');
-                const msgWpp = encodeURIComponent('Olá ' + nome + ', segue a proposta comercial.');
-                const wppUrl = 'https://wa.me/' + fone + '?text=' + msgWpp;
-                const blob = new Blob([pdf.output('arraybuffer')], { type: 'application/pdf' });
-                const file = new File([blob], nomeArq, { type: 'application/pdf' });
+            // Cria elemento com posição conhecida e chama html2canvas diretamente
+            const _pdfEl = document.createElement('div');
+            _pdfEl.style.cssText = 'position:absolute;left:0;top:0;width:756px;background:#fff;z-index:-1;';
+            _pdfEl.innerHTML = html;
+            document.body.appendChild(_pdfEl);
+            const _sy = window.scrollY || 0;
+            window.scrollTo(0, 0);
 
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({ files: [file], title: 'Proposta — ' + nome, text: 'Segue a proposta comercial.' });
-                    } catch(e) {
-                        if (e.name !== 'AbortError') pdf.save(nomeArq);
+            // eslint-disable-next-line no-undef
+            html2canvas(_pdfEl, {
+                scale: 2, useCORS: true, backgroundColor: '#ffffff',
+                width: 756, windowWidth: 756, scrollX: 0, scrollY: 0, logging: false
+            }).then(canvas => {
+                window.scrollTo(0, _sy);
+                document.body.removeChild(_pdfEl);
+
+                html2pdf().from(canvas, 'canvas').set({
+                    margin:   [4, 4, 16, 4],
+                    filename: nomeArq,
+                    jsPDF:    { unit:'mm', format:'a4', orientation:'portrait' }
+                }).toPdf().get('pdf').then(async pdf => {
+                    const n = pdf.internal.getNumberOfPages();
+                    const w = pdf.internal.pageSize.getWidth();
+                    const h = pdf.internal.pageSize.getHeight();
+                    for (let i = 1; i <= n; i++) {
+                        pdf.setPage(i);
+                        pdf.setDrawColor(fr, fg, fb);
+                        pdf.setLineWidth(0.4);
+                        pdf.line(4, h - 11, w - 4, h - 11);
+                        pdf.setFontSize(7);
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.setTextColor(100, 100, 100);
+                        pdf.text(footerLine, w / 2, h - 7, { align: 'center' });
                     }
-                } else {
-                    pdf.save(nomeArq);
-                    if (tel) mostrarToastWpp(wppUrl);
-                }
-            }).catch(e => { console.error('Erro PDF:', e); mostrarToast('Erro ao gerar PDF'); });
+
+                    const fone = '55' + tel.replace(/\D/g, '').replace(/^55/, '');
+                    const msgWpp = encodeURIComponent('Olá ' + nome + ', segue a proposta comercial.');
+                    const wppUrl = 'https://wa.me/' + fone + '?text=' + msgWpp;
+                    const blob = new Blob([pdf.output('arraybuffer')], { type: 'application/pdf' });
+                    const file = new File([blob], nomeArq, { type: 'application/pdf' });
+
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({ files: [file], title: 'Proposta — ' + nome, text: 'Segue a proposta comercial.' });
+                        } catch(e) {
+                            if (e.name !== 'AbortError') pdf.save(nomeArq);
+                        }
+                    } else {
+                        pdf.save(nomeArq);
+                        if (tel) mostrarToastWpp(wppUrl);
+                    }
+                }).catch(e => { console.error('Erro PDF:', e); mostrarToast('Erro ao gerar PDF'); });
+            }).catch(e => {
+                window.scrollTo(0, _sy);
+                if (document.body.contains(_pdfEl)) document.body.removeChild(_pdfEl);
+                console.error('Erro canvas:', e);
+                mostrarToast('Erro ao gerar PDF');
+            });
         })
         .catch(e => alert('Erro ao carregar template: ' + e.message));
 }
