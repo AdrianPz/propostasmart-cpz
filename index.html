@@ -1547,20 +1547,32 @@ body {
                 <label class="exp-label">Data do orçamento</label>
                 <input class="exp-input" id="expData" type="date">
             </div>
-            <div style="display:flex;gap:12px;">
+            <div style="display:flex;gap:10px;">
                 <div class="exp-field" style="flex:1;">
                     <label class="exp-label">Validade</label>
-                    <div style="display:flex;gap:6px;align-items:center">
-                        <input class="exp-input" id="expValidade" type="number" min="1" max="90" value="15" style="width:64px;flex:none">
-                        <span style="color:var(--muted);font-size:13px">dias</span>
+                    <div style="display:flex;gap:5px;align-items:center">
+                        <input class="exp-input" id="expValidade" type="number" min="1" max="90" value="15" style="width:52px;flex:none">
+                        <span style="color:var(--muted);font-size:12px">dias</span>
                     </div>
                 </div>
                 <div class="exp-field" style="flex:1;">
-                    <label class="exp-label">Prazo execução</label>
-                    <div style="display:flex;gap:6px;align-items:center">
-                        <input class="exp-input" id="expPrazo" type="number" min="1" max="60" value="2" style="width:64px;flex:none">
-                        <span style="color:var(--muted);font-size:13px">dias úteis</span>
+                    <label class="exp-label">Prazo exec.</label>
+                    <div style="display:flex;gap:5px;align-items:center">
+                        <input class="exp-input" id="expPrazo" type="number" min="1" max="60" value="2" style="width:52px;flex:none">
+                        <span style="color:var(--muted);font-size:12px">d.u.</span>
                     </div>
+                </div>
+                <div class="exp-field" style="flex:1;">
+                    <label class="exp-label">Garantia</label>
+                    <select class="exp-input" id="expGarantia" style="padding:8px 6px;">
+                        <option value="30 dias">30 dias</option>
+                        <option value="60 dias">60 dias</option>
+                        <option value="90 dias">90 dias</option>
+                        <option value="6 meses" selected>6 meses</option>
+                        <option value="12 meses">12 meses</option>
+                        <option value="18 meses">18 meses</option>
+                        <option value="24 meses">24 meses</option>
+                    </select>
                 </div>
             </div>
             <div class="exp-field">
@@ -2731,9 +2743,10 @@ function restaurarEstado() {
             if (ci.tel)      document.getElementById('expTel').value      = ci.tel;
             if (ci.email)    document.getElementById('expEmail').value    = ci.email;
             if (ci.data)     document.getElementById('expData').value     = ci.data;
-            if (ci.validade) document.getElementById('expValidade').value = ci.validade;
-            if (ci.prazo)    document.getElementById('expPrazo').value    = ci.prazo;
-            if (ci.obs)      document.getElementById('expObs').value      = ci.obs;
+            if (ci.validade)  document.getElementById('expValidade').value  = ci.validade;
+            if (ci.prazo)     document.getElementById('expPrazo').value     = ci.prazo;
+            if (ci.garantia)  document.getElementById('expGarantia').value  = ci.garantia;
+            if (ci.obs)       document.getElementById('expObs').value       = ci.obs;
         }
         if (e.desconto) { _descontoPct = e.desconto; document.getElementById('descontoPct').value = e.desconto; }
         if (e.canais)   { document.getElementById('canaisGravador').value = e.canais; }
@@ -2844,7 +2857,7 @@ function setNBoleto(n)     { _nBoleto   = n;   renderPagamento(); }
 function setNCartao(n)     { _nCartao   = n;   renderPagamento(); }
 
 // ── EXPORTAR ──
-let _clienteInfo = { nome:'', tel:'', email:'', data:'', validade:15, prazo:'2', obs:'' };
+let _clienteInfo = { nome:'', tel:'', email:'', data:'', validade:15, prazo:'2', obs:'', garantia:'6 meses' };
 
 function abrirExportar() {
     const ci = _clienteInfo;
@@ -2855,6 +2868,7 @@ function abrirExportar() {
     if (ci.obs)      document.getElementById('expObs').value      = ci.obs;
     document.getElementById('expValidade').value = ci.validade || p.validade || '15';
     document.getElementById('expPrazo').value    = ci.prazo    || p.prazo    || '2';
+    document.getElementById('expGarantia').value = ci.garantia || p.garantia || '6 meses';
     const inputData = document.getElementById('expData');
     if (ci.data) inputData.value = ci.data;
     else if (!inputData.value) inputData.value = new Date().toISOString().slice(0,10);
@@ -2872,10 +2886,11 @@ function confirmarExportar() {
     const data     = document.getElementById('expData').value;
     const validade = document.getElementById('expValidade').value;
     const prazo    = document.getElementById('expPrazo').value || '2';
+    const garantia = document.getElementById('expGarantia').value;
     const obs      = document.getElementById('expObs').value.trim();
     if (!nome)  { document.getElementById('expNome').focus();  return; }
     if (!tel)   { document.getElementById('expTel').focus();   return; }
-    _clienteInfo = { nome, tel, email, data, validade, prazo, obs };
+    _clienteInfo = { nome, tel, email, data, validade, prazo, garantia, obs };
     salvarEstado();
     salvarNoHistorico(nome);
     fecharExportar();
@@ -2897,7 +2912,7 @@ function gerarPDF() {
     const corR = '#f7f9ff';
 
     const msgInstitucional = marca + ' agradece a oportunidade de apresentar esta proposta e coloca-se à disposição para esclarecer qualquer dúvida.';
-    const garantia = getPadroes().garantia || '';
+    const garantia = _clienteInfo.garantia || getPadroes().garantia || '';
     const responsavel = CONFIG.responsavel;
     const cnpj        = CONFIG.cnpj;
     const TH  = 'background:' + cor + ';color:#fff;padding:8px 12px;font-size:11px;font-weight:700;text-align:left;';
@@ -3071,6 +3086,7 @@ async function exportarXLS() {
     const data     = document.getElementById('expData').value;
     const validade = document.getElementById('expValidade').value;
     const prazo    = document.getElementById('expPrazo').value || '2';
+    const garantia = document.getElementById('expGarantia').value;
     const obs      = document.getElementById('expObs').value.trim();
     if (!nome) { document.getElementById('expNome').focus(); return; }
     if (!tel)  { document.getElementById('expTel').focus();  return; }
@@ -3232,7 +3248,8 @@ async function exportarXLS() {
     duoCellRow('Nome', nome, 'Data do orçamento', addDias(0));
     duoCellRow('Telefone', tel, 'Validade', validade + ' dias');
     duoCellRow(email ? 'E-mail' : 'Tipo de projeto', email || tipo, 'Prazo de execução', prazo + ' dias úteis');
-    if (email) duoCellRow('Tipo de projeto', tipo, '', '');
+    if (email) duoCellRow('Tipo de projeto', tipo, 'Garantia', garantia || '—');
+    else duoCellRow('Garantia', garantia || '—', '', '');
     spacer();
 
     // EQUIPAMENTOS
