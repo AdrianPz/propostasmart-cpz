@@ -1725,23 +1725,44 @@ body {
             </div>
         </div>
 
-        <!-- Nome da empresa -->
+        <!-- Dados da empresa -->
         <div class="cfg-item">
             <div class="cfg-item-header" onclick="toggleCfg('Empresa')">
                 <div class="cfg-item-label">
                     <span class="cfg-item-icon">🏢</span>
-                    <span class="cfg-item-titulo">Nome da empresa</span>
+                    <span class="cfg-item-titulo">Dados da empresa</span>
                 </div>
                 <span class="cfg-item-seta" id="cfgSetaEmpresa">▼</span>
             </div>
             <div class="cfg-item-body" id="cfgBodyEmpresa">
-                <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                    Nome exibido abaixo de "PropostaSmart" no cabeçalho do app e nos documentos gerados.
+                <p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.6;">
+                    Aparecem no cabeçalho do app, no PDF e no rodapé de todas as propostas.
                 </p>
-                <input class="setup-url-input" id="cfgEmpresaInput" type="text" placeholder="Ex.: Minha Empresa Segurança" style="margin-bottom:10px;">
-                <button class="setup-salvar-btn" onclick="salvarNomeEmpresa()">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                    <div class="exp-field" style="grid-column:1/-1;">
+                        <label>Nome da empresa</label>
+                        <input class="exp-input" id="cfgEmpresaInput" type="text" placeholder="Ex.: B&R Vision Segurança">
+                    </div>
+                    <div class="exp-field" style="grid-column:1/-1;">
+                        <label>Responsável</label>
+                        <input class="exp-input" id="cfgResponsavelInput" type="text" placeholder="Ex.: João Silva">
+                    </div>
+                    <div class="exp-field">
+                        <label>WhatsApp / Telefone</label>
+                        <input class="exp-input" id="cfgTelefoneInput" type="text" placeholder="(11) 99999-9999">
+                    </div>
+                    <div class="exp-field">
+                        <label>E-mail de contato</label>
+                        <input class="exp-input" id="cfgEmailInput" type="text" placeholder="contato@empresa.com">
+                    </div>
+                    <div class="exp-field" style="grid-column:1/-1;">
+                        <label>CNPJ</label>
+                        <input class="exp-input" id="cfgCnpjInput" type="text" placeholder="00.000.000/0001-00">
+                    </div>
+                </div>
+                <button class="setup-salvar-btn" onclick="salvarDadosEmpresa()">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    Salvar nome
+                    Salvar dados
                 </button>
                 <div class="setup-status" id="cfgEmpresaStatus"></div>
             </div>
@@ -3967,13 +3988,18 @@ function salvarPadroes() {
     setTimeout(() => { document.getElementById('cfgPadroesStatus').textContent = ''; }, 2000);
 }
 
-function salvarNomeEmpresa() {
-    const nome = document.getElementById('cfgEmpresaInput').value.trim();
-    if (!nome) return;
-    localStorage.setItem('orcapro_empresa', nome);
-    CONFIG.empresa = nome;
-    document.getElementById('subtituloApp').textContent = nome;
-    document.getElementById('cfgEmpresaStatus').textContent = '✓ Nome salvo';
+function salvarDadosEmpresa() {
+    const nome       = document.getElementById('cfgEmpresaInput').value.trim();
+    const responsavel= document.getElementById('cfgResponsavelInput').value.trim();
+    const telefone   = document.getElementById('cfgTelefoneInput').value.trim();
+    const email      = document.getElementById('cfgEmailInput').value.trim();
+    const cnpj       = document.getElementById('cfgCnpjInput').value.trim();
+    if (nome)        { localStorage.setItem('orcapro_empresa',     nome);        CONFIG.empresa     = nome;        document.getElementById('subtituloApp').textContent = nome; }
+    if (responsavel !== undefined) { localStorage.setItem('orcapro_responsavel', responsavel); CONFIG.responsavel = responsavel; }
+    if (telefone    !== undefined) { localStorage.setItem('orcapro_telefone',    telefone);    CONFIG.telefone    = telefone; }
+    if (email       !== undefined) { localStorage.setItem('orcapro_email',       email);       CONFIG.email       = email; }
+    if (cnpj        !== undefined) { localStorage.setItem('orcapro_cnpj',        cnpj);        CONFIG.cnpj        = cnpj; }
+    document.getElementById('cfgEmpresaStatus').textContent = '✓ Dados salvos';
     setTimeout(() => { document.getElementById('cfgEmpresaStatus').textContent = ''; }, 2000);
 }
 
@@ -3993,7 +4019,11 @@ function abrirConfig() {
         deslogado.style.display = 'flex';
         document.getElementById('cfgContaTitulo').textContent  = 'Conta — não logado';
     }
-    document.getElementById('cfgEmpresaInput').value = localStorage.getItem('orcapro_empresa') || CONFIG.empresa || '';
+    document.getElementById('cfgEmpresaInput').value     = localStorage.getItem('orcapro_empresa')     || CONFIG.empresa     || '';
+    document.getElementById('cfgResponsavelInput').value = localStorage.getItem('orcapro_responsavel') || CONFIG.responsavel || '';
+    document.getElementById('cfgTelefoneInput').value    = localStorage.getItem('orcapro_telefone')    || CONFIG.telefone    || '';
+    document.getElementById('cfgEmailInput').value       = localStorage.getItem('orcapro_email')       || CONFIG.email       || '';
+    document.getElementById('cfgCnpjInput').value        = localStorage.getItem('orcapro_cnpj')        || CONFIG.cnpj        || '';
     document.getElementById('cfgEmpresaStatus').textContent = '';
     document.getElementById('cfgProdUrl').value  = localStorage.getItem('orcapro_prod_url')  || '';
     document.getElementById('cfgInfraUrl').value = localStorage.getItem('orcapro_infra_url') || '';
@@ -4471,6 +4501,14 @@ async function init() {
 
     const empresaSalva = localStorage.getItem('orcapro_empresa');
     if (empresaSalva) CONFIG.empresa = empresaSalva;
+    const responsavelSalvo = localStorage.getItem('orcapro_responsavel');
+    if (responsavelSalvo !== null) CONFIG.responsavel = responsavelSalvo;
+    const telefoneSalvo = localStorage.getItem('orcapro_telefone');
+    if (telefoneSalvo !== null) CONFIG.telefone = telefoneSalvo;
+    const emailSalvo = localStorage.getItem('orcapro_email');
+    if (emailSalvo !== null) CONFIG.email = emailSalvo;
+    const cnpjSalvo = localStorage.getItem('orcapro_cnpj');
+    if (cnpjSalvo !== null) CONFIG.cnpj = cnpjSalvo;
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
     const logoSalva = localStorage.getItem('orcapro_logo');
     if (logoSalva)        aplicarLogo(logoSalva);
