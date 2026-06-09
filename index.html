@@ -3033,6 +3033,7 @@ function gerarPDF() {
         .then(tpl => {
             let html = tpl;
             Object.entries(placeholders).forEach(([k, v]) => { html = html.split(k).join(v); });
+            html = '<div style="width:756px;background:#fff;margin:0;padding:0;">' + html + '</div>';
             const hex = CONFIG.corPrimaria.replace('#','');
             const [fr,fg,fb] = [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
             const footerParts = [marca, CONFIG.telefone, CONFIG.email, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : '', CONFIG.responsavel].filter(Boolean);
