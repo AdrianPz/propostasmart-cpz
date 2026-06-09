@@ -3044,10 +3044,9 @@ function gerarPDF() {
                 image:       { type:'jpeg', quality:0.95 },
                 html2canvas: {
                     scale: 2, useCORS: true, windowWidth: 756, scrollX: 0, scrollY: 0,
-                    onclone: (_doc, el) => {
-                        _doc.documentElement.style.cssText = 'margin:0;padding:0;';
-                        _doc.body.style.cssText = 'margin:0;padding:0;background:#fff;';
-                        el.style.background = '#fff';
+                    onclone: (clonedDoc) => {
+                        clonedDoc.documentElement.style.cssText = 'margin:0;padding:0;';
+                        clonedDoc.body.style.cssText = 'margin:0;padding:0;background:#fff;';
                     }
                 },
                 jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
@@ -3082,7 +3081,7 @@ function gerarPDF() {
                     pdf.save(nomeArq);
                     if (tel) mostrarToastWpp(wppUrl);
                 }
-            });
+            }).catch(e => { console.error('Erro PDF:', e); mostrarToast('Erro ao gerar PDF'); });
         })
         .catch(e => alert('Erro ao carregar template: ' + e.message));
 }
