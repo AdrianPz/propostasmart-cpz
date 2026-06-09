@@ -3042,7 +3042,7 @@ function gerarPDF() {
                 margin:      [4, 4, 16, 4],
                 filename:    nomeArq,
                 image:       { type:'jpeg', quality:0.95 },
-                html2canvas: { scale:2, useCORS:true, windowWidth:756 },
+                html2canvas: { scale:2, useCORS:true, windowWidth:756, scrollX:0, scrollY:0 },
                 jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
             }).toPdf().get('pdf').then(async pdf => {
                 const n = pdf.internal.getNumberOfPages();
