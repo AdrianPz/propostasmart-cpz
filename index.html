@@ -3231,9 +3231,11 @@ function gerarPDF() {
                         } catch(e) {
                             if (e.name !== 'AbortError') pdf.save(nomeArq);
                         }
+                        setTimeout(abrirHistorico, 600);
                     } else {
                         pdf.save(nomeArq);
                         if (tel) mostrarToastWpp(wppUrl);
+                        setTimeout(abrirHistorico, 600);
                     }
                 }).catch(e => { console.error('Erro PDF:', e); mostrarToast('Erro ao gerar PDF'); });
             }).catch(e => {
@@ -4162,17 +4164,80 @@ function aplicarTemplateEscopo(tipo) {
     if (textarea && _escopoTemplates[tipo]) textarea.value = _escopoTemplates[tipo];
 }
 
-function gerarContrato() {
-    const ci = _clienteInfo;
+function _buildContratoParcelasSimples(valorFinal, modo, subAvista, nPix, nBoleto, nCartao) {
+    const r50 = v => Math.round(v / 50) * 50;
+    const fmtR = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    let parcelas = [];
+    if (modo === 'avista') {
+        if (subAvista === '5050') {
+            parcelas = [
+                { label: '1ª parcela (aprovação)', recebe: r50(valorFinal / 2) },
+                { label: '2ª parcela (conclusão)', recebe: valorFinal - r50(valorFinal / 2) },
+            ];
+        } else {
+            const n = nPix || 1;
+            const parc = r50(valorFinal / n);
+            for (let i = 1; i <= n; i++) parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : valorFinal - parc*(n-1) });
+        }
+    } else if (modo === 'boleto') {
+        const total = r50(valorFinal * 1.05);
+        const n = nBoleto || 1;
+        const parc = r50(total / n);
+        for (let i = 1; i <= n; i++) parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : total - parc*(n-1) });
+    } else {
+        const total = r50(valorFinal * 1.10);
+        const n = nCartao || 1;
+        const parc = r50(total / n);
+        for (let i = 1; i <= n; i++) parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : total - parc*(n-1) });
+    }
+    return parcelas.map((p,i) =>
+        `<tr style="background:${i%2?'#f7f9ff':'#fff'}">
+            <td style="padding:6px 10px;font-size:11px;border-bottom:1px solid #e8e8e8;">${p.label}</td>
+            <td style="padding:6px 10px;font-size:11px;border-bottom:1px solid #e8e8e8;font-weight:700;color:#0055b3;">${fmtR(p.recebe)}</td>
+         </tr>`
+    ).join('');
+}
+
+async function gerarContratoDeHistorico(id, cloud) {
+    let estado;
+    if (cloud) {
+        const { data } = await supa.from('propostas').select('estado, nome_cliente').eq('id', id).single();
+        if (!data) return;
+        estado = data.estado;
+    } else {
+        const entry = getHistorico().find(h => h.id === id);
+        if (!entry) return;
+        estado = entry.estado;
+    }
+    const ci = estado.clienteInfo || {};
+    const valorFinal = estado.pag?.valorFinal || estado.resultado || 0;
+    gerarContrato({
+        ci, valorFinal,
+        modo: estado.pagModo || 'avista',
+        subAvista: estado.subAvista || '5050',
+        nPix: estado.nPix || 1,
+        nBoleto: estado.nBoleto || 1,
+        nCartao: estado.nCartao || 1,
+    });
+}
+
+function gerarContrato(override) {
+    const ci = override?.ci || _clienteInfo;
     if (!ci || !ci.nome) { mostrarToast('Gere uma proposta primeiro'); return; }
+    const valorFinal = override?.valorFinal ?? (_pag.valorFinal || 0);
+    const modo       = override?.modo       ?? _pagModo;
+    const subAvista  = override?.subAvista  ?? _subAvista;
+    const nPix       = override?.nPix       ?? _nPix;
+    const nBoleto    = override?.nBoleto    ?? _nBoleto;
+    const nCartao    = override?.nCartao    ?? _nCartao;
+
     const marca = CONFIG.empresa || 'Contratada';
     const fmtR = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const total = fmtR(_pag.valorFinal || 0);
-    const inst = calcInstallments();
-    const formaLabel = _pagModo === 'avista'
-        ? (_subAvista === '5050' ? '50% na aprovação + 50% na conclusão' : _nPix + '× Pix')
-        : _pagModo === 'boleto' ? (_nBoleto + '× mensais') : (_nCartao + '× no cartão');
-    const modoLabel = { avista:'À Vista / Pix', boleto:'Boleto Bancário', cartao:'Cartão de Crédito' }[_pagModo];
+    const total = fmtR(valorFinal);
+    const formaLabel = modo === 'avista'
+        ? (subAvista === '5050' ? '50% na aprovação + 50% na conclusão' : nPix + '× Pix')
+        : modo === 'boleto' ? (nBoleto + '× mensais') : (nCartao + '× no cartão');
+    const modoLabel = { avista:'À Vista / Pix', boleto:'Boleto Bancário', cartao:'Cartão de Crédito' }[modo];
     const escopo = CONFIG.escopo || 'Fornecimento e instalação de sistema de segurança eletrônica conforme proposta aprovada.';
     const garantia = ci.garantia || '6 meses';
     const prazo = ci.prazo || '2';
@@ -4181,12 +4246,7 @@ function gerarContrato() {
     const cnpj = CONFIG.cnpj ? ' — CNPJ: ' + CONFIG.cnpj : '';
     const nomeArq = 'Contrato_' + ci.nome.replace(/[^a-zA-Z0-9]/g,'_') + '_' + new Date().toISOString().slice(0,10) + '.pdf';
 
-    const rowsParc = inst.parcelas.map((p,i) =>
-        `<tr style="background:${i%2?'#f7f9ff':'#fff'}">
-            <td style="padding:6px 10px;font-size:11px;border-bottom:1px solid #e8e8e8;">${p.label}</td>
-            <td style="padding:6px 10px;font-size:11px;border-bottom:1px solid #e8e8e8;font-weight:700;color:#0055b3;">${fmtR(p.recebe)}</td>
-         </tr>`
-    ).join('');
+    const rowsParc = _buildContratoParcelasSimples(valorFinal, modo, subAvista, nPix, nBoleto, nCartao);
 
     const cor = CONFIG.corPrimaria || '#0055b3';
     const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;max-width:720px;padding:24px 28px;background:#fff;">
@@ -4704,6 +4764,7 @@ async function renderHistorico() {
                 <button class="hist-btn" onclick="reabrirProposta(${h.id}, ${!!h.cloud})" title="Reabrir">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
                 </button>
+                <button class="hist-btn" onclick="gerarContratoDeHistorico(${JSON.stringify(h.id)}, ${!!h.cloud})" title="Gerar contrato" style="font-size:13px;">📋</button>
                 <button class="hist-btn del" onclick="excluirProposta(${h.id}, ${!!h.cloud})" title="Excluir">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                 </button>
