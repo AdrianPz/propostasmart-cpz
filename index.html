@@ -2605,7 +2605,7 @@ function aplicarLogo(src) {
 function redimensionarLogo(src, cb) {
     const img = new Image();
     img.onload = () => {
-        const MAX_W = 240, MAX_H = 68;
+        const MAX_W = 280, MAX_H = 88; // 2× do espaço no PDF (140×44px)
         const scale = Math.min(MAX_W / img.width, MAX_H / img.height, 1);
         const w = Math.round(img.width * scale);
         const h = Math.round(img.height * scale);
@@ -3013,7 +3013,7 @@ function gerarPDF() {
         : '';
 
     const placeholders = {
-        '{{logo_img_tag}}':      (()=>{ const l=localStorage.getItem('orcapro_logo')||CONFIG.logo; return l?`<img src="${l}" style="display:block;height:40px;width:auto;max-width:52px;object-fit:contain;border-radius:6px;" crossorigin="anonymous">`:''; })(),
+        '{{logo_img_tag}}':      (()=>{ const l=localStorage.getItem('orcapro_logo')||CONFIG.logo; return l?`<img src="${l}" style="display:block;max-width:140px;max-height:44px;width:auto;height:auto;object-fit:contain;" crossorigin="anonymous">`:''; })(),
         '{{marca}}':             marca,
         '{{dataFmt}}':           dataFmt,
         '{{dataVenc}}':          dataVenc,
