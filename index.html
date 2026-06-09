@@ -3076,19 +3076,23 @@ function gerarPDF() {
             const footerLine  = footerParts.join('  |  ');
             mostrarToast('Gerando PDF...');
 
-            // Cria elemento com posição conhecida e chama html2canvas diretamente
+            // Cover invisível cobre o flash do elemento de renderização
+            const _cover = document.createElement('div');
+            _cover.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;background:' + getComputedStyle(document.body).backgroundColor;
+            document.body.appendChild(_cover);
+
             const _pdfEl = document.createElement('div');
-            _pdfEl.style.cssText = 'position:absolute;left:0;top:0;width:756px;background:#fff;z-index:-1;';
+            _pdfEl.style.cssText = 'position:absolute;left:0;top:0;width:756px;background:#fff;';
             _pdfEl.innerHTML = html;
             document.body.appendChild(_pdfEl);
             const _sy = window.scrollY || 0;
             window.scrollTo(0, 0);
 
-            // eslint-disable-next-line no-undef
             html2canvas(_pdfEl, {
                 scale: 2, useCORS: true, backgroundColor: '#ffffff',
                 width: 756, windowWidth: 756, scrollX: 0, scrollY: 0, logging: false
             }).then(canvas => {
+                document.body.removeChild(_cover);
                 window.scrollTo(0, _sy);
                 document.body.removeChild(_pdfEl);
 
@@ -3129,6 +3133,7 @@ function gerarPDF() {
                     }
                 }).catch(e => { console.error('Erro PDF:', e); mostrarToast('Erro ao gerar PDF'); });
             }).catch(e => {
+                if (document.body.contains(_cover)) document.body.removeChild(_cover);
                 window.scrollTo(0, _sy);
                 if (document.body.contains(_pdfEl)) document.body.removeChild(_pdfEl);
                 console.error('Erro canvas:', e);
