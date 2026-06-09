@@ -2995,8 +2995,9 @@ function gerarPDF() {
         : '';
 
     const placeholders = {
-        '{{logo_src}}':          CONFIG.logo || '',
-        '{{logo_height}}':       '40',
+        '{{logo_img_tag}}':      CONFIG.logo
+            ? `<img src="${CONFIG.logo}" height="40" style="display:block;height:40px;width:auto;border-radius:6px;" crossorigin="anonymous">`
+            : '',
         '{{marca}}':             marca,
         '{{dataFmt}}':           dataFmt,
         '{{dataVenc}}':          dataVenc,
