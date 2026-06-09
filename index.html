@@ -3038,7 +3038,11 @@ function gerarPDF() {
             const footerParts = [marca, CONFIG.telefone, CONFIG.email, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : '', CONFIG.responsavel].filter(Boolean);
             const footerLine  = footerParts.join('  |  ');
             mostrarToast('Gerando PDF...');
-            html2pdf().from(html).set({
+            const _pdfEl = document.createElement('div');
+            _pdfEl.style.cssText = 'position:fixed;top:-10000px;left:0;width:756px;background:white;';
+            _pdfEl.innerHTML = html;
+            document.body.appendChild(_pdfEl);
+            html2pdf().from(_pdfEl).set({
                 margin:      [4, 4, 16, 4],
                 filename:    nomeArq,
                 image:       { type:'jpeg', quality:0.95 },
@@ -3065,6 +3069,7 @@ function gerarPDF() {
                 const blob = new Blob([pdf.output('arraybuffer')], { type: 'application/pdf' });
                 const file = new File([blob], nomeArq, { type: 'application/pdf' });
 
+                document.body.removeChild(_pdfEl);
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try {
                         await navigator.share({ files: [file], title: 'Proposta — ' + nome, text: 'Segue a proposta comercial.' });
