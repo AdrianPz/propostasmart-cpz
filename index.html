@@ -3033,7 +3033,6 @@ function gerarPDF() {
         .then(tpl => {
             let html = tpl;
             Object.entries(placeholders).forEach(([k, v]) => { html = html.split(k).join(v); });
-            html = '<div style="width:756px;background:#fff;margin:0;padding:0;">' + html + '</div>';
             const hex = CONFIG.corPrimaria.replace('#','');
             const [fr,fg,fb] = [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
             const footerParts = [marca, CONFIG.telefone, CONFIG.email, CONFIG.cnpj ? 'CNPJ: ' + CONFIG.cnpj : '', CONFIG.responsavel].filter(Boolean);
@@ -3043,7 +3042,14 @@ function gerarPDF() {
                 margin:      [4, 4, 16, 4],
                 filename:    nomeArq,
                 image:       { type:'jpeg', quality:0.95 },
-                html2canvas: { scale:2, useCORS:true, windowWidth:756, scrollX:0, scrollY:0 },
+                html2canvas: {
+                    scale: 2, useCORS: true, windowWidth: 756, scrollX: 0, scrollY: 0,
+                    onclone: (_doc, el) => {
+                        _doc.documentElement.style.cssText = 'margin:0;padding:0;';
+                        _doc.body.style.cssText = 'margin:0;padding:0;background:#fff;';
+                        el.style.background = '#fff';
+                    }
+                },
                 jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
             }).toPdf().get('pdf').then(async pdf => {
                 const n = pdf.internal.getNumberOfPages();
