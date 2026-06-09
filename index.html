@@ -649,6 +649,24 @@ body {
 }
 .btn-del:active { background: var(--danger); color: var(--danger-text); border-color: transparent; }
 
+.btn-fav {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 1.5px solid var(--border2);
+    border-radius: 10px; font-size: 17px; cursor: pointer; flex-shrink: 0;
+    color: var(--muted); transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-fav.ativo { color: #f5c842; border-color: #f5c842; background: rgba(245,200,66,0.08); }
+.btn-fav:active { background: rgba(245,200,66,0.18); }
+
+.chip-template {
+    font-size: 11px; font-weight: 600; font-family: inherit;
+    padding: 4px 10px; border-radius: 50px; cursor: pointer;
+    border: 1.5px solid var(--border2); background: var(--surface2);
+    color: var(--label); transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.chip-template:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+
 /* ── BUSCA ── */
 .busca-input {
     width: 100%;
@@ -933,6 +951,9 @@ body {
     color: #fff; font-size: 12px; font-weight: 700;
     padding: 6px 14px; cursor: pointer; font-family: inherit;
     white-space: nowrap;
+}
+.toast-wpp-btn.contrato {
+    background: var(--blue);
 }
 
 /* ── ADD ROW ── */
@@ -1452,6 +1473,7 @@ body {
 <div class="toast" id="toast"></div>
 <div class="toast-wpp" id="toastWpp">
     📄 PDF gerado!
+    <button class="toast-wpp-btn contrato" onclick="gerarContrato()">📋 Contrato</button>
     <button class="toast-wpp-btn" id="toastWppBtn">Enviar no WhatsApp</button>
 </div>
 
@@ -2011,6 +2033,13 @@ body {
                 </div>
                 <div class="exp-field" style="margin-bottom:10px;">
                     <label class="exp-label">Texto do escopo</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+                        <button type="button" class="chip-template" onclick="aplicarTemplateEscopo('ip')">📷 IP</button>
+                        <button type="button" class="chip-template" onclick="aplicarTemplateEscopo('analogico')">📡 Analógica</button>
+                        <button type="button" class="chip-template" onclick="aplicarTemplateEscopo('wifi')">📶 Wi-Fi</button>
+                        <button type="button" class="chip-template" onclick="aplicarTemplateEscopo('alarme')">🚨 Alarme</button>
+                        <button type="button" class="chip-template" onclick="aplicarTemplateEscopo('automacao')">🏠 Automação</button>
+                    </div>
                     <textarea class="exp-input" id="cfgEscopo" rows="3" style="resize:vertical;min-height:72px;" placeholder="Ex.: Fornecimento e instalação de sistema de vigilância..."></textarea>
                 </div>
                 <div class="exp-field" style="margin-bottom:12px;">
@@ -2316,8 +2345,32 @@ function criarBusca(listaOpcoes, placeholder, valorInicial, onSelect) {
     return wrapper;
 }
 
+let _favoritos = new Set();
+
+function salvarFavoritos() {
+    localStorage.setItem('orcapro_favoritos', JSON.stringify([..._favoritos]));
+}
+
+function toggleFavorito(codigo) {
+    if (_favoritos.has(codigo)) _favoritos.delete(codigo);
+    else _favoritos.add(codigo);
+    salvarFavoritos();
+}
+
+function atualizarOpcoesProdutos() {
+    const novas = opcoesParaProdutos();
+    document.querySelectorAll('.item-produto').forEach(card => {
+        const buscaEl = card.querySelector('.item-busca-wrapper');
+        if (buscaEl && buscaEl.setOpcoes) buscaEl.setOpcoes(novas);
+    });
+}
+
 function opcoesParaProdutos() {
     const res=[];
+    const favs = produtos.filter(p => _favoritos.has(p.codigo));
+    if (favs.length) {
+        favs.forEach(p => res.push({valor:p.codigo,label:p.nome,sublabel:p.codigo,grupo:'⭐ Favoritos',preco:fmt(p.valor)}));
+    }
     ordemCategorias.forEach(cat=>{
         produtos.filter(p=>categoriaProduto(p.codigo)===cat).forEach(p=>{
             res.push({valor:p.codigo,label:p.nome,sublabel:p.codigo,grupo:cat,preco:fmt(p.valor)});
@@ -2338,7 +2391,7 @@ function adicionarProduto(codigo, quantidade, precoManual, recalcular = true) {
 
     const topo=document.createElement("div"); topo.className="item-topo";
     const numero=document.createElement("div"); numero.className="item-numero"; numero.textContent="";
-    const busca=criarBusca(opcoesParaProdutos(),"Buscar produto...",codigo||"",()=>atualizarPrecoItem(card,true));
+    const busca=criarBusca(opcoesParaProdutos(),"Buscar produto...",codigo||"",cod=>{ atualizarPrecoItem(card,true); atualizarBtnFav(card); });
     topo.appendChild(numero); topo.appendChild(busca);
 
     const rodape=document.createElement("div"); rodape.className="item-rodape";
@@ -2350,9 +2403,16 @@ function adicionarProduto(codigo, quantidade, precoManual, recalcular = true) {
     const btnMais=document.createElement("button"); btnMais.className="qtd-btn"; btnMais.textContent="+"; btnMais.type="button";
     ctrl.appendChild(btnMenos); ctrl.appendChild(qtdInput); ctrl.appendChild(btnMais);
 
+    const btnFav=document.createElement("button"); btnFav.className="btn-fav"; btnFav.textContent="☆"; btnFav.type="button"; btnFav.title="Favoritar produto";
+    btnFav.style.display="none";
+    btnFav.addEventListener("click",()=>{
+        const cod=busca.getValor(); if(!cod) return;
+        toggleFavorito(cod); atualizarBtnFav(card); atualizarOpcoesProdutos();
+    });
+
     const btnDel=document.createElement("button"); btnDel.className="btn-del"; btnDel.innerHTML="🗑"; btnDel.type="button";
 
-    rodape.appendChild(preco); rodape.appendChild(ctrl); rodape.appendChild(btnDel);
+    rodape.appendChild(preco); rodape.appendChild(ctrl); rodape.appendChild(btnFav); rodape.appendChild(btnDel);
     card.appendChild(topo); card.appendChild(rodape);
     lista.appendChild(card);
 
@@ -4077,6 +4137,128 @@ function salvarDadosEmpresa() {
     setTimeout(() => { document.getElementById('cfgEmpresaStatus').textContent = ''; }, 2000);
 }
 
+function atualizarBtnFav(card) {
+    const btn = card.querySelector('.btn-fav');
+    if (!btn) return;
+    const cod = card.querySelector('.item-busca-wrapper')?.getValor?.() || '';
+    if (!cod) { btn.style.display = 'none'; return; }
+    btn.style.display = '';
+    const isFav = _favoritos.has(cod);
+    btn.textContent = isFav ? '★' : '☆';
+    btn.classList.toggle('ativo', isFav);
+    btn.title = isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
+}
+
+const _escopoTemplates = {
+    ip:       'Fornecimento, instalação e configuração de sistema de câmeras IP, incluindo cabeamento estruturado, switch PoE, configuração de NVR e acesso remoto via aplicativo.',
+    analogico:'Fornecimento, instalação e configuração de sistema de câmeras analógicas/HDCVI, incluindo cabeamento coaxial, fonte de alimentação, configuração de DVR e acesso remoto via aplicativo.',
+    wifi:     'Fornecimento, instalação e configuração de sistema de câmeras sem fio (Wi-Fi), incluindo configuração de roteador dedicado, armazenamento em nuvem e acesso remoto via aplicativo.',
+    alarme:   'Fornecimento, instalação e configuração de sistema de alarme, incluindo central de alarme, sensores de presença (PIR), sensores magnéticos, sirene interna e externa e comunicação via aplicativo.',
+    automacao:'Fornecimento, instalação e configuração de sistema de automação residencial/comercial, incluindo controles de iluminação, climatização, fechaduras inteligentes e central de comando via aplicativo.',
+};
+
+function aplicarTemplateEscopo(tipo) {
+    const textarea = document.getElementById('cfgEscopo');
+    if (textarea && _escopoTemplates[tipo]) textarea.value = _escopoTemplates[tipo];
+}
+
+function gerarContrato() {
+    const ci = _clienteInfo;
+    if (!ci || !ci.nome) { mostrarToast('Gere uma proposta primeiro'); return; }
+    const marca = CONFIG.empresa || 'Contratada';
+    const fmtR = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const total = fmtR(_pag.valorFinal || 0);
+    const inst = calcInstallments();
+    const formaLabel = _pagModo === 'avista'
+        ? (_subAvista === '5050' ? '50% na aprovação + 50% na conclusão' : _nPix + '× Pix')
+        : _pagModo === 'boleto' ? (_nBoleto + '× mensais') : (_nCartao + '× no cartão');
+    const modoLabel = { avista:'À Vista / Pix', boleto:'Boleto Bancário', cartao:'Cartão de Crédito' }[_pagModo];
+    const escopo = CONFIG.escopo || 'Fornecimento e instalação de sistema de segurança eletrônica conforme proposta aprovada.';
+    const garantia = ci.garantia || '6 meses';
+    const prazo = ci.prazo || '2';
+    const dataHoje = new Date().toLocaleDateString('pt-BR');
+    const responsavel = CONFIG.responsavel || '';
+    const cnpj = CONFIG.cnpj ? ' — CNPJ: ' + CONFIG.cnpj : '';
+    const nomeArq = 'Contrato_' + ci.nome.replace(/[^a-zA-Z0-9]/g,'_') + '_' + new Date().toISOString().slice(0,10) + '.pdf';
+
+    const rowsParc = inst.parcelas.map((p,i) =>
+        `<tr style="background:${i%2?'#f7f9ff':'#fff'}">
+            <td style="padding:6px 10px;font-size:11px;border-bottom:1px solid #e8e8e8;">${p.label}</td>
+            <td style="padding:6px 10px;font-size:11px;border-bottom:1px solid #e8e8e8;font-weight:700;color:#0055b3;">${fmtR(p.recebe)}</td>
+         </tr>`
+    ).join('');
+
+    const cor = CONFIG.corPrimaria || '#0055b3';
+    const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;max-width:720px;padding:24px 28px;background:#fff;">
+        <div style="text-align:center;border-bottom:3px solid ${cor};padding-bottom:12px;margin-bottom:20px;">
+            <p style="margin:0;font-size:15px;font-weight:700;color:${cor};text-transform:uppercase;letter-spacing:1px;">Contrato de Prestação de Serviços</p>
+            <p style="margin:4px 0 0;font-size:11px;color:#666;">Data: ${dataHoje}</p>
+        </div>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">
+            <strong>CONTRATANTE:</strong> ${ci.nome}${ci.tel ? ' — Tel: ' + ci.tel : ''}${ci.email ? ' — E-mail: ' + ci.email : ''}<br>
+            <strong>CONTRATADA:</strong> ${marca}${cnpj}${responsavel ? ' — Responsável: ' + responsavel : ''}
+        </p>
+        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 1ª — Do Objeto</p>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">${escopo}</p>
+        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 2ª — Do Valor e Forma de Pagamento</p>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 8px;">O valor total dos serviços é de <strong>${total}</strong>, a ser pago via <strong>${modoLabel}</strong> — ${formaLabel}.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+            <tr><th style="background:${cor};color:#fff;padding:6px 10px;font-size:11px;text-align:left;">Parcela</th><th style="background:${cor};color:#fff;padding:6px 10px;font-size:11px;text-align:left;">Valor</th></tr>
+            ${rowsParc}
+        </table>
+        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 3ª — Do Prazo de Execução</p>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">O prazo de execução dos serviços será de <strong>${prazo} dias úteis</strong> a partir da aprovação deste contrato e do recebimento do sinal.</p>
+        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 4ª — Da Garantia</p>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">A CONTRATADA oferece garantia de <strong>${garantia}</strong> sobre os equipamentos fornecidos e os serviços executados, contados a partir da conclusão da instalação.</p>
+        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 5ª — Das Obrigações</p>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 4px;"><strong>Da CONTRATADA:</strong> Fornecer materiais e mão de obra qualificada; executar os serviços conforme descrito; prestar suporte pelo período de garantia.</p>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;"><strong>Do CONTRATANTE:</strong> Efetuar os pagamentos nas datas acordadas; garantir acesso ao local para execução dos serviços; fornecer energia elétrica durante a instalação.</p>
+        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 6ª — Da Rescisão</p>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">O presente contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 5 (cinco) dias úteis, respondendo a parte inadimplente pelas perdas e danos causados.</p>
+        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 7ª — Do Foro</p>
+        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 24px;">As partes elegem o foro da comarca de domicílio da CONTRATADA para dirimir quaisquer dúvidas ou litígios decorrentes deste instrumento.</p>
+        <p style="font-size:11px;color:#666;text-align:center;margin:0 0 24px;">Assinado em ${dataHoje}.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
+            <tr>
+                <td style="width:46%;height:32px;vertical-align:bottom;border-bottom:1px solid #555;"></td>
+                <td style="width:8%;"></td>
+                <td style="width:46%;height:32px;vertical-align:bottom;border-bottom:1px solid #555;"></td>
+            </tr>
+            <tr>
+                <td style="padding-top:4px;text-align:center;font-size:10px;color:#555;">Contratante — ${ci.nome}</td>
+                <td></td>
+                <td style="padding-top:4px;text-align:center;font-size:10px;color:#555;">Contratada — ${marca}${responsavel ? ' / ' + responsavel : ''}</td>
+            </tr>
+        </table>
+    </div>`;
+
+    mostrarToast('Gerando contrato...');
+    const _cover = document.createElement('div');
+    _cover.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;background:' + getComputedStyle(document.body).backgroundColor;
+    document.body.appendChild(_cover);
+    const _el = document.createElement('div');
+    _el.style.cssText = 'position:absolute;left:0;top:0;width:756px;background:#fff;';
+    _el.innerHTML = html;
+    document.body.appendChild(_el);
+    const _sy = window.scrollY || 0;
+    window.scrollTo(0, 0);
+    html2canvas(_el, { scale:2, useCORS:true, backgroundColor:'#ffffff', width:756, windowWidth:756, scrollX:0, scrollY:0, logging:false })
+    .then(canvas => {
+        document.body.removeChild(_cover);
+        window.scrollTo(0, _sy);
+        document.body.removeChild(_el);
+        html2pdf().from(canvas,'canvas').set({
+            margin:[4,4,16,4], filename:nomeArq,
+            jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+        }).save().then(()=>mostrarToast('Contrato gerado!')).catch(()=>mostrarToast('Erro ao gerar contrato'));
+    }).catch(()=>{
+        if (document.body.contains(_cover)) document.body.removeChild(_cover);
+        window.scrollTo(0, _sy);
+        if (document.body.contains(_el)) document.body.removeChild(_el);
+        mostrarToast('Erro ao gerar contrato');
+    });
+}
+
 function salvarTextos() {
     const msg    = document.getElementById('cfgMsgInstitucional').value.trim();
     const escopo = document.getElementById('cfgEscopo').value.trim();
@@ -4612,6 +4794,7 @@ async function init() {
     if (escopoSalvo !== null) CONFIG.escopo = escopoSalvo;
     const obsPadraoSalvo = localStorage.getItem('orcapro_obs_padrao');
     if (obsPadraoSalvo !== null) CONFIG.obsPadrao = obsPadraoSalvo;
+    try { _favoritos = new Set(JSON.parse(localStorage.getItem('orcapro_favoritos') || '[]')); } catch { _favoritos = new Set(); }
     document.getElementById('subtituloApp').textContent = CONFIG.empresa;
     const logoSalva = localStorage.getItem('orcapro_logo');
     if (logoSalva)        aplicarLogo(logoSalva);
