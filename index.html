@@ -3686,7 +3686,7 @@ function renderPagamento() {
                    onchange="setEntradaValor(Number(this.value))">`
             : '';
         const saldoHtml = eVal > 0
-            ? `<div class="entrada-saldo">Entrada: <strong>${fmt(eVal)}</strong> · Saldo: <strong>${fmt(saldoP)}</strong></div>`
+            ? `<div class="entrada-saldo">Entrada: <strong>${fmt(eVal)}</strong> · Restante: <strong>${fmt(saldoP)}</strong></div>`
             : '';
         html += `<div class="entrada-wrap">
             <div class="entrada-titulo">Entrada</div>
