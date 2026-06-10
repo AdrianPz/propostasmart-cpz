@@ -3173,8 +3173,6 @@ function gerarPDF() {
         '{{escopo_texto}}':      CONFIG.escopo || 'Fornecimento e instalação de sistema de segurança eletrônica conforme especificações abaixo.',
         '{{qtd_cameras_row}}':   qtdCamerasRow,
         '{{relacao_materiais}}': relacaoMateriais,
-        '{{responsavel}}':       responsavel,
-        '{{cnpj}}':              cnpj,
         '{{total}}':             fmtR(inst.total) + (_descontoPct > 0 ? ' <span style="font-size:12px;font-weight:400;opacity:0.7;">(desconto ' + _descontoPct + '% aplicado)</span>' : ''),
         '{{garantia_bullet}}':   garantia ? '&bull; Garantia de <strong>' + garantia + '</strong> para os equipamentos e serviços instalados.<br>' : '',
         '{{modoLabel}}':         modoLabel,
@@ -3183,12 +3181,7 @@ function gerarPDF() {
         '{{validade}}':          validade,
         '{{prazo}}':             prazo + ' dias úteis',
         '{{cor_pri}}':           CONFIG.corPrimaria,
-        '{{cor_light}}':         '#e8eef8',
         '{{cor_bg}}':            '#f0f5ff',
-        '{{cor_row}}':           '#f7f9ff',
-        '{{contato_email}}':     CONFIG.email,
-        '{{contato_tel}}':       CONFIG.telefone,
-        '{{geradoEm}}':          new Date().toLocaleDateString('pt-BR'),
         '{{obs_extra}}':         obs ? '<p style="font-size:11px;color:#444;line-height:1.8;margin:8px 0 16px;white-space:pre-wrap;">' + obs.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>' : '',
     };
 
