@@ -4164,38 +4164,42 @@ function aplicarTemplateEscopo(tipo) {
     if (textarea && _escopoTemplates[tipo]) textarea.value = _escopoTemplates[tipo];
 }
 
-function _buildContratoParcelasSimples(valorFinal, modo, subAvista, nPix, nBoleto, nCartao) {
-    const r50 = v => Math.round(v / 50) * 50;
+function _buildContratoParcelasSimples(valorFinal, modo, subAvista, nPix, nBoleto, nCartao, dataBase, validadeDias) {
+    const r50  = v => Math.round(v / 50) * 50;
     const fmtR = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const cor  = CONFIG.corPrimaria || '#0055b3';
+    const base = dataBase ? new Date(dataBase + 'T12:00:00') : new Date();
+    const vDias = parseInt(validadeDias) || 15;
+    const addDias = d => new Date(base.getTime() + d * 86400000).toLocaleDateString('pt-BR');
+
     let parcelas = [];
     if (modo === 'avista') {
         if (subAvista === '5050') {
             parcelas = [
-                { label: '1ª parcela (aprovação)', recebe: r50(valorFinal / 2) },
-                { label: '2ª parcela (conclusão)', recebe: valorFinal - r50(valorFinal / 2) },
+                { label: '50% — Aprovação', recebe: r50(valorFinal / 2),                      venc: addDias(vDias) },
+                { label: '50% — Conclusão', recebe: valorFinal - r50(valorFinal / 2),          venc: addDias(vDias + 30) },
             ];
         } else {
-            const n = nPix || 1;
-            const parc = r50(valorFinal / n);
-            for (let i = 1; i <= n; i++) parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : valorFinal - parc*(n-1) });
+            const n = nPix || 1; const parc = r50(valorFinal / n);
+            for (let i = 1; i <= n; i++)
+                parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : valorFinal - parc*(n-1), venc: addDias(vDias + (i-1)*30) });
         }
     } else if (modo === 'boleto') {
-        const total = r50(valorFinal * 1.05);
-        const n = nBoleto || 1;
-        const parc = r50(total / n);
-        for (let i = 1; i <= n; i++) parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : total - parc*(n-1) });
+        const tot = r50(valorFinal * 1.05); const n = nBoleto || 1; const parc = r50(tot / n);
+        for (let i = 1; i <= n; i++)
+            parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : tot - parc*(n-1), venc: addDias(vDias + (i-1)*30) });
     } else {
-        const total = r50(valorFinal * 1.10);
-        const n = nCartao || 1;
-        const parc = r50(total / n);
-        for (let i = 1; i <= n; i++) parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : total - parc*(n-1) });
+        const tot = r50(valorFinal * 1.10); const n = nCartao || 1; const parc = r50(tot / n);
+        for (let i = 1; i <= n; i++)
+            parcelas.push({ label: i + 'ª parcela', recebe: i < n ? parc : tot - parc*(n-1), venc: addDias(vDias + (i-1)*30) });
     }
-    return parcelas.map((p,i) =>
-        `<tr style="background:${i%2?'#f7f9ff':'#fff'}">
-            <td style="padding:6px 10px;font-size:11px;border-bottom:1px solid #e8e8e8;">${p.label}</td>
-            <td style="padding:6px 10px;font-size:11px;border-bottom:1px solid #e8e8e8;font-weight:700;color:#0055b3;">${fmtR(p.recebe)}</td>
-         </tr>`
-    ).join('');
+    const rows = parcelas.map((p, i) => `
+        <tr style="background:${i%2?'#f7f9ff':'#fff'}">
+            <td style="padding:7px 12px;font-size:11px;color:#333;border-bottom:1px solid #e8e8e8;">${p.label}</td>
+            <td style="padding:7px 12px;font-size:11px;color:#333;border-bottom:1px solid #e8e8e8;text-align:center;">${p.venc}</td>
+            <td style="padding:7px 12px;font-size:11px;font-weight:700;color:${cor};border-bottom:1px solid #e8e8e8;text-align:right;">${fmtR(p.recebe)}</td>
+        </tr>`).join('');
+    return rows;
 }
 
 async function gerarContratoDeHistorico(id, cloud) {
@@ -4231,65 +4235,154 @@ function gerarContrato(override) {
     const nBoleto    = override?.nBoleto    ?? _nBoleto;
     const nCartao    = override?.nCartao    ?? _nCartao;
 
-    const marca = CONFIG.empresa || 'Contratada';
-    const fmtR = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const total = fmtR(valorFinal);
+    const cor     = CONFIG.corPrimaria || '#0055b3';
+    const corBg   = '#f0f4fc';
+    const marca   = CONFIG.empresa    || 'Contratada';
+    const resp    = CONFIG.responsavel|| '';
+    const cnpj    = CONFIG.cnpj       || '';
+    const telEmp  = CONFIG.telefone   || '';
+    const emailEmp= CONFIG.email      || '';
+    const logoSrc = localStorage.getItem('orcapro_logo') || CONFIG.logo || '';
+    const escopo  = CONFIG.escopo || 'Fornecimento e instalação de sistema de segurança eletrônica (CFTV), compreendendo o fornecimento de materiais, equipamentos, mão de obra especializada, configuração, testes e treinamento básico de operação, conforme especificações descritas na Cláusula 3.';
+    const garantia= ci.garantia || '6 meses';
+    const prazo   = ci.prazo    || '2';
+    const dataHoje= new Date().toLocaleDateString('pt-BR');
+    const fmtR    = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+    // Número do contrato
+    const seq = parseInt(localStorage.getItem('orcapro_contrato_seq') || '0') + 1;
+    localStorage.setItem('orcapro_contrato_seq', String(seq));
+    const initials = marca.split(/\s+/).slice(0,2).map(w=>w[0]?.toUpperCase()||'').join('') || 'CT';
+    const numContrato = initials + '-' + String(seq).padStart(3,'0');
+
+    const modoLabel = { avista:'À Vista (Pix)', boleto:'Boleto Bancário', cartao:'Cartão de Crédito' }[modo];
     const formaLabel = modo === 'avista'
         ? (subAvista === '5050' ? '50% na aprovação + 50% na conclusão' : nPix + '× Pix')
         : modo === 'boleto' ? (nBoleto + '× mensais') : (nCartao + '× no cartão');
-    const modoLabel = { avista:'À Vista / Pix', boleto:'Boleto Bancário', cartao:'Cartão de Crédito' }[modo];
-    const escopo = CONFIG.escopo || 'Fornecimento e instalação de sistema de segurança eletrônica conforme proposta aprovada.';
-    const garantia = ci.garantia || '6 meses';
-    const prazo = ci.prazo || '2';
-    const dataHoje = new Date().toLocaleDateString('pt-BR');
-    const responsavel = CONFIG.responsavel || '';
-    const cnpj = CONFIG.cnpj ? ' — CNPJ: ' + CONFIG.cnpj : '';
+
+    const rowsParc = _buildContratoParcelasSimples(valorFinal, modo, subAvista, nPix, nBoleto, nCartao, ci.data, ci.validade);
+
     const nomeArq = 'Contrato_' + ci.nome.replace(/[^a-zA-Z0-9]/g,'_') + '_' + new Date().toISOString().slice(0,10) + '.pdf';
 
-    const rowsParc = _buildContratoParcelasSimples(valorFinal, modo, subAvista, nPix, nBoleto, nCartao);
+    const H = (n, t) => `<div style="font-size:12px;font-weight:700;text-transform:uppercase;color:#1a1a2e;border-bottom:2px solid ${cor};padding-bottom:6px;margin:18px 0 10px;">${n}. ${t}</div>`;
+    const LI = t => `<p style="font-size:11px;color:#444;line-height:1.7;margin:2px 0 2px 4px;">${t}</p>`;
 
-    const cor = CONFIG.corPrimaria || '#0055b3';
-    const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;max-width:720px;padding:24px 28px;background:#fff;">
-        <div style="text-align:center;border-bottom:3px solid ${cor};padding-bottom:12px;margin-bottom:20px;">
-            <p style="margin:0;font-size:15px;font-weight:700;color:${cor};text-transform:uppercase;letter-spacing:1px;">Contrato de Prestação de Serviços</p>
-            <p style="margin:4px 0 0;font-size:11px;color:#666;">Data: ${dataHoje}</p>
-        </div>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">
-            <strong>CONTRATANTE:</strong> ${ci.nome}${ci.tel ? ' — Tel: ' + ci.tel : ''}${ci.email ? ' — E-mail: ' + ci.email : ''}<br>
-            <strong>CONTRATADA:</strong> ${marca}${cnpj}${responsavel ? ' — Responsável: ' + responsavel : ''}
-        </p>
-        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 1ª — Do Objeto</p>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">${escopo}</p>
-        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 2ª — Do Valor e Forma de Pagamento</p>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 8px;">O valor total dos serviços é de <strong>${total}</strong>, a ser pago via <strong>${modoLabel}</strong> — ${formaLabel}.</p>
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
-            <tr><th style="background:${cor};color:#fff;padding:6px 10px;font-size:11px;text-align:left;">Parcela</th><th style="background:${cor};color:#fff;padding:6px 10px;font-size:11px;text-align:left;">Valor</th></tr>
-            ${rowsParc}
+    const logoTag = logoSrc
+        ? `<img src="${logoSrc}" style="max-width:130px;max-height:42px;object-fit:contain;display:block;" crossorigin="anonymous">`
+        : `<span style="font-size:14px;font-weight:700;color:${cor};">${marca}</span>`;
+
+    const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;width:748px;padding:20px 28px 32px;background:#fff;font-size:12px;line-height:1.6;">
+
+        <!-- CABEÇALHO -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom:3px solid ${cor};padding-bottom:12px;margin-bottom:20px;">
+            <tr>
+                <td style="width:160px;vertical-align:middle;">${logoTag}</td>
+                <td style="text-align:right;vertical-align:middle;">
+                    <div style="font-size:15px;font-weight:700;color:${cor};text-transform:uppercase;letter-spacing:0.5px;">Contrato de Prestação de Serviços</div>
+                    <div style="font-size:11px;color:#777;margin-top:3px;">Nº ${numContrato} &nbsp;|&nbsp; ${dataHoje}</div>
+                </td>
+            </tr>
         </table>
-        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 3ª — Do Prazo de Execução</p>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">O prazo de execução dos serviços será de <strong>${prazo} dias úteis</strong> a partir da aprovação deste contrato e do recebimento do sinal.</p>
-        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 4ª — Da Garantia</p>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">A CONTRATADA oferece garantia de <strong>${garantia}</strong> sobre os equipamentos fornecidos e os serviços executados, contados a partir da conclusão da instalação.</p>
-        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 5ª — Das Obrigações</p>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 4px;"><strong>Da CONTRATADA:</strong> Fornecer materiais e mão de obra qualificada; executar os serviços conforme descrito; prestar suporte pelo período de garantia.</p>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;"><strong>Do CONTRATANTE:</strong> Efetuar os pagamentos nas datas acordadas; garantir acesso ao local para execução dos serviços; fornecer energia elétrica durante a instalação.</p>
-        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 6ª — Da Rescisão</p>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 16px;">O presente contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 5 (cinco) dias úteis, respondendo a parte inadimplente pelas perdas e danos causados.</p>
-        <p style="font-size:13px;font-weight:700;color:${cor};border-bottom:2px solid ${cor};padding-bottom:4px;margin:0 0 8px;">Cláusula 7ª — Do Foro</p>
-        <p style="font-size:12px;color:#444;line-height:1.8;margin:0 0 24px;">As partes elegem o foro da comarca de domicílio da CONTRATADA para dirimir quaisquer dúvidas ou litígios decorrentes deste instrumento.</p>
-        <p style="font-size:11px;color:#666;text-align:center;margin:0 0 24px;">Assinado em ${dataHoje}.</p>
+
+        ${H(1,'Das Partes')}
+        <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #ddd;margin-bottom:4px;">
+            <tr>
+                <td style="width:50%;padding:12px 14px;vertical-align:top;border-right:1px solid #ddd;background:#fafbfd;">
+                    <div style="font-size:10px;font-weight:700;color:${cor};text-transform:uppercase;letter-spacing:0.6px;margin-bottom:7px;">Contratada</div>
+                    <div style="font-weight:700;font-size:12px;">${marca}</div>
+                    ${cnpj   ? `<div style="font-size:11px;color:#444;">CNPJ: ${cnpj}</div>`       : ''}
+                    ${telEmp ? `<div style="font-size:11px;color:#444;">Tel: ${telEmp}</div>`       : ''}
+                    ${emailEmp?`<div style="font-size:11px;color:#444;">E-mail: ${emailEmp}</div>`  : ''}
+                    ${resp   ? `<div style="font-size:11px;color:#444;">Resp.: ${resp}</div>`       : ''}
+                </td>
+                <td style="width:50%;padding:12px 14px;vertical-align:top;background:#fafbfd;">
+                    <div style="font-size:10px;font-weight:700;color:${cor};text-transform:uppercase;letter-spacing:0.6px;margin-bottom:7px;">Contratante</div>
+                    <div style="font-weight:700;font-size:12px;">${ci.nome}</div>
+                    ${ci.tel  ? `<div style="font-size:11px;color:#444;">Tel: ${ci.tel}</div>`      : ''}
+                    ${ci.email? `<div style="font-size:11px;color:#444;">E-mail: ${ci.email}</div>` : ''}
+                </td>
+            </tr>
+        </table>
+
+        ${H(2,'Do Objeto')}
+        <p style="font-size:11px;color:#333;line-height:1.75;margin:0 0 6px;">O presente contrato tem por objeto a <strong>prestação de serviços de instalação de sistema de segurança eletrônica (CFTV)</strong>, ${escopo}</p>
+
+        ${H(3,'Do Valor e Forma de Pagamento')}
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:${cor};margin-bottom:8px;">
+            <tr>
+                <td style="padding:9px 14px;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;">Valor Total do Contrato</td>
+                <td style="padding:9px 14px;color:#fff;font-size:16px;font-weight:700;text-align:right;">${fmtR(valorFinal)}</td>
+            </tr>
+        </table>
+        <p style="font-size:11px;color:#333;margin:0 0 8px;"><strong>Forma:</strong> ${modoLabel} — ${formaLabel}</p>
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
             <tr>
-                <td style="width:46%;height:32px;vertical-align:bottom;border-bottom:1px solid #555;"></td>
-                <td style="width:8%;"></td>
-                <td style="width:46%;height:32px;vertical-align:bottom;border-bottom:1px solid #555;"></td>
+                <th style="background:${cor};color:#fff;padding:7px 12px;font-size:11px;font-weight:700;text-align:left;">Parcela</th>
+                <th style="background:${cor};color:#fff;padding:7px 12px;font-size:11px;font-weight:700;text-align:center;">Vencimento</th>
+                <th style="background:${cor};color:#fff;padding:7px 12px;font-size:11px;font-weight:700;text-align:right;">Valor</th>
             </tr>
+            ${rowsParc}
+        </table>
+        <p style="font-size:10px;color:#666;line-height:1.6;margin:0 0 4px;">O não pagamento nas datas acordadas sujeitará o CONTRATANTE a multa de 2% (dois por cento) sobre o valor em atraso, acrescido de juros de mora de 1% (um por cento) ao mês, além de correção monetária pelo IPCA.</p>
+
+        ${H(4,'Do Prazo de Execução')}
+        <p style="font-size:11px;color:#333;line-height:1.75;margin:0 0 4px;">A CONTRATADA se compromete a executar os serviços em até <strong>${prazo} dias úteis</strong> a contar da aprovação deste contrato e do recebimento do primeiro pagamento, podendo o prazo ser prorrogado mediante acordo entre as partes em caso de impedimento por fatores externos (condições climáticas, acesso ao local, etc.).</p>
+
+        ${H(5,'Obrigações da Contratada')}
+        ${LI('a) Executar os serviços com profissionalismo, dentro das normas técnicas aplicáveis;')}
+        ${LI('b) Fornecer os equipamentos e materiais especificados ou de equivalência técnica superior;')}
+        ${LI('c) Manter sigilo sobre informações do CONTRATANTE e do local de instalação;')}
+        ${LI(`d) Prestar suporte técnico remoto por ${garantia} após a conclusão dos serviços;`)}
+        ${LI('e) Corrigir, sem ônus adicional, eventuais defeitos de instalação verificados no período de garantia;')}
+        ${LI('f) Apresentar o sistema funcionando ao CONTRATANTE ao término da instalação.')}
+
+        ${H(6,'Obrigações do Contratante')}
+        ${LI('a) Efetuar os pagamentos nas datas e formas acordadas;')}
+        ${LI('b) Garantir acesso ao local de instalação nos dias e horários combinados;')}
+        ${LI('c) Disponibilizar ponto de energia elétrica e internet (quando necessário para o sistema);')}
+        ${LI('d) Comunicar à CONTRATADA qualquer problema técnico durante o período de garantia;')}
+        ${LI('e) Não realizar modificações no sistema instalado sem prévia autorização técnica da CONTRATADA.')}
+
+        ${H(7,'Da Garantia')}
+        <p style="font-size:11px;color:#333;line-height:1.75;margin:0 0 4px;">A CONTRATADA oferece garantia de <strong>${garantia}</strong> para equipamentos e serviços, a contar da data de conclusão. A garantia não cobre danos causados por mau uso, queda de energia, vandalismo, desastres naturais ou modificações realizadas por terceiros sem autorização da CONTRATADA.</p>
+
+        ${H(8,'Da Rescisão')}
+        <p style="font-size:11px;color:#333;line-height:1.75;margin:0 0 4px;">O presente contrato poderá ser rescindido por qualquer das partes mediante notificação prévia de 5 (cinco) dias úteis. Em caso de rescisão por iniciativa do CONTRATANTE após o início dos serviços, serão devidos os valores proporcionais aos serviços já executados, acrescidos de multa rescisória de 20% sobre o saldo remanescente. A rescisão por iniciativa da CONTRATADA, sem justa causa, obrigará a devolução dos valores recebidos acima do proporcional executado.</p>
+
+        ${H(9,'Da Confidencialidade')}
+        <p style="font-size:11px;color:#333;line-height:1.75;margin:0 0 4px;">As partes comprometem-se a manter sigilo sobre todas as informações técnicas e comerciais trocadas no âmbito deste contrato, não podendo divulgá-las a terceiros sem prévia autorização por escrito da parte interessada.</p>
+
+        ${H(10,'Disposições Gerais e Foro')}
+        <p style="font-size:11px;color:#333;line-height:1.75;margin:0 0 20px;">Este contrato é regido pelas leis da República Federativa do Brasil. Fica eleito o foro da comarca de domicílio da CONTRATADA para dirimir quaisquer controvérsias oriundas deste instrumento, renunciando as partes a qualquer outro, por mais privilegiado que seja. O presente instrumento, lido e achado conforme, é assinado pelas partes em 2 (duas) vias de igual teor e forma, juntamente com as testemunhas abaixo.</p>
+
+        <p style="font-size:11px;color:#555;text-align:right;margin:0 0 28px;">${dataHoje}.</p>
+
+        <!-- ASSINATURAS -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
             <tr>
-                <td style="padding-top:4px;text-align:center;font-size:10px;color:#555;">Contratante — ${ci.nome}</td>
-                <td></td>
-                <td style="padding-top:4px;text-align:center;font-size:10px;color:#555;">Contratada — ${marca}${responsavel ? ' / ' + responsavel : ''}</td>
+                <td style="width:46%;padding-top:36px;border-top:1px solid #888;text-align:center;">
+                    <div style="font-size:11px;font-weight:700;color:#1a1a2e;">${marca}</div>
+                    ${cnpj ? `<div style="font-size:10px;color:#666;">CNPJ: ${cnpj} — Contratada</div>` : `<div style="font-size:10px;color:#666;">Contratada</div>`}
+                </td>
+                <td style="width:8%;"></td>
+                <td style="width:46%;padding-top:36px;border-top:1px solid #888;text-align:center;">
+                    <div style="font-size:11px;font-weight:700;color:#1a1a2e;">${ci.nome}</div>
+                    <div style="font-size:10px;color:#666;">Contratante</div>
+                </td>
             </tr>
         </table>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <td style="width:46%;padding-top:36px;border-top:1px solid #aaa;text-align:center;">
+                    <div style="font-size:10px;color:#777;">Testemunha 1</div>
+                </td>
+                <td style="width:8%;"></td>
+                <td style="width:46%;padding-top:36px;border-top:1px solid #aaa;text-align:center;">
+                    <div style="font-size:10px;color:#777;">Testemunha 2</div>
+                </td>
+            </tr>
+        </table>
+
     </div>`;
 
     mostrarToast('Gerando contrato...');
@@ -4307,10 +4400,28 @@ function gerarContrato(override) {
         document.body.removeChild(_cover);
         window.scrollTo(0, _sy);
         document.body.removeChild(_el);
+        const hex = cor.replace('#','');
+        const [fr,fg,fb] = [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+        const footerParts = [marca, telEmp, emailEmp, cnpj ? 'CNPJ: ' + cnpj : ''].filter(Boolean);
+        const footerLine  = footerParts.join('  |  ');
         html2pdf().from(canvas,'canvas').set({
             margin:[4,4,16,4], filename:nomeArq,
             jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
-        }).save().then(()=>mostrarToast('Contrato gerado!')).catch(()=>mostrarToast('Erro ao gerar contrato'));
+        }).toPdf().get('pdf').then(pdf => {
+            const n = pdf.internal.getNumberOfPages();
+            const w = pdf.internal.pageSize.getWidth();
+            const h = pdf.internal.pageSize.getHeight();
+            for (let i = 1; i <= n; i++) {
+                pdf.setPage(i);
+                pdf.setDrawColor(fr, fg, fb); pdf.setLineWidth(0.4);
+                pdf.line(4, h-11, w-4, h-11);
+                pdf.setFontSize(7); pdf.setFont('helvetica','normal');
+                pdf.setTextColor(100,100,100);
+                pdf.text(footerLine, w/2, h-7, { align:'center' });
+            }
+            pdf.save(nomeArq);
+            mostrarToast('Contrato gerado!');
+        }).catch(()=>mostrarToast('Erro ao gerar contrato'));
     }).catch(()=>{
         if (document.body.contains(_cover)) document.body.removeChild(_cover);
         window.scrollTo(0, _sy);
